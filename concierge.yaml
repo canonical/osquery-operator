@@ -7,9 +7,9 @@ juju:
     test-mode: "true"
     automatically-retry-hooks: "false"
 
+# OSQuery is a machine subordinate charm, so it is exercised on a LXD cloud
+# rather than a Kubernetes substrate.
 providers:
-  microk8s:
+  lxd:
     enable: true
     bootstrap: true
-    addons:
-      - hostpath-storage

@@ -1,46 +1,66 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Fixtures for charm integration tests."""
+"""Fixtures for the OSQuery charm integration tests."""
 
-import typing
-from collections.abc import Generator
+import pathlib
 
 import jubilant
 import pytest
 
+# The principal application the subordinate is related to. The `ubuntu` charm
+# provides the implicit `juju-info` interface required by this subordinate.
+PRINCIPAL_APP = "ubuntu"
+OSQUERY_APP = "osquery"
 
-@pytest.fixture(scope="session", name="juju")
-def juju_fixture(request: pytest.FixtureRequest) -> Generator[jubilant.Juju, None, None]:
-    """Pytest fixture that wraps :meth:`jubilant.with_model`."""
 
-    def show_debug_log(juju: jubilant.Juju):
-        """Show debug log.
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the --charm-file command line option.
 
-        Args:
-            juju: the Juju object.
-        """
-        if request.session.testsfailed:
-            log = juju.debug_log(limit=1000)
-            print(log, end="")
+    Args:
+        parser: the pytest command line parser.
+    """
+    parser.addoption(
+        "--charm-file",
+        action="store",
+        help="Path to the packed OSQuery charm file under test.",
+    )
 
-    use_existing = request.config.getoption("--use-existing", default=False)
-    if use_existing:
-        juju = jubilant.Juju()
-        yield juju
-        show_debug_log(juju)
-        return
 
+@pytest.fixture(scope="module")
+def charm_file(request: pytest.FixtureRequest) -> str:
+    """Return the path to the packed charm under test.
+
+    Args:
+        request: the pytest request object.
+
+    Returns:
+        The path to the charm file.
+    """
+    charm = request.config.getoption("--charm-file")
+    if charm:
+        return str(pathlib.Path(charm).resolve())
+    charms = list(pathlib.Path(".").glob("*.charm"))
+    assert charms, "no .charm file found; pack the charm or pass --charm-file"
+    return str(charms[0].resolve())
+
+
+@pytest.fixture(scope="module")
+def juju(request: pytest.FixtureRequest):
+    """Yield a Juju model for the test module.
+
+    When ``--model`` is provided (for example by the spread/charm-ci runner) the
+    existing model is reused, otherwise a temporary model is created.
+
+    Args:
+        request: the pytest request object.
+
+    Yields:
+        A jubilant.Juju instance bound to the model under test.
+    """
     model = request.config.getoption("--model")
     if model:
-        juju = jubilant.Juju(model=model)
-        yield juju
-        show_debug_log(juju)
+        yield jubilant.Juju(model=model)
         return
-
-    keep_models = typing.cast(bool, request.config.getoption("--keep-models"))
-    with jubilant.temp_model(keep=keep_models) as juju:
-        juju.wait_timeout = 10 * 60
-        yield juju
-        show_debug_log(juju)
-        return
+    with jubilant.temp_model() as temp:
+        yield temp

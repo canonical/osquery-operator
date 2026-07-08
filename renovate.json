@@ -13,20 +13,6 @@
   "customManagers": [
     {
       "customType": "regex",
-      "datasourceTemplate": "docker",
-      "description": "Update base image references",
-      "managerFilePatterns": [
-        "/(^|/)rockcraft.yaml$/"
-      ],
-      "matchStrings": [
-        "# renovate: build-base:\\s+(?<depName>[^:]*):(?<currentValue>[^\\s@]*)(@(?<currentDigest>sha256:[0-9a-f]*))?",
-        "# renovate: base:\\s+(?<depName>[^:]*):(?<currentValue>[^\\s@]*)(@(?<currentDigest>sha256:[0-9a-f]*))?"
-      ],
-      "matchStringsStrategy": "any",
-      "versioningTemplate": "ubuntu"
-    },
-    {
-      "customType": "regex",
       "datasourceTemplate": "custom.charmhub",
       "fileMatch": [
         "\\.tftest\\.hcl$",
@@ -36,6 +22,19 @@
         "# renovate: depName=\"(?<packageName>[^\"]+)\"\\s*\\n\\s*(?<fieldName>[a-zA-Z0-9_]+)\\s*=\\s*(?<currentValue>\\d+)"
       ],
       "versioningTemplate": "semver-coerced"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "deb",
+      "depNameTemplate": "osquery",
+      "fileMatch": [
+        "^src/osquery\\.py$"
+      ],
+      "matchStrings": [
+        "PACKAGE_VERSION\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "registryUrlTemplate": "https://ppa.launchpadcontent.net/jjimenezgarcia/osquery/ubuntu?suite=noble&components=main&binaryArch=amd64",
+      "versioningTemplate": "deb"
     }
   ],
   "extends": [
@@ -59,14 +58,10 @@
       ]
     },
     {
-      "enabled": false,
-      "matchFileNames": [
-        "rockcraft.yaml"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
+      "automerge": true,
+      "enabled": true,
+      "matchDatasources": [
+        "deb"
       ]
     },
     {

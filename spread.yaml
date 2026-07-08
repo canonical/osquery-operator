@@ -1,28 +1,38 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-project: platform-engineering-charm-template
+project: osquery
+
 path: /home/ubuntu/proj
+
 kill-timeout: 60m
 warn-timeout: 1m
+
 backends:
   integration-test:
     type: integration-test
     systems:
     - ubuntu-24.04
+
 environment:
-  CONCIERGE: '$(HOST: echo "${CONCIERGE:-concierge.yaml}")'
-  OPCLI_GIT_REF: '$(HOST: echo "${OPCLI_GIT_REF:-main}")'
+  CONCIERGE: concierge.yaml
+  CONCIERGE_EXTRA_SNAPS: ""
+  OPCLI_GIT_REF: "v0.0.1-alpha.5"
+
 exclude:
 - .git
 - .tox
 - .venv
 - .*_cache
+
 integration-suites:
   tests/integration/:
-    summary: integration tests
+    summary: OSQuery integration tests
     working-dir: ./
     backends:
     - integration-test
     pytest-arguments-template: |
       --model testing
+      {% for build in artifacts.charms[0].builds if build.arch == arch %}
+      --charm-file {{ build.path }}
+      {% endfor %}

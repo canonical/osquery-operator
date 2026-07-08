@@ -1,29 +1,30 @@
-#!/usr/bin/env python3
-
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Integration tests."""
-
-import logging
-from pathlib import Path
+"""Integration tests that deploy the OSQuery subordinate charm."""
 
 import jubilant
-import pytest
-import yaml
 
-logger = logging.getLogger(__name__)
-
-CHARMCRAFT = yaml.safe_load(Path("./charmcraft.yaml").read_text())
-RESOURCES = {name: val["upstream-source"] for name, val in CHARMCRAFT["resources"].items()}
+from .conftest import OSQUERY_APP, PRINCIPAL_APP
 
 
-@pytest.mark.abort_on_fail
-def test_deploy(juju: jubilant.Juju, charm_path: str):
+def test_deploy_and_relate(juju: jubilant.Juju, charm_file: str):
+    """The subordinate deploys, relates to a principal and becomes active.
+
+    Steps:
+    - Deploy the `ubuntu` principal application.
+    - Deploy the OSQuery subordinate.
+    - Relate the two and wait for the subordinate to become active.
     """
-    arrange: A Juju model with MicroK8s.
-    act: Deploy the charm with its OCI image resource.
-    assert: The charm reaches active status.
-    """
-    juju.deploy(charm_path, resources=RESOURCES)
-    juju.wait(jubilant.all_active)
+    juju.deploy(PRINCIPAL_APP, base="ubuntu@24.04")
+    juju.deploy(
+        charm_file,
+        OSQUERY_APP,
+        base="ubuntu@24.04",
+    )
+    juju.integrate(PRINCIPAL_APP, OSQUERY_APP)
+
+    juju.wait(
+        lambda status: jubilant.all_active(status, PRINCIPAL_APP, OSQUERY_APP),
+        timeout=20 * 60,
+    )
