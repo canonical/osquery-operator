@@ -12,26 +12,22 @@ from errors import OSQueryInstallError
 
 
 def test_install_success(monkeypatch):
-    calls = {}
+    commands = []
 
     def fake_run(cmd, check, capture_output):
-        calls["cmd"] = cmd
+        commands.append(cmd)
         return subprocess.CompletedProcess(cmd, 0)
 
-    def fake_add_package(name, version):
-        calls["package"] = name
-        calls["version"] = version
-
     monkeypatch.setattr(osquery.subprocess, "run", fake_run)
-    monkeypatch.setattr(osquery.apt, "update", lambda: calls.setdefault("update", True))
-    monkeypatch.setattr(osquery.apt, "add_package", fake_add_package)
 
     osquery.install()
 
-    assert osquery.PPA in calls["cmd"]
-    assert calls["update"] is True
-    assert calls["package"] == osquery.PACKAGE_NAME
-    assert calls["version"] == osquery.PACKAGE_VERSION
+    # The PPA is added, the cache refreshed and the pinned version installed.
+    assert any(osquery.PPA in cmd for cmd in commands)
+    install_cmd = commands[-1]
+    assert "install" in install_cmd
+    assert "--allow-downgrades" in install_cmd
+    assert f"{osquery.PACKAGE_NAME}={osquery.PACKAGE_VERSION}" in install_cmd
 
 
 def test_install_failure_raises(monkeypatch):
@@ -44,9 +40,27 @@ def test_install_failure_raises(monkeypatch):
         osquery.install()
 
 
+def test_installed_version_returns_version(monkeypatch):
+    class FakePackage:
+        version = "5.21.0custom19~noble1"
+
+    monkeypatch.setattr(
+        osquery.apt.DebianPackage, "from_installed_package", lambda name: FakePackage()
+    )
+    assert osquery.installed_version() == "5.21.0custom19~noble1"
+
+
+def test_installed_version_returns_none_when_absent(monkeypatch):
+    def raise_not_found(name):
+        raise osquery.apt.PackageNotFoundError()
+
+    monkeypatch.setattr(osquery.apt.DebianPackage, "from_installed_package", raise_not_found)
+    assert osquery.installed_version() is None
+
+
 def test_is_installed_true(monkeypatch):
     class FakePackage:
-        present = True
+        version = "5.21.0custom19~noble1"
 
     monkeypatch.setattr(
         osquery.apt.DebianPackage, "from_installed_package", lambda name: FakePackage()
@@ -94,23 +108,27 @@ def test_stop_when_not_installed_is_noop(monkeypatch):
 def test_uninstall_success(monkeypatch):
     removed: dict = {}
     monkeypatch.setattr(osquery, "stop", lambda: removed.setdefault("stopped", True))
-    monkeypatch.setattr(
-        osquery.apt, "remove_package", lambda name: removed.setdefault("package", name)
-    )
+
+    def fake_run(cmd, check, capture_output):
+        removed["cmd"] = cmd
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(osquery.subprocess, "run", fake_run)
 
     osquery.uninstall()
 
     assert removed["stopped"] is True
-    assert removed["package"] == osquery.PACKAGE_NAME
+    assert "remove" in removed["cmd"]
+    assert osquery.PACKAGE_NAME in removed["cmd"]
 
 
 def test_uninstall_failure_raises(monkeypatch):
     monkeypatch.setattr(osquery, "stop", lambda: None)
 
-    def fail(name):
-        raise osquery.apt.PackageError("boom")
+    def fail(cmd, check, capture_output):
+        raise subprocess.CalledProcessError(1, cmd)
 
-    monkeypatch.setattr(osquery.apt, "remove_package", fail)
+    monkeypatch.setattr(osquery.subprocess, "run", fail)
 
     with pytest.raises(OSQueryInstallError):
         osquery.uninstall()

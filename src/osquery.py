@@ -27,15 +27,18 @@ SERVICE_NAME = "osqueryd"
 
 
 def install() -> None:
-    """Install the OSQuery package from the Launchpad PPA.
+    """Install the pinned OSQuery package from the Launchpad PPA.
 
     Steps:
     - Add the Launchpad PPA (which also imports its signing key).
     - Refresh the apt cache.
-    - Install the OSQuery package.
+    - Install the pinned OSQuery version.
 
     This function is idempotent: adding an already-present PPA and installing an
-    already-present package are both no-ops.
+    already-present version are both no-ops. Because it installs an exact
+    version, it also handles both upgrading and downgrading the host to match
+    the pin (``--allow-downgrades`` permits the latter, which the apt library
+    does not expose).
 
     Raises:
         OSQueryInstallError: if adding the repository or installing the package
@@ -50,10 +53,27 @@ def install() -> None:
             check=True,
             capture_output=True,
         )
-        apt.update()
+        subprocess.run(  # nosec B603
+            ["/usr/bin/apt-get", "--yes", "update"],
+            check=True,
+            capture_output=True,
+        )
         logger.info("Installing %s package version %s", PACKAGE_NAME, PACKAGE_VERSION)
-        apt.add_package(PACKAGE_NAME, version=PACKAGE_VERSION)
-    except (subprocess.CalledProcessError, apt.Error) as exc:
+        # apt.add_package cannot downgrade (it omits --allow-downgrades), so we
+        # call apt-get directly to support pinning to any version, up or down.
+        subprocess.run(  # nosec B603
+            [
+                "/usr/bin/apt-get",
+                "--yes",
+                "--allow-downgrades",
+                "--option=Dpkg::Options::=--force-confold",
+                "install",
+                f"{PACKAGE_NAME}={PACKAGE_VERSION}",
+            ],
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
         raise OSQueryInstallError(f"failed to install {PACKAGE_NAME}: {exc}") from exc
 
 
@@ -63,19 +83,36 @@ def uninstall() -> None:
     Raises:
         OSQueryInstallError: if removing the package fails.
     """
+    stop()
     try:
-        stop()
-        apt.remove_package(PACKAGE_NAME)
-    except (apt.Error, systemd.SystemdError) as exc:
+        logger.info("Removing %s package", PACKAGE_NAME)
+        # Mirror install(): drive apt-get directly rather than the apt library so
+        # the install and uninstall paths stay consistent.
+        subprocess.run(  # nosec B603
+            ["/usr/bin/apt-get", "--yes", "remove", PACKAGE_NAME],
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
         raise OSQueryInstallError(f"failed to remove {PACKAGE_NAME}: {exc}") from exc
 
 
 def is_installed() -> bool:
-    """Return whether the OSQuery package is installed."""
+    """Return whether the OSQuery package is installed (at any version)."""
+    return installed_version() is not None
+
+
+def installed_version() -> str | None:
+    """Return the installed OSQuery package version, or None if absent.
+
+    Returns:
+        The installed package version string, or None when OSQuery is not
+        installed on the host.
+    """
     try:
-        return apt.DebianPackage.from_installed_package(PACKAGE_NAME).present
+        return str(apt.DebianPackage.from_installed_package(PACKAGE_NAME).version)
     except apt.PackageNotFoundError:
-        return False
+        return None
 
 
 def stop() -> None:

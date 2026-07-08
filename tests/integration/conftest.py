@@ -12,6 +12,8 @@ import pytest
 # provides the implicit `juju-info` interface required by this subordinate.
 PRINCIPAL_APP = "ubuntu"
 OSQUERY_APP = "osquery"
+# The apt package the subordinate installs on the principal's machine.
+PACKAGE_NAME = "osquery"
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:

@@ -6,6 +6,7 @@
 import pytest
 from ops import testing
 
+import osquery
 from charm import OSQueryCharm
 
 
@@ -31,14 +32,14 @@ def test_reconcile_installs_when_missing(ctx, patch_workload, event):
 
     out = ctx.run(getattr(ctx.on, event)(), state)
 
-    assert patch_workload.installed is True
+    assert patch_workload.installed_version == osquery.PACKAGE_VERSION
     assert patch_workload.install_count == 1
     assert out.unit_status == testing.ActiveStatus()
 
 
-def test_reconcile_is_idempotent_when_installed(ctx, patch_workload):
-    """Reconciling an already-installed workload does not reinstall it."""
-    patch_workload.installed = True
+def test_reconcile_is_idempotent_when_pinned_version_installed(ctx, patch_workload):
+    """Reconciling with the pinned version already installed does not reinstall."""
+    patch_workload.installed_version = osquery.PACKAGE_VERSION
     state = testing.State()
 
     out = ctx.run(ctx.on.update_status(), state)
@@ -47,9 +48,21 @@ def test_reconcile_is_idempotent_when_installed(ctx, patch_workload):
     assert out.unit_status == testing.ActiveStatus()
 
 
+def test_reconcile_reinstalls_on_version_mismatch(ctx, patch_workload):
+    """A stale installed version is upgraded to the pinned version."""
+    patch_workload.installed_version = "0.0.0old~noble1"
+    state = testing.State()
+
+    out = ctx.run(ctx.on.upgrade_charm(), state)
+
+    assert patch_workload.install_count == 1
+    assert patch_workload.installed_version == osquery.PACKAGE_VERSION
+    assert out.unit_status == testing.ActiveStatus()
+
+
 def test_stop_uninstalls_workload(ctx, patch_workload):
     """Stopping the unit uninstalls the workload."""
-    patch_workload.installed = True
+    patch_workload.installed_version = osquery.PACKAGE_VERSION
     state = testing.State()
 
     ctx.run(ctx.on.stop(), state)
