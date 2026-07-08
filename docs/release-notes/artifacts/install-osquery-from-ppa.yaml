@@ -1,10 +1,13 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
 # Version of the artifact schema
 version_schema: 2
 
 # The key holding the change(s)
 changes:
 - title: Added OSQuery subordinate charm with PPA-based installation
-  author: mostafa-farzan
+  author: m2-farzan
   type: minor
   description: >
     Introduced the OSQuery subordinate machine charm. When related to a
