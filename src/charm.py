@@ -33,13 +33,11 @@ class OSQueryCharm(ops.CharmBase):
     def _reconcile(self, _: ops.EventBase) -> None:
         """Reconcile the host with the desired charm state.
 
-        Ensures the pinned OSQuery version is installed and reports the
-        resulting unit status. The handler is idempotent and safe to run on
-        every lifecycle event, so a single reconcile method drives the whole
-        charm (a holistic approach). Installing also upgrades the host when the
-        pinned version changes (for example after a charm upgrade).
+        Ensures OSQuery is installed and reports the resulting unit status. The
+        handler is idempotent and safe to run on every lifecycle event, so a
+        single reconcile method drives the whole charm (a holistic approach).
         """
-        if osquery.installed_version() != osquery.PACKAGE_VERSION:
+        if not osquery.is_installed():
             self.unit.status = ops.MaintenanceStatus("installing OSQuery")
             osquery.install()
         self.unit.status = ops.ActiveStatus()

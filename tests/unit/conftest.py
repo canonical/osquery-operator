@@ -22,24 +22,24 @@ def patch_workload_fixture(monkeypatch):
 
     class Recorder:
         def __init__(self):
-            self.installed_version = None
+            self.installed = False
             self.uninstalled = False
             self.install_count = 0
 
     recorder = Recorder()
 
     def fake_install():
-        recorder.installed_version = osquery.PACKAGE_VERSION
+        recorder.installed = True
         recorder.install_count += 1
 
     def fake_uninstall():
         recorder.uninstalled = True
-        recorder.installed_version = None
+        recorder.installed = False
 
-    def fake_installed_version():
-        return recorder.installed_version
+    def fake_is_installed():
+        return recorder.installed
 
     monkeypatch.setattr(osquery, "install", fake_install)
     monkeypatch.setattr(osquery, "uninstall", fake_uninstall)
-    monkeypatch.setattr(osquery, "installed_version", fake_installed_version)
+    monkeypatch.setattr(osquery, "is_installed", fake_is_installed)
     yield recorder
