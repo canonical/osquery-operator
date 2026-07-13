@@ -27,8 +27,8 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
     # Give each base its own application names so the parametrised runs can
     # share a single Juju model without colliding.
     suffix = base.split("@", 1)[1].replace(".", "")
-    principal_app = f"ubuntu-{suffix}"
-    osquery_app = f"osquery-{suffix}"
+    principal_app = f"ubuntu{suffix}"
+    osquery_app = f"osquery{suffix}"
 
     juju.deploy(PRINCIPAL_CHARM, principal_app, base=base)
     juju.deploy(charm_paths[CHARM_NAME][base], osquery_app, base=base)
