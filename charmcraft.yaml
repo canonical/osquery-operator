@@ -27,9 +27,10 @@ links:
 # monitors its host, therefore the charm is a subordinate.
 subordinate: true
 
-base: ubuntu@24.04  # TODO: add more bases here
 platforms:
-  amd64:
+  ubuntu@22.04:amd64:
+  ubuntu@24.04:amd64:
+  ubuntu@26.04:amd64:
 
 # A subordinate charm must require a container-scoped relation to a principal.
 # `juju-info` is implicitly provided by every principal charm, so this charm
