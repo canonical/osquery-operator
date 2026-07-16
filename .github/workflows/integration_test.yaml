@@ -2,9 +2,6 @@ name: Integration tests
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
   schedule:
     # Run every Wednesday at 06:00 UTC to catch regressions from the unpinned
     # OSQuery package version, which can change independently of this repo.

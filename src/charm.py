@@ -9,6 +9,7 @@ import logging
 import ops
 
 import osquery
+from errors import OSQueryError
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +38,23 @@ class OSQueryCharm(ops.CharmBase):
         handler is idempotent and safe to run on every lifecycle event, so a
         single reconcile method drives the whole charm (a holistic approach).
         """
-        if not osquery.is_installed():
-            self.unit.status = ops.MaintenanceStatus("installing OSQuery")
-            osquery.install()
-        self.unit.status = ops.ActiveStatus()
+        try:
+            if not osquery.is_installed():
+                self.unit.status = ops.MaintenanceStatus("installing OSQuery")
+                osquery.install()
+            self.unit.status = ops.ActiveStatus()
+        except OSQueryError as exc:
+            logger.exception("Failed to reconcile OSQuery workload")
+            self.unit.status = ops.BlockedStatus(str(exc))
 
     def _on_stop(self, _: ops.EventBase) -> None:
         """Stop and uninstall OSQuery during unit tear-down."""
-        self.unit.status = ops.MaintenanceStatus("removing OSQuery")
-        osquery.uninstall()
+        try:
+            self.unit.status = ops.MaintenanceStatus("removing OSQuery")
+            osquery.uninstall()
+        except OSQueryError as exc:
+            logger.exception("Failed to stop OSQuery workload cleanly")
+            self.unit.status = ops.BlockedStatus(str(exc))
 
 
 if __name__ == "__main__":  # pragma: nocover

@@ -7,6 +7,7 @@ import pytest
 from ops import testing
 
 from charm import OSQueryCharm
+from errors import OSQueryInstallError
 
 
 @pytest.fixture(name="ctx")
@@ -55,3 +56,42 @@ def test_stop_uninstalls_workload(ctx, patch_workload):
     ctx.run(ctx.on.stop(), state)
 
     assert patch_workload.uninstalled is True
+
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        "install",
+        "upgrade_charm",
+        "start",
+        "config_changed",
+        "update_status",
+    ],
+)
+def test_reconcile_failure_sets_blocked_status(ctx, monkeypatch, event):
+    """A custom workload error is converted to blocked status during reconcile."""
+    monkeypatch.setattr("osquery.is_installed", lambda: False)
+
+    def fail_install():
+        raise OSQueryInstallError("install failed")
+
+    monkeypatch.setattr("osquery.install", fail_install)
+    state = testing.State()
+
+    out = ctx.run(getattr(ctx.on, event)(), state)
+
+    assert out.unit_status == testing.BlockedStatus("install failed")
+
+
+def test_stop_failure_sets_blocked_status(ctx, monkeypatch):
+    """A custom workload error is converted to blocked status during stop."""
+
+    def fail_uninstall():
+        raise OSQueryInstallError("remove failed")
+
+    monkeypatch.setattr("osquery.uninstall", fail_uninstall)
+    state = testing.State()
+
+    out = ctx.run(ctx.on.stop(), state)
+
+    assert out.unit_status == testing.BlockedStatus("remove failed")
