@@ -13,20 +13,6 @@
   "customManagers": [
     {
       "customType": "regex",
-      "datasourceTemplate": "docker",
-      "description": "Update base image references",
-      "managerFilePatterns": [
-        "/(^|/)rockcraft.yaml$/"
-      ],
-      "matchStrings": [
-        "# renovate: build-base:\\s+(?<depName>[^:]*):(?<currentValue>[^\\s@]*)(@(?<currentDigest>sha256:[0-9a-f]*))?",
-        "# renovate: base:\\s+(?<depName>[^:]*):(?<currentValue>[^\\s@]*)(@(?<currentDigest>sha256:[0-9a-f]*))?"
-      ],
-      "matchStringsStrategy": "any",
-      "versioningTemplate": "ubuntu"
-    },
-    {
-      "customType": "regex",
       "datasourceTemplate": "custom.charmhub",
       "fileMatch": [
         "\\.tftest\\.hcl$",
@@ -59,14 +45,10 @@
       ]
     },
     {
-      "enabled": false,
-      "matchFileNames": [
-        "rockcraft.yaml"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
+      "automerge": true,
+      "enabled": true,
+      "matchDatasources": [
+        "deb"
       ]
     },
     {
