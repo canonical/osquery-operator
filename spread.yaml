@@ -33,6 +33,3 @@ integration-suites:
     - integration-test
     pytest-arguments-template: |
       --model testing
-      {% for build in artifacts.charms[0].builds if build.arch == arch %}
-      --charm-file {{ build.path }}
-      {% endfor %}
