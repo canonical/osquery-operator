@@ -70,7 +70,6 @@ def test_stop_uninstalls_workload(ctx, patch_workload):
 )
 def test_reconcile_failure_sets_blocked_status(ctx, monkeypatch, event):
     """A custom workload error is converted to blocked status during reconcile."""
-
     monkeypatch.setattr("osquery.is_installed", lambda: False)
 
     def fail_install():
