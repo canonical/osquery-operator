@@ -6,9 +6,13 @@ name = "osquery-operator"
 version = "0.1.0"
 description = "Subordinate charm for the OSQuery endpoint security monitoring agent."
 readme = "README.md"
-requires-python = ">=3.12"
+# Ubuntu 22.04 (one of the supported bases) ships Python 3.10, so the charm must
+# remain compatible with it. Keep this in sync with the oldest supported base.
+requires-python = ">=3.10"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
@@ -47,6 +51,9 @@ static = [
 ]
 integration = [
   "jubilant==1.10.0",
+  # opcli requires Python 3.12+; the integration tests run on the 24.04 host,
+  # so gate it behind a marker to keep the project's 3.10 floor for the build.
+  "opcli @ git+https://github.com/canonical/charm-ci.git@v0.0.1-alpha.5 ; python_version >= '3.12'",
   "pytest",
 ]
 
@@ -54,7 +61,7 @@ integration = [
 package = false
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py310"
 line-length = 99
 
 [tool.ruff.lint]

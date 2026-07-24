@@ -1,0 +1,25 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Added support for Ubuntu 22.04 and 26.04
+  author: m2-farzan
+  type: minor
+  description: >
+    Extended the charm to build and run on Ubuntu 22.04 LTS and 26.04 LTS in
+    addition to 24.04 LTS. A separate charm artifact is now produced for each
+    supported base, matching the Ubuntu releases for which the OSQuery PPA
+    publishes packages. Integration tests run against all three bases, and are
+    additionally scheduled every Wednesday to catch regressions from the
+    unpinned OSQuery package version.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/2"
+    related_doc:
+    related_issue:
+  visibility: public
+  highlight: true
