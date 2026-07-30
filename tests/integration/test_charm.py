@@ -6,7 +6,7 @@
 import jubilant
 import pytest
 
-from .conftest import BASES, CHARM_NAME, PACKAGE_NAME, PRINCIPAL_CHARM
+from .conftest import BASES, CHARM_NAME, PACKAGE_NAME, PRINCIPAL_CHARM, SERVICE_NAME
 
 
 @pytest.mark.parametrize("base", BASES)
@@ -22,6 +22,7 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
     - Deploy the matching OSQuery subordinate artifact for that base.
     - Relate the two and wait for the subordinate to become active.
     - Confirm OSQuery is installed on the principal machine.
+    - Confirm the OSQuery daemon is running on the principal machine.
     - Remove the subordinate and confirm OSQuery is uninstalled.
     """
     # Give each base its own application names so the parametrised runs can
@@ -50,6 +51,18 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
         wait=60,
     )
     assert installed.stdout.strip() == "installed"
+
+    # Installing the package also brings up the OSQuery daemon, which is the
+    # whole point of the subordinate: `systemctl is-active` reports "active" for
+    # a running service.
+    running = juju.exec(
+        "systemctl",
+        "is-active",
+        SERVICE_NAME,
+        unit=f"{principal_app}/0",
+        wait=60,
+    )
+    assert running.stdout.strip() == "active"
 
     # Removing the subordinate runs its stop hook, which uninstalls OSQuery.
     juju.remove_application(osquery_app)

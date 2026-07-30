@@ -18,7 +18,7 @@ changes:
     unpinned OSQuery package version.
   urls:
     pr:
-      - "https://github.com/canonical/osquery-operator/pull/2"
+      - "https://github.com/canonical/osquery-operator/pull/4"
     related_doc:
     related_issue:
   visibility: public

@@ -14,6 +14,9 @@ PRINCIPAL_CHARM = "ubuntu"
 CHARM_NAME = "osquery"
 # The apt package the subordinate installs on the principal's machine.
 PACKAGE_NAME = "osquery"
+# The systemd service the OSQuery package runs in daemon mode. The subordinate's
+# whole purpose is to keep this daemon running on the principal's host.
+SERVICE_NAME = "osqueryd"
 
 # The Ubuntu bases the charm supports. The OSQuery PPA publishes packages for
 # each of these releases, so the charm is built and tested against all of them.
