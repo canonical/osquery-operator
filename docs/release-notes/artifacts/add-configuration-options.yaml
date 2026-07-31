@@ -1,0 +1,29 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Added configuration options to build the OSQuery flagfile
+  author: m2-farzan
+  type: minor
+  description: >
+    Introduced the charm's configuration surface. The charm now translates its
+    options into the OSQuery flagfile at /etc/osquery/osquery.flags and
+    (re)starts the daemon so changes take effect. Two options, controller-uri
+    and controller-env-uuid, are required and the unit blocks until they are
+    set; controller-env-uuid expands into every per-environment TLS endpoint.
+    The enrollment secret and TLS certificate/key are materialised on disk, with
+    secret material written as root-owned files with 600 permissions inside
+    700 directories. Secret material is supplied through Juju secrets. An
+    outbound proxy is honoured automatically from the model's juju-https-proxy
+    setting.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/3"
+    related_doc: https://github.com/canonical/osquery-operator/blob/main/docs/reference/configurations.rst
+    related_issue:
+  visibility: public
+  highlight: true
