@@ -1,0 +1,22 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Documented the charm configuration options
+  author: m2-farzan
+  type: minor
+  description: >
+    Added a configuration reference describing every charm option, how they map
+    onto the OSQuery flagfile and which options are required, and documented the
+    Juju events the charm reacts to.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/5"
+    related_doc: https://github.com/canonical/osquery-operator/blob/main/docs/reference/configurations.rst
+    related_issue:
+  visibility: internal
+  highlight: false
