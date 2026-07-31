@@ -1,69 +1,67 @@
 .. meta::
-   :description: Familiarize yourself with contributing to the __charm_name__ charm documentation.
+   :description: Learn how to contribute to the OSQuery charm.
 
 .. _how_to_contribute:
 
 How to contribute
 =================
 
-.. TODO: Add link to CONTRIBUTING.md
+This document explains the processes and practices recommended for contributing
+enhancements to the OSQuery charm.
 
-.. note::
+.. vale Canonical.013-Spell-out-numbers-below-10 = NO
+.. vale Canonical.500-Repeated-words = NO
 
-   See CONTRIBUTING.md
-   for information on contributing to the source code. 
+- Each contribution should focus on a single change. If you're proposing several
+  unrelated changes, split them into separate pull requests.
+- Use `conventional commits <https://www.conventionalcommits.org/>`_ where
+  possible so the history stays readable and changelogs can be generated.
+- Before you invest significant effort in a large change, open an issue to
+  discuss the design. This helps ensure your work aligns with the project's
+  direction.
+- Sign off your commits and, where possible, sign them cryptographically.
 
-.. TODO: Update the links to point to the correct repo!!
-         Is the documentation hosted on Charmhub or RTD? Include a link
-
-Our documentation is hosted on __docs_hosting_with_link__ to enable collaboration.
-Please use the links on each documentation page to either
-directly change something you see that's wrong, ask a question, or make a suggestion
-about a potential change.
-
-.. TODO: Add link to GitHub page for "source code on GitHub"
-         Add link to issues page for "file a bug"
-
-Our documentation is also available alongside the source code on GitHub.
-You may open a pull request with your documentation changes, or you can
-file a bug to provide constructive feedback or suggestions.
-
-AI usage
+Overview
 --------
 
-You are free to use any tools you want while preparing your contribution, including
-AI, provided that you do so lawfully and ethically. 
+The full development workflow — setting up your environment, building and
+deploying the charm locally, running the tests, and the code-signing
+requirements — is documented in the project's ``CONTRIBUTING.md`` file:
 
-Avoid using AI to complete
-`Canonical Open Documentation Academy issues <https://github.com/canonical/open-documentation-academy/issues>`_.
-The purpose of these issues is to provide newcomers with opportunities to
-contribute to our projects and gain documentation skills. Using AI to
-complete these tasks undermines their purpose.
+- `CONTRIBUTING.md <https://github.com/canonical/osquery-operator/blob/main/CONTRIBUTING.md>`_
 
-If you use AI to help with your PRs, be mindful. Avoid submitting contributions
-with entirely AI-generated documentation. The human aspect of documentation is
-important to us, and that includes tone, syntax, perspectives, and the
-occasional typo. 
+Report issues and request features
+----------------------------------
 
-Some examples of valid AI assistance includes:
+Report bugs and request features on the project's issue tracker:
 
-* Checking for spelling or grammar errors
-* Drafting plans or outlines
-* Checking that your contribution aligns with the Canonical style guide
+- `Issue tracker <https://github.com/canonical/osquery-operator/issues>`_
 
-We have created instructions and tools that you can provide AI while preparing
-your contribution in `copilot-collections <https://github.com/canonical/copilot-collections>`_.
+When filing a bug, include the charm revision, the Juju version, and the relevant
+output from ``juju status`` and ``juju debug-log``.
 
-While it isn't necessary to use ``copilot-collections`` while preparing your
-contribution, these files contain details about our documentation standards and
-practices that will help the AI avoid common pitfalls when interacting with our
-projects. By using these tools, you can avoid longer review times and nitpicks.
+Contribute to the documentation
+-------------------------------
 
-If you choose to use AI, please disclose this information to us by indicating
-AI usage in the PR description (for instance, marking the checklist item about
-AI usage). You don't need to go into explicit details about how and where you used AI.
+Documentation is an important part of this project, and we welcome community
+contributions. The documentation is written in reStructuredText and built with
+Sphinx. The source lives in the ``docs/`` directory of the repository.
 
-Avoid submitting contributions that you don't fully understand.
-You are responsible for the entire contribution, including the AI-assisted portions.
-You must be willing to engage in discussion and respond to any questions, comments,
-or suggestions we may have. 
+.. TODO: Add a link to the rendered documentation site once it's published on
+   Read the Docs or Charmhub.
+
+Use of generative AI
+--------------------
+
+This project welcomes contributions produced with the assistance of generative
+AI tools. If you use such tools, you remain fully responsible for the
+contribution: review the output carefully, ensure it's correct and appropriate,
+and confirm that it doesn't introduce license or security issues. All the usual
+review and testing standards apply regardless of how a change was produced.
+
+Canonical contributor agreement
+-------------------------------
+
+Canonical welcomes contributions to the OSQuery charm. Please check out our
+`contributor agreement <https://ubuntu.com/legal/contributors>`_ if you're
+interested in contributing to the solution.

@@ -1,37 +1,59 @@
 .. meta::
-   :description: How to upgrade the __charm_name__ charm to a new revision.
+   :description: Learn how to upgrade the OSQuery charm.
 
 .. _how_to_upgrade:
 
 How to upgrade
 ==============
 
-.. TODO: Remember to update this file for your charm!! 
-    Use this placeholder to provide information on how to
-    upgrade the charm. The purpose of this document is
-    to provide clarity and reassurance to our users about
-    the upgrade process.
-    
-    Some questions to answer:
-    * Should we suggest that the user back up the charm or its database
-      before upgrading?
-    * Does the user need to reset or reapply any configurations? 
-    * If the charm is used in a larger deployment: Does the user need to
-      check for compatibility between the upgraded revision and any other charms?
+Upgrading the OSQuery charm refreshes the charm code and, where applicable, the
+version of OSQuery installed on the host. Because the charm is stateless, upgrades
+don't require any data migration.
 
-    Provide an example command for the upgrade, even if it's simple.
+.. vale Canonical.013-Spell-out-numbers-below-10 = NO
 
-    If the charm is stateless, explicitly mention this to reassure
-    users that they don't need to perform a backup before upgrading.
+Before you upgrade
+------------------
 
-    If the charm is meant to be deployed alongside other charms,
-    explicitly mention the consequences of the upgrade (for example:
-    will the integrations/configurations remain intact? Will the user need
-    to check for revision compatibility between the charm + its integrations?)
+- Review the :ref:`release notes <release_notes_index>` for the target revision
+  to check for any behavioral changes or new required configuration.
+- Capture your current configuration so you can compare or reapply it if needed:
 
-    You may not need to include this document if all of
-    the following are true:
-    * The charm is stateless.
-    * The charm requires no configuration or database backups
-      before upgrading.
-    * The charm requires no integrations for deployment.
+  .. code-block:: bash
+
+      juju config osquery > osquery-config-backup.yaml
+
+Refresh the charm
+-----------------
+
+Upgrade the charm to the latest revision in its channel with ``juju refresh``:
+
+.. code-block:: bash
+
+    juju refresh osquery
+
+To upgrade to a specific channel or revision, pass ``--channel`` or
+``--revision``:
+
+.. code-block:: bash
+
+    juju refresh osquery --channel latest/stable
+
+After the refresh, the charm reconciles the agent: it re-renders the OSQuery
+flagfile and restarts ``osqueryd`` if anything changed.
+
+Verify the upgrade
+------------------
+
+Watch the deployment until it settles back into an ``active`` state:
+
+.. code-block:: bash
+
+    juju status --watch 2s
+
+Confirm the OSQuery version on the host if the upgrade included a new agent
+release:
+
+.. code-block:: bash
+
+    juju ssh <principal>/0 osqueryd --version

@@ -1,21 +1,20 @@
 .. meta::
-   :description: Follow step-by-step tutorials to deploy and operate the __charm_name__ charm. 
+   :description: Follow step-by-step tutorials to deploy and operate the OSQuery charm.
 
 .. _tutorial_index:
 
 Tutorial
 ========
 
-.. TODO: Update the charm name, and check that the toctree entries are up-to-date.
-
 This section contains a step-by-step guide to help you start exploring
-how to install and use the __charm_name__ operator. Our tutorials aim to
+how to install and use the OSQuery operator. Our tutorials aim to
 provide an end-to-end learning experience as you get started with the charm.
 
 Get started
 -----------
 
-This tutorial walks through a basic deployment of the charm.
+This tutorial walks through a basic deployment of the charm: relating it to a
+principal application and confirming that OSQuery is installed and running.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 
@@ -28,13 +27,11 @@ This tutorial walks through a basic deployment of the charm.
 Advanced tutorial
 -----------------
 
-.. TODO: Update section name, and provide a specific summary of the advanced tutorial.
-         Remove this section if there's no advanced tutorial.
-
-Now that you have a basic deployment, learn more about what you can do with it!
+Once you have a basic deployment, learn how to connect the agent to an OSQuery
+Controller and supply its enrollment secret through a Juju secret.
 
 .. toctree::
     :hidden:
     :maxdepth: 1
 
-    Advanced tutorial <advanced-deployment>
+    Connect to a controller <advanced-deployment>

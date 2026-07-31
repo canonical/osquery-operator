@@ -1,10 +1,10 @@
 .. meta::
-   :description: Technical reference for the Terraform module available for deploying the __charm_name__ charm.
+   :description: Reference for the Terraform module shipped with the OSQuery charm.
 
 .. _reference_terraform:
 
-Terraform module
-================
+Terraform
+=========
 
 The OSQuery charm ships a Terraform module that wraps the `Juju Terraform
 provider <https://registry.terraform.io/providers/juju/juju/latest>`_, so you can

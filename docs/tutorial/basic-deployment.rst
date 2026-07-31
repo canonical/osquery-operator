@@ -1,152 +1,135 @@
 .. meta::
-   :description: A step-by-step tutorial for deploying the __charm_name__ charm for the first time.
+   :description: Deploy the OSQuery charm for the first time and relate it to a principal application.
 
 .. _tutorial_basic_deployment:
 
-Deploy the __charm_name__ charm for the first time
-==================================================
+Deploy the OSQuery charm for the first time
+===========================================
 
-.. TODO: 1-2 sentences that introduce the charm and outlines what the tutorial will cover.
-   For example, successfully deploying the charm and its required dependencies.
+The OSQuery charm installs and runs the ``osqueryd`` endpoint security
+monitoring agent on a machine. Because it's a `subordinate charm
+<https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm>`_,
+it doesn't run on its own: it attaches to a *principal* application that occupies
+the machine. In this tutorial you'll deploy a simple principal application, add
+the OSQuery charm as a subordinate, and confirm that the agent is running.
 
-What you'll do
---------------
-
-.. TODO: Add numbered list of steps outlining what happens in this tutorial.
-   Example:
-
-    1. Deploy the WordPress K8s charm
-    2. Deploy and integrate a database
-    3. Get admin credentials
-    4. Access the WordPress instance
-    5. Clean up the environment
+.. vale Canonical.013-Spell-out-numbers-below-10 = NO
+.. vale Canonical.500-Repeated-words = NO
 
 What you'll need
 ----------------
 
-.. vale Canonical.013-Spell-out-numbers-below-10 = NO
+- A working station, e.g., a laptop, with amd64 architecture.
+- Juju 3 installed and bootstrapped to a machine controller. If you don't have
+  one yet, the quickest option is to use a local `LXD
+  <https://canonical.com/lxd>`_ cloud.
+- At least 4 GB of RAM and 2 CPU cores available for the LXD container.
 
-.. SPREAD SKIP
+What you'll do
+--------------
 
-You will need a working station, e.g., a laptop, with AMD64 architecture. Your working station
-should have at least 4 CPU cores, 8 GB of RAM, and 50 GB of disk space.
+- Set up an isolated environment.
+- Deploy a principal application.
+- Deploy the OSQuery charm as a subordinate.
+- Integrate the two charms.
+- Verify the deployment.
+- Clean up the environment.
 
-.. tip::
+Set up an isolated environment
+------------------------------
 
-    You can use Multipass to create an isolated environment by running:
+For this tutorial, use a clean Juju model inside a local LXD cloud. This keeps
+your environment isolated and easy to remove afterwards.
 
-    .. code-block::
-
-        multipass launch 24.04 --name charm-tutorial-vm --cpus 4 --memory 8G --disk 50G
-
-
-This tutorial requires the following software to be installed on your working station
-(either locally or in the Multipass VM):
-
-.. TODO: Does this tutorial require a specific version of Juju?
-         Does this tutorial require MicroK8s at all?
-         If this is a machine charm, what version of LXD is required?
-
-- Juju 3
-- MicroK8s 1.33
-
-Use `Concierge <https://github.com/canonical/concierge>`_ to set up Juju and MicroK8s:
-
-.. code-block::
-
-    sudo snap install --classic concierge
-    sudo concierge prepare -p microk8s
-
-.. TODO: If the tutorial requires a LXD controller, update "microk8s" to "machine"
-         Double check that the text below is accurate!
-
-This first command installs Concierge, and the second command uses Concierge to install
-and configure Juju and MicroK8s.
-
-For this tutorial, Juju must be bootstrapped to a MicroK8s controller. Concierge should
-complete this step for you, and you can verify by checking for
-``msg="Bootstrapped Juju" provider=microk8s``
-in the terminal output and by running ``juju controllers``.
-
-If Concierge did not perform the bootstrap, run:
-
-.. code-block::
-
-    juju bootstrap microk8s tutorial-controller
-
-
-To be able to work inside the Multipass VM, log in with the following command:
+The fastest way to set up a machine cloud is with `concierge
+<https://github.com/canonical/concierge>`_, which bootstraps Juju on LXD for
+you:
 
 .. code-block:: bash
 
-    multipass shell charm-tutorial-vm 
+    sudo snap install --classic concierge
+    concierge prepare -p machine
 
-.. note::
+Alternatively, if you already have Juju and LXD installed, bootstrap a controller
+and add a model manually:
 
-    If you're working locally, you don't need to do this step.
+.. code-block:: bash
 
-.. SPREAD SKIP END
+    juju bootstrap localhost lxd
+    juju add-model osquery-tutorial
 
-Set up the environment
-----------------------
+Deploy a principal application
+------------------------------
 
-To manage resources effectively and to separate this tutorial's workload from
-your usual work, create a new model in the MicroK8s controller using the following command:
+A subordinate charm needs a principal to attach to. The ``ubuntu`` charm is a
+minimal principal that provisions a bare Ubuntu machine, which is ideal for this
+tutorial:
 
-.. code-block::
+.. code-block:: bash
 
-    juju add-model wordpress-tutorial
+    juju deploy ubuntu --base ubuntu@24.04
 
-Deploy the charm
-----------------
+Deploy the OSQuery charm
+------------------------
 
-.. TODO: Add instructions on deploying the charm
+Deploy the OSQuery charm. Because it's a subordinate, it stays in a ``waiting``
+state until it's integrated with a principal:
 
-Deploy and integrate dependencies 
----------------------------------
+.. code-block:: bash
 
-.. TODO: If required, add instructions on deploying and integrating any other required charms
-         Rename the section to something more specific (e.g., "Deploy and integrate database")
+    juju deploy osquery
 
+Integrate the charms
+--------------------
 
-Run ``juju status`` to check the current status of the deployment.
-The output should be similar to the following:
+Integrate the OSQuery charm with the principal application over the
+``general-info`` endpoint. This tells Juju to place the OSQuery agent on the same
+machine as the ``ubuntu`` unit:
 
-.. TODO: Add the output of juju status into a command block, showing a successful deployment. 
-         If using the starter pack, use the terminal directive: https://github.com/canonical/sphinx-terminal/blob/main/README.md
+.. code-block:: bash
 
+    juju integrate ubuntu osquery
 
-When the status shows "Active" for both the charm, the deployment is considered finished.
+Verify the deployment
+---------------------
 
-Perform an action/configuration
--------------------------------
+Watch the deployment settle with:
 
-.. TODO: Provide instructions for running an action or updating a configuration.
-         Choose a common task or operation. 
-         Show any terminal output so the user can verify that their attempt was successful.
+.. code-block:: bash
+
+    juju status --watch 2s
+
+Wait until the ``ubuntu`` application is ``active`` and the ``osquery``
+subordinate reaches a settled state. The OSQuery charm blocks until it's told
+which OSQuery Controller to enroll with, so it's expected to report a blocked
+status such as ``controller-env-uuid is required`` at this stage. Connecting the
+agent to a controller is covered in the :ref:`advanced tutorial
+<tutorial_advanced_deployment>`.
+
+You can confirm that the ``osqueryd`` binary was installed on the machine by
+running a command inside the unit:
+
+.. code-block:: bash
+
+    juju ssh ubuntu/0 osqueryd --version
 
 Clean up the environment
 ------------------------
 
-.. TODO: Add a one-sentence summary about what the user accomplished in the tutorial.
-         If using the starter pack, update the link to use intersphinx.
+Once you're done, you can remove the model and everything in it:
 
-Congratulations! You successfully...
+.. code-block:: bash
 
-You can clean up your environment by following this guide:
-`Tear down your test environment <https://documentation.ubuntu.com/juju/3.6/howto/manage-your-juju-deployment/tear-down-your-juju-deployment-local-testing-and-development/>`_
+    juju destroy-model osquery-tutorial --destroy-storage
+
+If you used ``concierge``, you can tear down the whole environment with:
+
+.. code-block:: bash
+
+    concierge restore
 
 Next steps
 ----------
 
-.. TODO: Fill in the list below with how-to guides or further reading about the charm.
-
-You achieved a basic deployment of the charm. If you want to go farther in your deployment
-or learn more about the charm, check out these pages:
-
-- Continue with the advanced tutorial, which...
-- Perform basic operations with your deployment like...
-- Set up monitoring for your deployment by...
-- Make your deployment more secure by...
-- Learn more about the available :ref:`relation endpoints <reference_relation_endpoints>`
-  for the charm.
+Now that you have a basic deployment, continue to the :ref:`advanced tutorial
+<tutorial_advanced_deployment>` to connect the agent to an OSQuery Controller.

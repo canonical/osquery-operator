@@ -1,15 +1,19 @@
 .. meta::
-   :description: Reference documentation for all actions available in the __charm_name__ charm.
+   :description: Reference for the Juju actions supported by the OSQuery charm.
 
 .. _reference_actions:
 
 Actions
 =======
 
-.. TODO: Add link to the Charmhub actions tab.
+`Juju actions <https://documentation.ubuntu.com/juju/3.6/reference/action/>`_ are
+operations that a charm exposes so operators can run them on demand.
 
-See Actions.
+The OSQuery charm doesn't define any actions. Its behavior is entirely
+configuration-driven: the charm reconciles the ``osqueryd`` daemon in response to
+Juju events (such as configuration changes) rather than through operator-invoked
+actions. See :ref:`Configurations <reference_configurations>` and :ref:`Juju
+events <reference_juju_events>` for the mechanisms the charm does use.
 
-.. seealso::
-
-   Read more about actions in the Juju docs: `Action <https://documentation.ubuntu.com/juju/latest/user/reference/action/>`_
+.. TODO: If actions are added to the charm in the future, document each action,
+   its parameters, and its expected output here.

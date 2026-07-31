@@ -1,32 +1,22 @@
 .. meta::
-   :description: Release notes for all versions of the __charm_name__ charm, including release policy and schedule.
+   :description: Release notes for the OSQuery charm, including system and upgrade requirements.
 
 .. _release_notes_index:
-
-.. Remember to update this file for your charm -- replace __charm_name__ with the appropriate name,
-   specify the track the release notes will follow, and include a link on how to upgrade.
 
 Release notes
 =============
 
-Release notes for the <main> track of __charm_name__, summarizing new features,
-bug fixes and backwards-incompatible changes in each revision.
+This section contains the release notes for the OSQuery charm.
 
-For upgrading the charm, see :ref:`How to upgrade <how_to_upgrade>`.
-For instructions on a specific release, see the corresponding release notes.
+Release notes summarize the changes shipped in each revision, including new
+features, bug fixes, and any system or upgrade requirements. The OSQuery charm
+is released continuously: a new revision is published whenever a change lands on
+the ``main`` branch and passes the full test suite.
 
-Release policy and schedule
-----------------------------
+.. TODO: Add published release-note pages under this toctree once the first
+   formal release is cut. Each generated release note should be listed below.
 
-..
-   Use this section to define a schedule at which we publish release notes for this charm. 
-   Please adopt one of the following release patterns:
-   - Fixed release schedule (monthly, bimonthly, etc.)
-   - Release notes with every revision of the <main> track
-   - Release notes published when there's a need (maintenance, bug fixes, etc.)
+.. toctree::
+    :maxdepth: 1
 
-Releases
---------
-
-.. TODO: Add a list of releases here, with links to the individual release notes.
-         Use a toctree directive
+    Changelog <../changelog>

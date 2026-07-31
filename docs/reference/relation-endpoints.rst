@@ -1,23 +1,46 @@
 .. meta::
-   :description: Reference documentation for all relation endpoints supported by the __charm_name__ charm.
+   :description: Reference for the relation endpoints exposed by the OSQuery charm.
 
 .. _reference_relation_endpoints:
 
 Relation endpoints
 ==================
 
-.. TODO: Use the template below to add information about integrations supported by this charm.
+`Relation endpoints <https://documentation.ubuntu.com/juju/3.6/reference/relation/>`_
+are the integration points a charm exposes so it can be connected to other
+applications.
 
-Integration example
--------------------
+The OSQuery charm is a subordinate charm. It requires a single endpoint that
+attaches it to a principal application, and it doesn't provide any endpoints of
+its own.
 
-* **Interface**:
-* **Supported charms**: 
+Requires
+--------
 
-Description here.
+.. list-table::
+    :header-rows: 1
 
-Example <integration-name> integrate command: 
+    * - Endpoint
+      - Interface
+      - Scope
+      - Description
+    * - ``general-info``
+      - ``juju-info``
+      - ``container``
+      - Attaches the OSQuery subordinate to a principal application so that the
+        ``osqueryd`` agent runs on the same machine. The ``container`` scope
+        restricts the relation to units that share a machine.
 
-.. code-block:: bash
+Because OSQuery is endpoint security monitoring software, it's designed to run
+alongside any workload. Relating it over the generic ``juju-info`` interface lets
+it attach to any principal machine charm — for example, the ``ubuntu`` charm — so
+you can monitor arbitrary hosts.
 
-   juju integrate __charm_name__ <supported-charm>:<integration-name>
+Provides
+--------
+
+The charm doesn't currently provide any relation endpoints. It communicates with
+its OSQuery Controller directly over TLS rather than through a Juju relation.
+
+.. TODO: If the charm gains provided endpoints (for example, an observability or
+   controller integration), document them here.

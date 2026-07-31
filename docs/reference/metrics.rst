@@ -1,28 +1,22 @@
 .. meta::
-   :description: Reference documentation for the alerting and monitoring metrics provided by the __charm_name__ charm.
+   :description: Reference for the metrics exposed by the OSQuery charm.
 
 .. _reference_metrics:
 
 Metrics
 =======
 
-.. TODO: Fill in this information or remove if not applicable.
-   Remember to update this file for your charm!! 
-   If applicable, use this placeholder to include information on the alerting
-   and monitoring metrics that exist for this charm. 
+The OSQuery charm doesn't currently expose Juju or Prometheus metrics.
 
-   List the metrics and include a brief explanation of each one
-   (including units, if applicable). End each item with a period.
+OSQuery's operational data — scheduled query results, telemetry, and status
+logs — is shipped directly to the OSQuery Controller over TLS, which is the
+system of record for that data. The charm doesn't presently surface a separate
+metrics endpoint for Juju or for the :ref:`Canonical Observability Stack
+<how_to_integrate_with_cos>`.
 
-   Add a description of the metrics:
-   * Are there metrics for containers, non-containerised workloads, snaps, or something else?
-   * How are the metrics defined or added?
-   * In what container is the metric run? What statistics or values does the metric provide? 
-   * How is the container started? 
-   * On what port(s) does the metric listen?
+For visibility into a running deployment today, use the Juju status and logs as
+described in :ref:`how to troubleshoot <how_to_troubleshoot>`.
 
-   EXAMPLE LIST:
-   * **keys_added**: Number of new keys added since startup.
-   * **keys_ignored**: Number of keys with no-op (unchanged) updates.
-   * **keys_removed**: Number of keys removed since startup.
-   * **http_request_duration_seconds**: Time spent generating HTTP responses.
+.. TODO: If a metrics endpoint (for example, a Prometheus scrape target or a
+   COS integration) is added to the charm, document each metric, its type, and
+   its labels here.

@@ -1,4 +1,4 @@
-<!-- Remember to update this file for your charm -- replace __charm_name__ with the appropriate name. -->
+# OSQuery Terraform module
 
 This folder contains a base [Terraform][Terraform] module for the `osquery` charm.
 
@@ -30,9 +30,9 @@ directory.
 If you want to use `osquery` as part of your Terraform module, import it like
 shown below:
 
-```text
+```hcl
 data "juju_model" "my_model" {
-  name = var.model
+  name = "my_model"
 }
 
 module "osquery" {

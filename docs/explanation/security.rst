@@ -1,26 +1,67 @@
 .. meta::
-   :description: Understand the security design, risks, and best practices for the __charm_name__ charm.
+   :description: A security overview of the OSQuery charm, including its threat model and best practices.
 
 .. _explanation_security:
 
-Security overview
-=================
+Security
+========
 
-.. TODO: Remember to update this file for your charm!!
-         Elaborate on topics such as common risks, good practices, built-in protection, etc.
-         Are there upstream security docs that we can point to? If so, include a
-         sentence like:
-         For details regarding upstream __charm_name__ configuration and broader security
-         considerations, please refer to the upstream documentation (include a link here).
+This page provides an overview of the security posture of the OSQuery charm: how
+it handles sensitive material, what to be aware of when operating it, and the
+best practices that keep a deployment secure.
 
-         In most cases, it will be appropriate to include a specific heading for risks.
-         Include a subheading for best practices for the user to follow to avoid or limit risks.
+.. vale Canonical.013-Spell-out-numbers-below-10 = NO
+.. vale Canonical.500-Repeated-words = NO
 
-         In some cases a product will have particular information security implications
-         (concerned with potential for information loss, incorrect retention, unlawful disclosure
-         and so on). Notes on these should be gathered separately in the overview topic, or
-         in a topic of their own.
+Handling of sensitive material
+------------------------------
 
-This document outlines the security design of the __charm_name__  charm along common risks
-and best practices.
+The charm handles several pieces of sensitive material: the OSQuery enrollment
+secret and the TLS client certificate and key used to authenticate to the
+controller.
 
+- The enrollment secret is provided as a `Juju secret
+  <https://documentation.ubuntu.com/juju/3.6/reference/secret/>`_ rather than a
+  plain configuration value, so it isn't stored in plain text in the model
+  configuration.
+- The TLS certificates and key are supplied as file-backed configuration options
+  and written to disk on the host so ``osqueryd`` can read them.
+- Files that contain secret material are written with owner-only permissions in a
+  directory that isn't traversable by other users, so only the ``root`` user that
+  runs the daemon can read them.
+
+Transport security
+------------------
+
+All communication between the OSQuery agent and its controller is protected by
+mutual TLS. The agent authenticates the controller with a CA certificate and
+authenticates itself with a client certificate and key. See :ref:`the
+cryptographic overview <reference_cryptographic_overview>` for details.
+
+Threat considerations
+---------------------
+
+- **Host access.** ``osqueryd`` runs as ``root`` and inspects sensitive
+  operating-system state. Anyone with root access to a monitored host already has
+  broad control of that host; the charm doesn't widen that boundary, but operators
+  should apply the usual host-hardening practices.
+- **Secret exposure.** Because the enrollment secret and TLS key grant the agent
+  its identity with the controller, treat them as high-value credentials. Rotate
+  them if you suspect compromise.
+- **Controller trust.** The agent trusts the controller identified by its
+  configuration. Ensure the ``controller-uri`` and TLS CA are correct so the
+  agent only enrolls with a controller you control.
+
+Best practices
+--------------
+
+- Provide the enrollment secret through a Juju secret and grant the charm access
+  to it explicitly, rather than embedding credentials in plain configuration.
+- Restrict who can access the Juju model, since model access implies control over
+  the charm's configuration and secrets.
+- Keep the charm up to date so the deployment benefits from security fixes in
+  both the charm and the OSQuery package. See :ref:`how to upgrade
+  <how_to_upgrade>`.
+
+.. TODO: Link to the project's security policy and vulnerability-reporting
+   process (SECURITY.md) once a public disclosure address is confirmed.

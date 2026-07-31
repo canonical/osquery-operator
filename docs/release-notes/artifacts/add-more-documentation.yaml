@@ -1,0 +1,24 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Populated the project documentation
+  author: m2-farzan
+  type: minor
+  description: >
+    Filled in the remaining documentation across the docs/ directory, following
+    the Diátaxis structure, including the tutorial, how-to guides, reference, and
+    explanation sections, along with the release-notes index. Also rewrote the
+    README, contributing guide, and the Terraform module README for the OSQuery
+    subordinate machine charm.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/4"
+    related_doc:
+    related_issue:
+  visibility: public
+  highlight: false
