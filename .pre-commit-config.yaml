@@ -1,0 +1,92 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Pre-commit hooks for the osquery charm.
+#
+# Setup (one-off):
+#   uv tool install pre-commit   # or: pipx install pre-commit
+#   pre-commit install           # installs the pre-commit and pre-push hooks
+#
+# The Python lint/unit hooks shell out to the project's own tox environments so
+# they stay in lockstep with CI. The license, Vale and Terraform hooks use the
+# corresponding system tools and are skipped (with a note) when the tool is not
+# installed, so contributors are never blocked by optional local tooling.
+#
+# Terraform hooks are in the "manual" stage and therefore do NOT run on a normal
+# commit. Run them explicitly with:
+#   pre-commit run --hook-stage manual --all-files terraform-fmt terraform-validate
+#
+# Deliberately omitted: release-note artifact checks. Those are a property of a
+# pull request to main, not of an individual commit, so they belong in CI only.
+
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  # ---- Generic hygiene -----------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        # Release-note templates contain placeholders and are not valid YAML.
+        exclude: ^docs/release-notes/template/
+      - id: check-toml
+
+  # ---- Project-specific checks (run via the repo's own tooling) ------------
+  - repo: local
+    hooks:
+      # Python: codespell + ruff (format & lint) + mypy, exactly as CI runs it.
+      - id: lint
+        name: lint (codespell, ruff, mypy)
+        entry: bash -c 'if command -v tox >/dev/null 2>&1; then exec tox -e lint; else exec uvx tox -e lint; fi'
+        language: system
+        pass_filenames: false
+        types_or: [python, toml]
+
+      # Unit tests: heavier, so only on push rather than every commit.
+      - id: unit
+        name: unit tests
+        entry: bash -c 'if command -v tox >/dev/null 2>&1; then exec tox -e unit; else exec uvx tox -e unit; fi'
+        language: system
+        pass_filenames: false
+        types: [python]
+        stages: [pre-push]
+
+      # License headers, using the repo's .licenserc.yaml for exact parity.
+      - id: license-check
+        name: license header check
+        entry: bash -c 'if command -v license-eye >/dev/null 2>&1; then exec license-eye header check; else echo "[skipped] license-eye not found; install via go install github.com/apache/skywalking-eyes/cmd/license-eye@latest"; fi'
+        language: system
+        pass_filenames: false
+
+      # Vale docs linter, mirroring the CI invocation (Markdown files only).
+      - id: vale
+        name: vale docs linter
+        entry: bash -c 'if command -v vale >/dev/null 2>&1; then exec vale --glob="*.md" --config=.vale.ini README.md CONTRIBUTING.md docs/; else echo "[skipped] vale not found; install from https://vale.sh then run vale sync"; fi'
+        language: system
+        pass_filenames: false
+        files: ^(README\.md|CONTRIBUTING\.md|docs/)
+
+      # Terraform: skipped by default (manual stage) since it may not be installed.
+      - id: terraform-fmt
+        name: terraform fmt (check)
+        entry: bash -c 'if command -v terraform >/dev/null 2>&1; then exec terraform -chdir=terraform fmt -check -recursive; else echo "[skipped] terraform not found"; fi'
+        language: system
+        pass_filenames: false
+        files: ^terraform/
+        stages: [manual]
+
+      - id: terraform-validate
+        name: terraform validate
+        entry: bash -c 'if command -v terraform >/dev/null 2>&1; then terraform -chdir=terraform init -backend=false -input=false >/dev/null && exec terraform -chdir=terraform validate; else echo "[skipped] terraform not found"; fi'
+        language: system
+        pass_filenames: false
+        files: ^terraform/
+        stages: [manual]
