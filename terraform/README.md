@@ -1,59 +1,74 @@
 <!-- Remember to update this file for your charm -- replace __charm_name__ with the appropriate name. -->
 
-# __charm_name__ Terraform module
-
-This folder contains a base [Terraform][Terraform] module for the __charm_name__ charm.
+This folder contains a base [Terraform][Terraform] module for the `osquery` charm.
 
 The module uses the [Terraform Juju provider][Terraform Juju provider] to model the charm
-deployment onto any Kubernetes environment managed by [Juju][Juju].
+deployment onto any machine cloud environment managed by [Juju][Juju].
+
+`osquery` is a **subordinate machine charm**. It does not run on its own machine;
+instead Juju co-locates one OSQuery unit next to every unit of the principal
+application it is related to over the `juju-info` interface. For this reason the
+module deliberately does not expose a `units` variable — the unit count is
+derived from the principal.
 
 ## Module structure
 
-- **main.tf** - Defines the Juju application to be deployed.
-- **variables.tf** - Allows customization of the deployment. Also models the charm configuration, 
-  except for exposing the deployment options (Juju model name, channel or application name).
-- **output.tf** - Integrates the module with other Terraform modules, primarily
-  by defining potential integration endpoints (charm integrations), but also by exposing
-  the Juju application name.
-- **versions.tf** - Defines the Terraform provider version.
+- **main.tf** - Defines the `osquery` Juju application to be deployed.
+- **variables.tf** - Allows customization of the deployment, such as the Juju
+  model, application name, channel, revision, base and constraints.
+- **outputs.tf** - Integrates the module with other Terraform modules, primarily
+  by exposing the required integration endpoints and the Juju application name.
+- **versions.tf** - Defines the Terraform and provider versions.
 
-## Using __charm_name__ base module in higher level modules
+## Using the `osquery` base module in higher level modules
 
-If you want to use `__charm_name__` base module as part of your Terraform module, import it
-like shown below:
+If you want to use `osquery` as part of your Terraform module, import it like
+shown below:
 
 ```text
 data "juju_model" "my_model" {
   name = var.model
 }
 
-module "__charm_name__" {
-  source = "git::https://github.com/canonical/__charm_name__-operator//terraform"
-  
-  model = juju_model.my_model.name
-  # (Customize configuration variables here if needed)
+module "osquery" {
+  source = "git::https://github.com/canonical/osquery-operator//terraform"
+
+  model_uuid = data.juju_model.my_model.uuid
+  # (Customize app_name, channel, revision, base or constraints here if needed)
 }
 ```
 
-Create integrations, for instance:
+Because OSQuery is a subordinate, you must relate it to a principal machine
+application over its `general-info` endpoint. For example, to monitor a
+`ubuntu` principal:
 
 ```text
-resource "juju_integration" "__charm_name__-loki" {
-  model = juju_model.my_model.name
-  application {
-    name     = module.__charm_name__.app_name
-    endpoint = module.__charm_name__.endpoints.logging
+resource "juju_application" "ubuntu" {
+  model_uuid = data.juju_model.my_model.uuid
+  charm {
+    name    = "ubuntu"
+    base    = "ubuntu@24.04"
+    channel = "latest/stable"
   }
+}
+
+resource "juju_integration" "osquery" {
+  model_uuid = data.juju_model.my_model.uuid
+
   application {
-    name     = "loki-k8s"
-    endpoint = "logging"
+    name     = module.osquery.app_name
+    endpoint = module.osquery.requires.general_info
+  }
+
+  application {
+    name = juju_application.ubuntu.name
   }
 }
 ```
 
-The complete list of available integrations can be found [in the Integrations tab][__charm_name__-integrations].
+The complete list of available integrations can be found [in the Integrations tab][osquery-integrations].
 
 [Terraform]: https://developer.hashicorp.com/terraform
 [Terraform Juju provider]: https://registry.terraform.io/providers/juju/juju/latest
 [Juju]: https://juju.is
-[__charm_name__-integrations]: https://charmhub.io/__charm_name__/integrations
+[osquery-integrations]: https://charmhub.io/osquery/integrations

@@ -6,9 +6,41 @@
 Terraform module
 ================
 
-.. TODO: Add technical details and information about any Terraform modules used in this repo.
-         Remove if there is no Terraform module in the repo.
-         You don't necessarily need to copy the Terraform module into this document,
-         but you should provide some information about the setup, other charms deployed,
-         or other configurations/settings handled by the module.
-         Add a link to any generated README files for Terraform modules in the codebase.
+The OSQuery charm ships a Terraform module that wraps the `Juju Terraform
+provider <https://registry.terraform.io/providers/juju/juju/latest>`_, so you can
+deploy and manage the charm declaratively. The module source lives in the
+``terraform/`` directory of the repository.
+
+For step-by-step usage instructions, see :ref:`How to deploy with Terraform
+<how_to_terraform>`.
+
+Module contents
+---------------
+
+.. list-table::
+    :header-rows: 1
+
+    * - File
+      - Purpose
+    * - ``main.tf``
+      - Declares the ``juju_application`` resource for the OSQuery charm.
+    * - ``variables.tf``
+      - Declares the module's input variables.
+    * - ``outputs.tf``
+      - Declares the module's outputs, such as the application name.
+    * - ``versions.tf``
+      - Pins the required Terraform and provider versions.
+
+Because OSQuery is a subordinate charm, the module intentionally omits the
+``units`` input: Juju co-locates one OSQuery unit next to every unit of the
+principal application it's related to. The module exposes an ``app_name`` output
+and a ``requires`` output that surfaces the ``general-info`` endpoint, so
+higher-level modules can integrate OSQuery with a principal application.
+
+The authoritative description of the module's inputs and outputs is maintained
+alongside the module itself:
+
+- `Terraform module README <https://github.com/canonical/osquery-operator/blob/main/terraform/README.md>`_
+
+.. TODO: Publish the module to the Terraform Registry and link it here once
+   available.
