@@ -1,0 +1,24 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Added end-to-end controller integration tests
+  author: m2-farzan
+  type: minor
+  description: >
+    Added an integration test that stands up a dummy HTTPS controller on the
+    principal machine and verifies the subordinate blocks until the required
+    controller options are set, then enrols the real osqueryd daemon and honours
+    its configuration end-to-end. This proves the enrollment secret and plain
+    options reach the running daemon and change its behaviour.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/4"
+    related_doc:
+    related_issue:
+  visibility: internal
+  highlight: false
