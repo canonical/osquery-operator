@@ -17,7 +17,7 @@ derived from the principal.
 - **variables.tf** - Allows customization of the deployment, such as the Juju
   model, application name, channel, revision, base and constraints.
 - **outputs.tf** - Integrates the module with other Terraform modules, primarily
-  by exposing the required integration endpoints and the Juju application name.
+  by exposing the required integration endpoints and the deployed Juju application.
 - **versions.tf** - Defines the Terraform and provider versions.
 
 ## Using the `osquery` base module in higher level modules
@@ -56,8 +56,8 @@ resource "juju_integration" "osquery" {
   model_uuid = data.juju_model.my_model.uuid
 
   application {
-    name     = module.osquery.app_name
-    endpoint = module.osquery.requires.general_info
+    name     = module.osquery.application.name
+    endpoint = module.osquery.requires.general_info.endpoint
   }
 
   application {

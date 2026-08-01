@@ -22,7 +22,7 @@ run "basic_deploy" {
   }
 
   assert {
-    condition     = output.app_name == "osquery"
+    condition     = output.application.name == "osquery"
     error_message = "osquery app_name did not match expected"
   }
 }

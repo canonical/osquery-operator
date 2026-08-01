@@ -28,12 +28,13 @@ variable "config" {
 variable "constraints" {
   description = "Juju constraints to apply for this application."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "model_uuid" {
   description = "UUID of the Juju model where the application will be deployed."
   type        = string
+  nullable    = false
 }
 
 variable "revision" {
