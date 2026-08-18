@@ -7,24 +7,24 @@ Configurations
 ==============
 
 The OSQuery charm is configured entirely through Juju configuration options.
-There are no cross-charm relations for configuration: you set options with
+The charm doesn't use cross-charm relations for configuration: you set options with
 ``juju config`` and the charm applies them.
 
-How configuration is applied
------------------------------
+How configurations are applied
+------------------------------
 
 On every configuration change the charm:
 
-#. resolves each option (including any referenced Juju secrets);
-#. writes the file-backed options (enrollment secret and TLS material) to disk
-   with strict ownership and permissions;
-#. renders the OSQuery *flagfile* to ``/etc/osquery/osquery.flags``; and
-#. enables and restarts the ``osqueryd`` service so the new flags take effect.
+#. Resolves each option (including any referenced Juju secrets)
+#. Writes the file-backed options (enrollment secret and TLS material) to disk
+   with strict ownership and permissions
+#. Renders the OSQuery flagfile to ``/etc/osquery/osquery.flags``
+#. Enables and restarts the ``osqueryd`` service so the new flags take effect
 
 The flagfile is the `OSQuery flagfile
 <https://osquery.readthedocs.io/en/stable/installation/cli-flags/#flagfile>`_.
-Each charm option maps to one or more OSQuery command-line flags. Options that
-have no charm default and are left unset are *omitted* from the flagfile, so
+Each charm option maps to one or more OSQuery command-line flags. Unset options that
+have no charm default are omitted from the flagfile, so
 OSQuery falls back to its own built-in defaults.
 
 Required options
@@ -32,7 +32,7 @@ Required options
 
 Two options must be set before the charm can build a working flagfile. Until
 both are set the unit reports ``blocked`` with a message naming the missing
-options:
+options.
 
 ``controller-uri``
    Hostname of the OSQuery Controller. It sets ``--tls_hostname`` to
@@ -107,7 +107,6 @@ option, grant it to the application, and set the option to the secret's URI:
 
 .. code-block:: bash
 
-   # Enrollment secret
    secret_id=$(juju add-secret osquery-enroll enroll-secret#file=enroll.secret)
    juju grant-secret osquery-enroll osquery
    juju config osquery enroll-secret="$secret_id"
@@ -115,14 +114,14 @@ option, grant it to the application, and set the option to the secret's URI:
 The charm reads the value from the field named after the option (for example
 ``enroll-secret``). For convenience, a secret that exposes exactly one field is
 also accepted regardless of the field's name. If a referenced secret cannot be
-accessed (for example it was not granted to the application) the unit reports
+accessed (for example, if it wasn't granted to the application), the unit reports
 ``blocked``.
 
 One-to-one options
 ------------------
 
 The remaining options map directly to a single flag of the same name, with
-dashes replaced by underscores (for example ``carver-block-size`` sets
+dashes replaced by underscores (for example, ``carver-block-size`` sets
 ``--carver_block_size``). Options that have a charm default are always emitted;
 options without a default are only emitted once you set them.
 
@@ -292,12 +291,12 @@ Some flags are always managed by the charm and are not exposed as options:
    deployment model.
 
 Keeping the option list up to date
------------------------------------
+----------------------------------
 
 The set of supported flags is derived systematically from the OSQuery fork's
 source. The ``scripts/extract_flags.py`` helper scans the source tree and
 exports every flag definition (along with whether it is a plugin flag,
-remote-configurable, or shell-only) to a CSV. Re-run it whenever the OSQuery
+remote-configurable, or shell-only) to a CSV. Re-run the script whenever the OSQuery
 version is bumped to review any newly added flags:
 
 .. code-block:: bash
@@ -307,5 +306,5 @@ version is bumped to review any newly added flags:
 .. seealso::
 
    Read more about configurations in the Juju docs: `Configuration
-   <https://documentation.ubuntu.com/juju/latest/user/reference/configuration/>`_
+   <https://canonical.com/juju/docs/juju-cli/latest/reference/configuration/>`_
 
