@@ -15,7 +15,7 @@ changes:
     Juju events the charm reacts to.
   urls:
     pr:
-      - "https://github.com/canonical/osquery-operator/pull/5"
+      - "https://github.com/canonical/osquery-operator/pull/7"
     related_doc: https://github.com/canonical/osquery-operator/blob/main/docs/reference/configurations.rst
     related_issue:
   visibility: internal

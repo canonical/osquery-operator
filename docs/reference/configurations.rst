@@ -122,8 +122,13 @@ One-to-one options
 
 The remaining options map directly to a single flag of the same name, with
 dashes replaced by underscores (for example, ``carver-block-size`` sets
-``--carver_block_size``). Options that have a charm default are always emitted;
-options without a default are only emitted once you set them.
+``--carver_block_size``). Options that have a charm default are always passed
+to the OSQuery workload. Options without a default are only passed once the
+user sets them to a specific value.
+
+The following table lists all one-to-one options. Please refer to the `OSQuery flagfile
+<https://osquery.readthedocs.io/en/stable/installation/cli-flags/#flagfile>`_ for the
+meaning of each flag.
 
 .. list-table::
    :header-rows: 1
