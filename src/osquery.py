@@ -125,13 +125,16 @@ def is_running() -> bool:
     return systemd.service_running(SERVICE_NAME)
 
 
-def _write_file(path: str, content: str, *, file_mode: int, dir_mode: int) -> None:
+def _write_file(path: str, content: str, *, file_mode: int, dir_mode: int) -> bool:
     """Write ``content`` to ``path`` with strict ownership and permissions.
 
-    The parent directory is created if missing and reset to ``dir_mode`` owned by
-    root. The file is written atomically (via a temporary file and rename) so a
-    concurrent OSQuery read never observes a partially written file, and it ends
-    up with ``file_mode`` and root ownership.
+    The parent directory is created if missing and its ownership and permissions
+    are re-applied on every call so drift is corrected even when the file content
+    is unchanged. The file is opened (creating it if necessary) and its ownership
+    and permissions are set before any content is written, so sensitive data is
+    never briefly readable through a loosely-permissioned file. If the file
+    already holds exactly ``content`` the write is skipped, but its ownership and
+    permissions are still re-enforced.
 
     Args:
         path: absolute path of the file to write.
@@ -139,36 +142,54 @@ def _write_file(path: str, content: str, *, file_mode: int, dir_mode: int) -> No
         file_mode: permission bits to apply to the file.
         dir_mode: permission bits to apply to the parent directory.
 
+    Returns:
+        ``True`` if the file content changed, ``False`` if it already matched.
+
     Raises:
         OSQueryConfigError: if the file or directory cannot be written.
     """
     target = Path(path)
     parent = target.parent
     try:
+        # Always enforce the parent directory's ownership and permissions so
+        # drift (for example a loosened mode) is corrected on every reconcile.
         parent.mkdir(parents=True, exist_ok=True)
         os.chown(parent, FILE_OWNER_UID, FILE_OWNER_GID)
         os.chmod(parent, dir_mode)
-        # Write to a sibling temp file first so the replace is atomic.
-        tmp = target.with_name(f".{target.name}.tmp")
-        tmp.write_text(content, encoding="utf-8")
-        os.chown(tmp, FILE_OWNER_UID, FILE_OWNER_GID)
-        os.chmod(tmp, file_mode)
-        tmp.replace(target)
+
+        if target.exists() and target.read_text(encoding="utf-8") == content:
+            # Content is unchanged: still re-enforce ownership and permissions.
+            os.chown(target, FILE_OWNER_UID, FILE_OWNER_GID)
+            os.chmod(target, file_mode)
+            return False
+
+        # Open (truncating any existing file), then set ownership and permissions
+        # before writing any content so secret material is never exposed through
+        # a loosely-permissioned file.
+        fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, file_mode)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            os.fchown(fd, FILE_OWNER_UID, FILE_OWNER_GID)
+            os.fchmod(fd, file_mode)
+            handle.write(content)
+        return True
     except OSError as exc:
         raise OSQueryConfigError(f"failed to write {path}: {exc}") from exc
 
 
-def write_flagfile(content: str) -> None:
+def write_flagfile(content: str) -> bool:
     """Write the generated OSQuery flagfile to disk.
+
+    Returns:
+        ``True`` if the flagfile content changed, ``False`` if it already matched.
 
     Raises:
         OSQueryConfigError: if the flagfile cannot be written.
     """
     logger.info("Writing OSQuery flagfile to %s", FLAGFILE_PATH)
-    _write_file(FLAGFILE_PATH, content, file_mode=FLAGFILE_MODE, dir_mode=SECURE_DIR_MODE)
+    return _write_file(FLAGFILE_PATH, content, file_mode=FLAGFILE_MODE, dir_mode=SECURE_DIR_MODE)
 
 
-def write_secret_file(path: str, content: str) -> None:
+def write_secret_file(path: str, content: str) -> bool:
     """Write secret material with owner-only (600) permissions.
 
     The parent directory is locked down to 700 so the secret is not readable by
@@ -178,14 +199,17 @@ def write_secret_file(path: str, content: str) -> None:
         path: absolute path of the secret file.
         content: the secret value to write.
 
+    Returns:
+        ``True`` if the file content changed, ``False`` if it already matched.
+
     Raises:
         OSQueryConfigError: if the file cannot be written.
     """
     logger.info("Writing secret file %s", path)
-    _write_file(path, content, file_mode=SECRET_FILE_MODE, dir_mode=SECURE_DIR_MODE)
+    return _write_file(path, content, file_mode=SECRET_FILE_MODE, dir_mode=SECURE_DIR_MODE)
 
 
-def write_public_file(path: str, content: str) -> None:
+def write_public_file(path: str, content: str) -> bool:
     """Write non-secret material (such as a CA certificate) to disk.
 
     The file itself is world-readable (644) but it still lives inside a 700
@@ -195,11 +219,14 @@ def write_public_file(path: str, content: str) -> None:
         path: absolute path of the file.
         content: the value to write.
 
+    Returns:
+        ``True`` if the file content changed, ``False`` if it already matched.
+
     Raises:
         OSQueryConfigError: if the file cannot be written.
     """
     logger.info("Writing file %s", path)
-    _write_file(path, content, file_mode=PUBLIC_FILE_MODE, dir_mode=SECURE_DIR_MODE)
+    return _write_file(path, content, file_mode=PUBLIC_FILE_MODE, dir_mode=SECURE_DIR_MODE)
 
 
 def restart() -> None:

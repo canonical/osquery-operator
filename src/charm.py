@@ -76,12 +76,18 @@ class OSQueryCharm(ops.CharmBase):
         if missing:
             raise OSQueryConfigError("missing required configuration: " + ", ".join(missing))
 
-        self._write_config_files(values)
+        changed = self._write_config_files(values)
 
         proxy_hostname = os.environ.get(HTTPS_PROXY_ENV, "")
         flagfile = flags.render_flagfile(flags.build_flags(values, proxy_hostname))
-        osquery.write_flagfile(flagfile)
-        osquery.restart()
+        changed = osquery.write_flagfile(flagfile) or changed
+
+        # OSQuery only reads its flagfile at start-up, so restart when the
+        # rendered config changed. Also (re)start if the daemon is not running
+        # (for example after a reboot or a fresh install) even when nothing
+        # changed, so reconcile self-heals a stopped service.
+        if changed or not osquery.is_running():
+            osquery.restart()
 
     def _config_values(self) -> dict:
         """Return every configuration value, with secrets resolved to plaintext.
@@ -95,20 +101,25 @@ class OSQueryCharm(ops.CharmBase):
             values[name] = self._secret_value(name)
         return values
 
-    def _write_config_files(self, values: dict) -> None:
+    def _write_config_files(self, values: dict) -> bool:
         """Materialise the file-backed options on disk with correct permissions.
 
         Args:
             values: mapping of option name to its resolved value.
+
+        Returns:
+            ``True`` if any file-backed option changed on disk.
         """
+        changed = False
         for name, path in flags.FILE_CONFIGS.items():
             content = values.get(name)
             if content is None:
                 continue
             if name in flags.SECRET_CONFIGS:
-                osquery.write_secret_file(path, content)
+                changed = osquery.write_secret_file(path, content) or changed
             else:
-                osquery.write_public_file(path, content)
+                changed = osquery.write_public_file(path, content) or changed
+        return changed
 
     def _secret_value(self, config_key: str) -> Optional[str]:
         """Resolve a secret-typed config option to its plaintext value.

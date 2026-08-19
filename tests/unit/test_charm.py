@@ -58,6 +58,38 @@ def test_reconcile_is_idempotent_when_already_installed(ctx, patch_workload):
     assert out.unit_status == testing.ActiveStatus()
 
 
+def test_reconcile_does_not_restart_when_config_unchanged(ctx, patch_workload):
+    """A reconcile that changes nothing on disk leaves the daemon untouched."""
+    patch_workload.installed = True
+    patch_workload.running = True
+    state = testing.State(config=VALID_CONFIG)
+
+    # First reconcile renders and applies the config, restarting once.
+    ctx.run(ctx.on.config_changed(), state)
+    assert patch_workload.restarted == 1
+
+    # A second reconcile with identical config must not restart again.
+    out = ctx.run(ctx.on.update_status(), state)
+
+    assert patch_workload.restarted == 1
+    assert out.unit_status == testing.ActiveStatus()
+
+
+def test_reconcile_restarts_stopped_daemon_without_config_change(ctx, patch_workload):
+    """A stopped daemon is restarted even when the config did not change."""
+    patch_workload.installed = True
+    state = testing.State(config=VALID_CONFIG)
+
+    ctx.run(ctx.on.config_changed(), state)
+    assert patch_workload.restarted == 1
+
+    # Simulate the daemon dying (or a reboot) with the config unchanged.
+    patch_workload.running = False
+    ctx.run(ctx.on.update_status(), state)
+
+    assert patch_workload.restarted == 2
+
+
 def test_flagfile_contains_defaults_and_endpoints(ctx, patch_workload):
     """Charm defaults and env-derived endpoints end up in the flagfile."""
     state = testing.State(config=VALID_CONFIG)

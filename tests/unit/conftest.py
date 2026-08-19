@@ -26,6 +26,7 @@ def patch_workload_fixture(monkeypatch):
             self.uninstalled = False
             self.install_count = 0
             self.restarted = 0
+            self.running = False
             self.flagfile = None
             self.files = {}
 
@@ -42,21 +43,32 @@ def patch_workload_fixture(monkeypatch):
     def fake_is_installed():
         return recorder.installed
 
+    def fake_is_running():
+        return recorder.running
+
     def fake_write_flagfile(content):
+        changed = content != recorder.flagfile
         recorder.flagfile = content
+        return changed
 
     def fake_write_secret_file(path, content):
+        changed = recorder.files.get(path) != content
         recorder.files[path] = content
+        return changed
 
     def fake_write_public_file(path, content):
+        changed = recorder.files.get(path) != content
         recorder.files[path] = content
+        return changed
 
     def fake_restart():
         recorder.restarted += 1
+        recorder.running = True
 
     monkeypatch.setattr(osquery, "install", fake_install)
     monkeypatch.setattr(osquery, "uninstall", fake_uninstall)
     monkeypatch.setattr(osquery, "is_installed", fake_is_installed)
+    monkeypatch.setattr(osquery, "is_running", fake_is_running)
     monkeypatch.setattr(osquery, "write_flagfile", fake_write_flagfile)
     monkeypatch.setattr(osquery, "write_secret_file", fake_write_secret_file)
     monkeypatch.setattr(osquery, "write_public_file", fake_write_public_file)
