@@ -230,8 +230,8 @@ def test_write_file_repairs_permission_drift_without_rewrite(
     osquery.write_secret_file(str(path), "topsecret")
 
     # Simulate drift: someone loosens the secret and its directory.
-    os.chmod(path, 0o644)
-    os.chmod(path.parent, 0o755)
+    os.chmod(path, 0o644)  # nosec B103 - deliberately loosened to test drift repair
+    os.chmod(path.parent, 0o755)  # nosec B103 - deliberately loosened to test drift repair
 
     def fail(*_args, **_kwargs):
         raise AssertionError("the file should not be reopened when content is unchanged")
