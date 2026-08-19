@@ -1,0 +1,20 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+version: 1
+rocks: []
+charms:
+- name: osquery
+  charmcraft-yaml: charmcraft.yaml
+  pack-dir: .
+  builds:
+  - arch: amd64
+    path: ./osquery_ubuntu@22.04-amd64.charm
+    base: ubuntu@22.04
+  - arch: amd64
+    path: ./osquery_ubuntu@24.04-amd64.charm
+    base: ubuntu@24.04
+  - arch: amd64
+    path: ./osquery_ubuntu@26.04-amd64.charm
+    base: ubuntu@26.04
+snaps: []

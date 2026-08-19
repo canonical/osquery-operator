@@ -40,6 +40,172 @@ requires:
     interface: juju-info
     scope: container
 
+config:
+  options:
+    # --- Options with a custom mapping to one or more OSQuery flags ---
+    controller-uri:
+      type: string
+      description: >
+        Required. Hostname of the OSQuery Controller the agent connects to over
+        TLS. Sets the `--tls_hostname` flag to `<controller-uri>:443`. The unit
+        is blocked until this option is set.
+    controller-env-uuid:
+      type: string
+      description: >
+        Required. UUID of the environment on the OSQuery Controller. It expands
+        into every per-environment TLS endpoint flag (`--enroll_tls_endpoint`,
+        `--config_tls_endpoint`, `--logger_tls_endpoint`,
+        `--distributed_tls_read_endpoint`, `--distributed_tls_write_endpoint`,
+        `--carver_start_endpoint` and `--carver_continue_endpoint`). The unit is
+        blocked until this option is set.
+    enroll-secret:
+      type: secret
+      description: >
+        Juju secret holding the enrollment secret used to authenticate the agent
+        with the controller. The value is written to /etc/osquery/enroll.secret
+        (owned by root, mode 600) and referenced through `--enroll_secret_path`.
+        The secret should expose the value under a field named `enroll-secret`.
+    tls-server-certs:
+      type: string
+      description: >
+        PEM-encoded CA bundle used to verify the OSQuery Controller's server
+        certificate. Written to /etc/osquery/certs/server-ca.pem and referenced
+        through `--tls_server_certs`.
+    tls-client-cert:
+      type: string
+      description: >
+        PEM-encoded client certificate the agent presents to the controller.
+        Written to /etc/osquery/certs/client-ca.pem and referenced through
+        `--tls_client_cert`.
+    tls-client-key:
+      type: secret
+      description: >
+        Juju secret holding the PEM-encoded private key matching
+        `tls-client-cert`. Written to /etc/osquery/certs/client-key.pem (owned by
+        root, mode 600) and referenced through `--tls_client_key`. The secret
+        should expose the value under a field named `tls-client-key`.
+    # --- Options with a one-to-one mapping to a flag of the same name ---
+    alarm-timeout:
+      type: int
+      description: Sets `--alarm_timeout`, the seconds to wait for a graceful shutdown before aborting.
+    carver-block-size:
+      type: int
+      default: 5120000
+      description: Sets `--carver_block_size`, the size in bytes of each file-carve block.
+    carver-compression:
+      type: boolean
+      description: Sets `--carver_compression`, enabling zstd compression of carved blocks.
+    carver-disable-function:
+      type: boolean
+      default: false
+      description: Sets `--carver_disable_function`, disabling the `carve()` SQL function.
+    config-accelerated-refresh:
+      type: int
+      description: Sets `--config_accelerated_refresh`, the accelerated config refresh interval in seconds.
+    config-check:
+      type: boolean
+      description: Sets `--config_check`, validating the config and exiting.
+    config-dump:
+      type: boolean
+      description: Sets `--config_dump`, dumping the config and exiting.
+    config-plugin:
+      type: string
+      default: tls
+      description: Sets `--config_plugin`, the plugin OSQuery uses to fetch its configuration.
+    config-enable-backup:
+      type: boolean
+      description: Sets `--config_enable_backup`, keeping a backup of the last working config.
+    config-refresh:
+      type: int
+      default: 300
+      description: Sets `--config_refresh`, the config refresh interval in seconds.
+    config-tls-max-attempts:
+      type: int
+      default: 5
+      description: Sets `--config_tls_max_attempts`, the number of config fetch retries.
+    database-dump:
+      type: boolean
+      description: Sets `--database_dump`, dumping the backing database and exiting.
+    disable-carver:
+      type: boolean
+      default: false
+      description: Sets `--disable_carver`, disabling the file carver entirely.
+    disable-distributed:
+      type: boolean
+      default: false
+      description: Sets `--disable_distributed`, disabling the distributed query service.
+    disable-enrollment:
+      type: boolean
+      description: Sets `--disable_enrollment`, skipping TLS enrollment.
+    disable-reenrollment:
+      type: boolean
+      description: Sets `--disable_reenrollment`, preventing automatic re-enrollment.
+    disable-watchdog:
+      type: boolean
+      description: Sets `--disable_watchdog`, disabling the resource-usage watchdog.
+    distributed-interval:
+      type: int
+      default: 60
+      description: Sets `--distributed_interval`, seconds between distributed query checks.
+    distributed-plugin:
+      type: string
+      default: tls
+      description: Sets `--distributed_plugin`, the distributed query plugin.
+    distributed-tls-max-attempts:
+      type: int
+      default: 5
+      description: Sets `--distributed_tls_max_attempts`, distributed query fetch retries.
+    enable-signal-handler:
+      type: boolean
+      description: Sets `--enable_signal_handler`, installing a diagnostic signal handler.
+    enroll-always:
+      type: boolean
+      description: Sets `--enroll_always`, re-enrolling on every start.
+    force:
+      type: boolean
+      default: true
+      description: Sets `--force`, forcing a start even if a stale pidfile or lock is present.
+    host-identifier:
+      type: string
+      default: uuid
+      description: Sets `--host_identifier`, the method used to identify this host.
+    logger-plugin:
+      type: string
+      default: tls
+      description: Sets `--logger_plugin`, the plugin OSQuery uses to ship logs.
+    logger-stderr:
+      type: boolean
+      description: Sets `--logger_stderr`, mirroring status logs to stderr.
+    logger-tls-compress:
+      type: boolean
+      default: true
+      description: Sets `--logger_tls_compress`, gzip-compressing log payloads sent over TLS.
+    logger-tls-period:
+      type: int
+      default: 600
+      description: Sets `--logger_tls_period`, seconds between TLS log flushes.
+    tls-enroll-max-attempts:
+      type: int
+      description: Sets `--tls_enroll_max_attempts`, the number of enrollment retries.
+    tls-session-reuse:
+      type: boolean
+      description: Sets `--tls_session_reuse`, reusing TLS sessions across requests.
+    tls-session-timeout:
+      type: int
+      description: Sets `--tls_session_timeout`, the TLS session cache timeout in seconds.
+    watchdog-delay:
+      type: int
+      description: Sets `--watchdog_delay`, seconds to delay watchdog checks after start.
+    watchdog-level:
+      type: int
+      description: Sets `--watchdog_level`, the watchdog profile (resource limit preset).
+    watchdog-memory-limit:
+      type: int
+      description: Sets `--watchdog_memory_limit`, the worker memory limit in MB (0 disables).
+    watchdog-utilization-limit:
+      type: int
+      description: Sets `--watchdog_utilization_limit`, the worker CPU utilization limit (0 disables).
+
 parts:
   charm:
     plugin: uv
