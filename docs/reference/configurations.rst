@@ -31,7 +31,7 @@ Required options
 ----------------
 
 Two options must be set before the charm can build a working flagfile. Until
-both are set the unit reports ``blocked`` with a message naming the missing
+both are set, the unit reports ``blocked`` with a message naming the missing
 options.
 
 ``controller-uri``
