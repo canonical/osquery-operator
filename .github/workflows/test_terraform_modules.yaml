@@ -12,11 +12,17 @@ on:
 
 jobs:
   terraform-tests:
+    # Temporarily disabled: this workflow deploys the charm from Charmhub,
+    # but the charm is not currently being published.
+    if: false
     uses: canonical/operator-workflows/.github/workflows/terraform_modules_test.yaml@main
     permissions:
       contents: read
     secrets: inherit
     with:
-      k8s-controller: true
-      #lxd-controller: true
+      # OSQuery is a machine subordinate charm and its terraform test deploys a
+      # machine principal (ubuntu), so the tests need an LXD (machine)
+      # controller, not a Kubernetes one.
+      #k8s-controller: true
+      lxd-controller: true
       terraform-directories: '["terraform"]'
