@@ -20,6 +20,11 @@ derived from the principal.
   by exposing the required integration endpoints and the deployed Juju application.
 - **versions.tf** - Defines the Terraform and provider versions.
 
+The tables below (requirements, providers, resources, inputs and outputs) are
+generated automatically from the module source with [terraform-docs][terraform-docs].
+Do not edit them by hand; regenerate them with `terraform-docs .` from this
+directory.
+
 ## Using the `osquery` base module in higher level modules
 
 If you want to use `osquery` as part of your Terraform module, import it like
@@ -68,7 +73,48 @@ resource "juju_integration" "osquery" {
 
 The complete list of available integrations can be found [in the Integrations tab][osquery-integrations].
 
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | ~> 1.12 |
+| juju | ~> 1.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| juju | ~> 1.0 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [juju_application.osquery](https://registry.terraform.io/providers/juju/juju/latest/docs/resources/application) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| model\_uuid | UUID of the Juju model where the application will be deployed. | `string` | n/a | yes |
+| app\_name | Name of the application in the Juju model. | `string` | `"osquery"` | no |
+| base | The operating system on which to deploy. Supported: ubuntu@22.04, ubuntu@24.04 and ubuntu@26.04. | `string` | `"ubuntu@24.04"` | no |
+| channel | The channel to use when deploying a charm. | `string` | `"latest/stable"` | no |
+| config | Application config. Details about available options can be found at https://charmhub.io/osquery/configurations. | `map(string)` | `{}` | no |
+| constraints | Juju constraints to apply for this application. | `string` | `null` | no |
+| revision | Revision number of the charm | `number` | `null` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| application | Object representing the deployed application. |
+| requires | Integration endpoints (relations) that this charm requires. |
+<!-- END_TF_DOCS -->
+
 [Terraform]: https://developer.hashicorp.com/terraform
 [Terraform Juju provider]: https://registry.terraform.io/providers/juju/juju/latest
 [Juju]: https://juju.is
 [osquery-integrations]: https://charmhub.io/osquery/integrations
+[terraform-docs]: https://terraform-docs.io
