@@ -24,7 +24,8 @@ What you'll need
   - The controller's hostname or URI.
   - The environment UUID assigned to your fleet.
   - An enrollment secret.
-  - The TLS certificates used to authenticate to the controller.
+  - Optionally, the TLS certificates used to authenticate to the controller, if
+    your controller is configured to require them.
 
 .. TODO: Link to the OSQuery Controller documentation once it's published, so
    readers know how to obtain these values.
@@ -34,7 +35,7 @@ What you'll do
 
 - Point the agent at a controller.
 - Provide the enrollment secret through a Juju secret.
-- Provide the TLS certificates.
+- Optionally, provide the TLS certificates.
 - Verify that the agent enrolls.
 
 Point the agent at a controller
@@ -46,12 +47,14 @@ your fleet. Set both with ``juju config``:
 .. code-block:: bash
 
     juju config osquery \
-      controller-uri=controller.example.com \
-      controller-env-uuid=00000000-0000-0000-0000-000000000000
+      controller-uri=<controller-uri> \
+      controller-env-uuid=<controller-env-uuid>
 
 The ``controller-uri`` sets the TLS hostname the agent connects to, and the
 ``controller-env-uuid`` is expanded into the per-environment enrollment,
-configuration, logging, and distributed-query endpoints.
+configuration, logging, and distributed-query endpoints. Like the charm's other
+options, these map directly to the underlying ``osqueryd`` flags; see the
+:ref:`Configurations reference <reference_configurations>` for the full mapping.
 
 Provide the enrollment secret
 -----------------------------
@@ -61,6 +64,9 @@ enrollment. Because it's sensitive, it's delivered through a `Juju secret
 <https://canonical.com/juju/docs/juju-cli/3.6/reference/secret/>`_ rather than a
 plain configuration value.
 
+The enrollment secret is optional, but without it a controller that requires
+one will reject the agent.
+
 Create the secret and grant the charm access to it:
 
 .. code-block:: bash
@@ -69,12 +75,22 @@ Create the secret and grant the charm access to it:
     juju grant-secret "$secret_id" osquery
     juju config osquery enroll-secret="$secret_id"
 
-Provide the TLS certificates
-----------------------------
+Provide the TLS certificates (optional)
+---------------------------------------
 
-The agent authenticates to the controller with mutual TLS. Provide the server
-CA, the client certificate, and the client key as file-backed configuration
-options:
+Mutual TLS is optional and most deployments don't use it: the enrollment secret
+above is the common way to authenticate the agent. Only provide certificates if
+your controller is configured to require them.
+
+If your controller presents a publicly trusted certificate, you don't need to
+set ``tls-server-certs`` at all; the agent already verifies the controller
+against its bundle of publicly trusted certificate authorities. Provide it only
+to pin a private or self-signed certificate authority.
+
+When they're needed, the ``.pem`` files must be generated beforehand and
+registered with the OSQuery Controller. Generating and registering them is
+out of scope for this tutorial. Once you have them, provide the server CA, the
+client certificate, and the client key as file-backed configuration options:
 
 .. code-block:: bash
 
@@ -100,8 +116,28 @@ can confirm the daemon is running on the host with:
 
     juju ssh ubuntu/0 systemctl status osqueryd
 
+You should see the service reported as ``active (running)``:
+
+.. code-block:: text
+
+    ● osqueryd.service - The osquery daemon
+         Loaded: loaded (/lib/systemd/system/osqueryd.service; enabled; vendor preset: enabled)
+         Active: active (running) since Mon 2026-08-25 10:00:00 UTC; 1min ago
+       Main PID: 12345 (osqueryd)
+          Tasks: 8 (limit: 4915)
+         Memory: 20.0M
+            CPU: 250ms
+         CGroup: /system.slice/osqueryd.service
+                 ├─12345 /usr/bin/osqueryd --flagfile /etc/osquery/osquery.flags
+                 └─12346 /usr/bin/osqueryd --flagfile /etc/osquery/osquery.flags
+
 Next steps
 ----------
 
 To learn how to keep your deployment healthy, see the :ref:`how-to guides
 <how_to_index>`, in particular :ref:`how to troubleshoot <how_to_troubleshoot>`.
+
+To understand the concepts behind what you just configured, see the
+:ref:`charm design <explanation_charm_design>` and :ref:`security
+<explanation_security>` explanations, and the :ref:`cryptographic overview
+<reference_cryptographic_overview>`.

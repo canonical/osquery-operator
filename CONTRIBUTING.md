@@ -1,128 +1,184 @@
 # Contributing
 
-This document explains the processes and practices recommended for contributing
-enhancements to the OSQuery charm.
+This document explains the processes and practices recommended for contributing enhancements to the OSQuery charm.
 
-- Generally, before developing enhancements to this charm, you should consider
-  [opening an issue](https://github.com/canonical/osquery-operator/issues)
-  explaining your use case.
-- If you would like to chat with us about your use cases or proposed
-  implementation, you can reach us at
-  [Charmhub Matrix](https://matrix.to/#/#charmhub-charmdev:ubuntu.com).
-- Familiarizing yourself with the
-  [Charmed Operator Framework](https://ops.readthedocs.io/en/latest/) library
+## Overview
+
+- Generally, before developing enhancements to this charm, you should consider [opening an issue
+  ](https://github.com/canonical/osquery-operator/issues) explaining your use case.
+- If you would like to chat with us about your use-cases or proposed implementation, you can reach
+  us at [Canonical Matrix public channel](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
+  or [Discourse](https://discourse.charmhub.io/).
+- Familiarizing yourself with the [Juju documentation](https://documentation.ubuntu.com/juju/3.6/howto/manage-charms/)
   will help you a lot when working on new features or bug fixes.
-- All enhancements require review before being merged. Code review typically
-  examines code quality, test coverage, and user experience for Juju operators of
-  this charm.
-- When evaluating design decisions, we optimize for the following personas, in
-  descending order of priority: charm users, charm operators, and charm
-  developers.
-- Please help us out in ensuring easy to review branches by rebasing your pull
-  request branch onto the `main` branch. This also avoids merge commits and
-  creates a linear Git commit history.
+- All enhancements require review before being merged. Code review typically examines
+  - code quality
+  - test coverage
+  - user experience for Juju operators of this charm.
+- Once your pull request is approved, we squash and merge your pull request branch onto
+  the `main` branch. This creates a linear Git commit history.
+- For further information on contributing, please refer to our
+  [Contributing Guide](https://github.com/canonical/is-charms-contributing-guide).
 
-## Use of generative AI
+## Code of conduct
 
-This project welcomes contributions produced with the assistance of generative
-AI tools. If you use such tools, you remain fully responsible for the
-contribution: review the output carefully, make sure it's correct and
-appropriate, and confirm that it doesn't introduce license or security issues.
-All the usual review and testing standards apply regardless of how a change was
-produced.
+When contributing, you must abide by the
+[Ubuntu Code of Conduct](https://ubuntu.com/community/ethos/code-of-conduct).
 
-## Developing
+## Changelog
 
-The OSQuery charm is a subordinate machine charm. To make contributions to this
-charm, you'll need a working [development setup](https://documentation.ubuntu.com/juju/3.6/howto/manage-your-deployment/).
+Please ensure that any new feature, fix, or significant change is documented by
+adding an entry to the [changelog](docs/changelog.rst) file. Use the date of the
+contribution as the header for new entries.
+
+To learn more about changelog best practices, visit [Keep a Changelog](https://keepachangelog.com/).
+
+## Submissions
+
+If you want to address an issue or a bug in this project,
+notify in advance the people involved to avoid confusion;
+also, reference the issue or bug number when you submit the changes.
+
+- [Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks)
+  our [GitHub repository](https://github.com/canonical/osquery-operator)
+  and add the changes to your fork, properly structuring your commits,
+  providing detailed commit messages and signing your commits.
+- Make sure the updated project builds and runs without warnings or errors;
+  this includes linting, documentation, code and tests.
+- Submit the changes as a
+  [pull request (PR)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+
+Your changes will be reviewed in due time; if approved, they will be eventually merged.
+
+### AI
+
+You are free to use any tools you want while preparing your contribution, including
+AI, provided that you do so lawfully and ethically.
+
+Avoid using AI to complete issues tagged with the "good first issues" label. The
+purpose of these issues is to provide newcomers with opportunities to contribute
+to our projects and gain coding skills. Using AI to complete these tasks
+undermines their purpose.
+
+We have created instructions and tools that you can provide AI while preparing your contribution: [`copilot-collections`](https://github.com/canonical/copilot-collections)
+
+While it isn't necessary to use `copilot-collections` while preparing your
+contribution, these files contain details about our quality standards and
+practices that will help the AI avoid common pitfalls when interacting with
+our projects. By using these tools, you can avoid longer review times and nitpicks.
+
+If you choose to use AI, please disclose this information to us by indicating
+AI usage in the PR description (for instance, marking the checklist item about
+AI usage). You don't need to go into explicit details about how and where you used AI.
+
+Avoid submitting contributions that you don't fully understand.
+You are responsible for the entire contribution, including the AI-assisted portions.
+You must be willing to engage in discussion and respond to any questions, comments,
+or suggestions we may have. 
+
+### Signing commits
+
+To improve contribution tracking,
+we use the [Canonical contributor license agreement](https://assets.ubuntu.com/v1/ff2478d1-Canonical-HA-CLA-ANY-I_v1.2.pdf)
+(CLA) as a legal sign-off, and we require all commits to have verified signatures.
+
+#### Canonical contributor agreement
+
+Canonical welcomes contributions to the OSQuery charm. Please check out our
+[contributor agreement](https://ubuntu.com/legal/contributors) if you're interested in contributing to the solution.
+
+The CLA sign-off is simple line at the
+end of the commit message certifying that you wrote it
+or have the right to commit it as an open-source contribution.
+
+#### Verified signatures on commits
+
+All commits in a pull request must have cryptographic (verified) signatures.
+To add signatures on your commits, follow the
+[GitHub documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
+
+## Develop
+
+To make contributions to this charm, you'll need a working
+[development setup](https://documentation.ubuntu.com/juju/latest/howto/manage-your-juju-deployment/set-up-your-juju-deployment-local-testing-and-development/).
 
 The code for this charm can be downloaded as follows:
 
-```bash
-git clone https://github.com/canonical/osquery-operator.git
+```
+git clone https://github.com/canonical/osquery-operator
 ```
 
-You can use the environments created by `tox` for development. For example, to
-load the `unit` environment into your shell, run:
+Make sure to install [`uv`](https://docs.astral.sh/uv/). For example, you can install `uv` on Ubuntu using:
 
 ```bash
-tox --notest -e unit
-source .tox/unit/bin/activate
+sudo snap install astral-uv --classic
 ```
 
-### Testing
+For other systems, follow the [`uv` installation guide](https://docs.astral.sh/uv/getting-started/installation/).
 
-This project uses `tox` for managing test environments. There are some
-pre-configured environments that can be used for linting and formatting code when
-you're preparing contributions to the charm:
+Then install `tox` with its extensions, and install a range of Python versions:
 
 ```bash
-tox run -e fmt          # update your code according to linting rules
-tox run -e lint         # code style
-tox run -e unit         # unit tests
-tox run -e static       # static type and security checks
-tox run -e integration  # integration tests
-tox                     # runs 'lint' and 'unit' environments
+uv python install
+uv tool install tox --with tox-uv
+uv tool update-shell
 ```
 
-## Build the charm
+To create a development environment, run:
+
+```bash
+uv sync --all-groups
+source .venv/bin/activate
+```
+
+### Test
+
+This project uses `tox` for managing test environments. There are some pre-configured environments
+that can be used for linting and formatting code when you're preparing contributions to the charm:
+
+* ``tox``: Executes all of the basic checks and tests (``lint``, ``unit``, ``static``, and ``coverage-report``).
+* ``tox -e fmt``: Runs formatting using ``ruff``.
+* ``tox -e lint``: Runs a range of static code analysis to check the code.
+* ``tox -e static``: Runs other checks such as ``bandit`` for security issues.
+* ``tox -e unit``: Runs the unit tests.
+* ``tox -e integration``: Runs the integration tests.
+
+### Build the rock and charm
+
+Use [Rockcraft](https://documentation.ubuntu.com/rockcraft/stable/) to create an
+OCI image for the osquery app, and then upload the image to a MicroK8s registry,
+which stores OCI archives so they can be downloaded and deployed.
+
+Enable the MicroK8s registry:
+
+```bash
+microk8s enable registry
+```
+
+The following commands pack the OCI image and push it into
+the MicroK8s registry:
+
+```bash
+cd <project_dir>
+rockcraft pack
+skopeo --insecure-policy copy --dest-tls-verify=false oci-archive:<rock-name>.rock docker://localhost:32000/<app-name>:latest
+```
 
 Build the charm in this git repository using:
 
-```bash
+```shell
 charmcraft pack
 ```
 
-## Deploy this charm
-
-Because this is a subordinate charm, it must be integrated with a principal
-application that occupies the machine. The following deploys the freshly built
-charm against the minimal `ubuntu` principal:
+### Deploy
 
 ```bash
-# Create a working model
-juju add-model test-osquery
-
-# Deploy a principal application for the subordinate to attach to
-juju deploy ubuntu --base ubuntu@24.04
-
-# Deploy the locally built charm
-juju deploy ./osquery_*.charm
-
-# Integrate the subordinate with the principal
-juju integrate ubuntu osquery
+# Create a model
+juju add-model charm-dev
+# Enable DEBUG logging
+juju model-config logging-config="<root>=INFO;unit=DEBUG"
+# Deploy the charm
+juju deploy ./osquery.charm 
 ```
 
-The charm blocks until it's configured with an OSQuery Controller. See the
-[tutorial](docs/tutorial/index.rst) for the full configuration.
 
-## Canonical contributor agreement
-
-Canonical welcomes contributions to the OSQuery charm. Please check out our
-[contributor agreement](https://ubuntu.com/legal/contributors) if you're
-interested in contributing to the solution.
-
-## Signing commits
-
-To improve contribution tracking, we use the developer certificate of origin
-([DCO 1.1](https://developercertificate.org/)) and require a "sign-off" for any
-changes going into each branch.
-
-The sign-off is a simple line at the end of the explanation for the commit,
-certifying that you wrote it or otherwise have the right to pass it on as an
-open-source contribution.
-
-Assuming your name is `John Doe` and your email address is `johndoe@example.com`,
-just include the following line at the bottom of your commit message, with your
-details:
-
-```
-Signed-off-by: John Doe <johndoe@example.com>
-```
-
-You can sign off your commit automatically with `git commit -s` when you commit
-your changes.
-
-We also encourage you to sign your commits cryptographically. See the
-[GitHub documentation on signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
-for details.

@@ -55,3 +55,14 @@ and cryptography.
 
     Cryptographic overview <cryptographic-overview>
     Terraform <terraform>
+
+Changelog
+---------
+
+The changelog records all notable changes to the OSQuery charm.
+
+.. toctree::
+    :hidden:
+    :maxdepth: 1
+
+    Changelog <../changelog>

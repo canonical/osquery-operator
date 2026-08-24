@@ -16,11 +16,18 @@ Transport security
 
 The OSQuery agent communicates with its OSQuery Controller exclusively over TLS.
 All enrollment, configuration retrieval, log delivery, and distributed-query
-traffic is carried over these TLS connections. The agent authenticates the
-controller using the CA certificate provided in the ``tls-server-certs``
-configuration option, and the agent authenticates itself to the controller using the
-client certificate and key provided in ``tls-client-cert`` and
-``tls-client-key`` respectively.
+traffic is carried over these TLS connections.
+
+The agent always verifies the controller's server certificate. If
+``tls-server-certs`` is left unset, the agent validates the controller against
+its bundle of publicly trusted certificate authorities, so a controller that
+presents a publicly trusted certificate is trusted without any extra
+configuration. Set ``tls-server-certs`` only to pin a private or self-signed
+certificate authority instead.
+
+Client authentication (mutual TLS) is optional. When the controller requires it,
+the agent authenticates itself using the client certificate and key provided in
+``tls-client-cert`` and ``tls-client-key`` respectively.
 
 Secrets handling
 ----------------

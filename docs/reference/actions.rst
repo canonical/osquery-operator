@@ -1,5 +1,5 @@
 .. meta::
-   :description: Reference for the Juju actions supported by the OSQuery charm.
+   :description: Reference explaining that the OSQuery charm exposes no Juju actions.
 
 .. _reference_actions:
 

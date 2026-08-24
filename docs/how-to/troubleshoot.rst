@@ -47,8 +47,9 @@ reconcile:
 The daemon isn't running
 ------------------------
 
-If the charm reports ``active`` but OSQuery doesn't appear to be working, check
-the ``osqueryd`` service on the unit's machine:
+If the charm reports ``active`` but OSQuery doesn't appear to be working, e.g. 
+it's not visible from the OSQuery controller, check the ``osqueryd`` service on the
+unit's machine:
 
 .. code-block:: bash
 

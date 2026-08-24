@@ -13,6 +13,39 @@ principal's machine using the host's package manager and ``systemd``.
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 .. vale Canonical.500-Repeated-words = NO
 
+Architecture overview
+---------------------
+
+The OSQuery charm is a machine charm, so it is not containerized: there is no OCI
+image and no Pebble. Both the Juju unit agent (which runs the charm code) and the
+``osqueryd`` workload it manages run directly on the principal's host, sharing
+the same machine as the principal unit. The charm's only moving parts are the
+charm code, the ``osqueryd`` systemd service, and the files the charm writes
+under ``/etc/osquery``.
+
+.. mermaid::
+
+    flowchart TB
+        subgraph machine["Principal machine (no container)"]
+            principal["Principal unit"]
+            subgraph agent["Juju unit agent"]
+                charm["OSQuery charm code<br/>(charm.py reconcile)"]
+            end
+            osqueryd["osqueryd<br/>systemd service"]
+            subgraph files["/etc/osquery"]
+                flagfile["osquery.flags"]
+                secrets["enroll.secret<br/>TLS certificates"]
+            end
+            principal -.->|osquery:general-info| charm
+            charm -->|installs & manages| osqueryd
+            charm -->|writes| flagfile
+            charm -->|writes| secrets
+            osqueryd -->|reads| flagfile
+            osqueryd -->|reads| secrets
+        end
+        controller["OSQuery Controller"]
+        osqueryd -->|TLS: enroll / config / logs| controller
+
 Workload
 --------
 
@@ -44,6 +77,19 @@ Because the handler is idempotent, it's safe to run on every event. If a require
 configuration value is missing or invalid, the charm sets a ``blocked`` status
 with a descriptive message instead of failing the hook. The ``stop`` event is
 handled separately to clean up the workload when the unit is removed.
+
+.. mermaid::
+
+    flowchart TD
+        event["Lifecycle event<br/>(install, config-changed, ...)"] --> reconcile["_reconcile"]
+        reconcile --> installed{"OSQuery<br/>installed?"}
+        installed -->|no| install["Install from PPA"]
+        installed -->|yes| render["Render flagfile<br/>+ write secrets"]
+        install --> render
+        render --> valid{"Config<br/>valid?"}
+        valid -->|no| blocked["Set blocked status"]
+        valid -->|yes| restart["Restart osqueryd<br/>if config changed"]
+        restart --> active["Set active status"]
 
 Code structure
 --------------

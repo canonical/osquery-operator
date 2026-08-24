@@ -1,5 +1,5 @@
 .. meta::
-   :description: Learn why the OSQuery charm requires no backup or restore procedure.
+   :description: Learn why the OSQuery charm needs no data backup, and how to back up and restore its configuration.
 
 .. _how_to_back_up_restore:
 
@@ -40,3 +40,14 @@ Restore
 
 To restore the deployment, :ref:`redeploy the charm <how_to_redeploy>` and
 reapply the configuration you captured above.
+
+You can reapply all of the captured settings at once by passing the backup file
+to ``juju config``:
+
+.. code-block:: bash
+
+    juju config osquery --file osquery-config-backup.yaml
+
+Sensitive values held in Juju secrets and file-backed configuration aren't
+included in this file, so restore those from your secret-management process as
+described above.

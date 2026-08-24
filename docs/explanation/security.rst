@@ -20,15 +20,14 @@ The charm handles several pieces of sensitive material: the OSQuery enrollment
 secret, and the TLS client certificate and key used to authenticate to the
 controller.
 
-- The enrollment secret is provided as a `Juju secret
-  <https://documentation.ubuntu.com/juju/3.6/reference/secret/>`_ rather than a
-  plain configuration value, so it isn't stored in plain text in the model
-  configuration.
-- The TLS certificates and key are supplied as file-backed configuration options
-  and written to disk on the host so ``osqueryd`` can read them.
-- Files that contain secret material are written with owner-only permissions in a
-  directory that isn't traversable by other users, so only the ``root`` user that
-  runs the daemon can read them.
+The enrollment secret is provided as a `Juju secret
+<https://documentation.ubuntu.com/juju/3.6/reference/secret/>`_ rather than a
+plain configuration value, so it isn't stored in plain text in the model
+configuration. The TLS certificates and key are supplied as file-backed
+configuration options and written to disk on the host so ``osqueryd`` can read
+them. Files that contain secret material are written with owner-only permissions
+in a directory that isn't traversable by other users, so only the ``root`` user
+that runs the daemon can read them.
 
 Transport security
 ------------------
@@ -43,7 +42,7 @@ Threat considerations
 
 - **Host access:** ``osqueryd`` runs as ``root`` and inspects sensitive
   operating-system state. Anyone with root access to a monitored host already has
-  broad control of that host; the charm doesn't widen that boundary, but operators
+  broad control of that host. The charm doesn't widen that boundary, but operators
   should apply the usual host-hardening practices.
 - **Secret exposure:** Because the enrollment secret and TLS key grant the agent
   its identity with the controller, treat them as high-value credentials. Rotate

@@ -46,11 +46,11 @@ In this documentation
     * -
       -
     * - Get started
-      - :ref:`Guided tutorial <tutorial_index>` | :ref:`High-level deployment <reference_high_level_deployment>`
+      - :ref:`Deploy the OSQuery charm <tutorial_basic_deployment>` | :ref:`Enroll an OSQuery Controller <tutorial_advanced_deployment>`
     * - Deployment
       - :ref:`Configurations <reference_configurations>` | :ref:`Relation endpoints <reference_relation_endpoints>`
     * - Operations
-      - :ref:`Upgrade <how_to_upgrade>` | :ref:`Redeploy <how_to_redeploy>` | :ref:`Troubleshoot <how_to_troubleshoot>`
+      - :ref:`Upgrade <how_to_upgrade>` | :ref:`Redeploy <how_to_redeploy>` | :ref:`Back up and restore <how_to_back_up_restore>` | :ref:`Troubleshoot <how_to_troubleshoot>` | :ref:`Metrics <reference_metrics>` | :ref:`Terraform <how_to_terraform>`
     * - Design
       - :ref:`Architecture <reference_charm_architecture>` | :ref:`Design <explanation_charm_design>`
     * - Security

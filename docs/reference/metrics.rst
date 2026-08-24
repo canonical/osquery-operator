@@ -16,7 +16,3 @@ metrics endpoint for Juju or for the :ref:`Canonical Observability Stack
 
 For visibility into a running deployment today, use the Juju status and logs as
 described in :ref:`how to troubleshoot <how_to_troubleshoot>`.
-
-.. TODO: If a metrics endpoint (for example, a Prometheus scrape target or a
-   COS integration) is added to the charm, document each metric, its type, and
-   its labels here.

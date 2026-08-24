@@ -13,8 +13,8 @@ provide an end-to-end learning experience as you get started with the charm.
 Get started
 -----------
 
-This tutorial walks through a basic deployment of the charm: relating it to a
-principal application and confirming that OSQuery is installed and running.
+This tutorial walks through a basic deployment of the charm, integrating it to a
+principal application, and confirming that OSQuery is installed and running.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 

@@ -6,12 +6,6 @@
 Charm design
 ============
 
-This page explains the main design decisions behind the OSQuery charm and the
-reasoning that motivates them.
-
-.. vale Canonical.013-Spell-out-numbers-below-10 = NO
-.. vale Canonical.500-Repeated-words = NO
-
 A subordinate machine charm
 ---------------------------
 

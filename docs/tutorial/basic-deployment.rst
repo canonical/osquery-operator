@@ -19,11 +19,16 @@ the OSQuery charm as a subordinate, and confirm that the agent is running.
 What you'll need
 ----------------
 
-- A working station, e.g., a laptop, with AMD64 architecture.
-- Juju 3 installed and bootstrapped to a machine controller. If you don't have
-  one yet, the quickest option is to use a local `LXD
-  <https://canonical.com/lxd>`_ cloud.
-- At least 4 GB of RAM and 2 CPU cores available for the LXD container.
+You will need a working station, e.g., a laptop, with AMD64 architecture. Your working station
+should have at least 2 CPU cores, 4 GB of RAM, and 20 GB of disk space.
+
+.. tip::
+
+    You can use Multipass to create an isolated environment by running:
+
+    .. code-block::
+
+        multipass launch 24.04 --name charm-tutorial-vm --cpus 4 --memory 8G --disk 50G
 
 What you'll do
 --------------
@@ -41,21 +46,26 @@ Set up an isolated environment
 For this tutorial, use a clean Juju model inside a local LXD cloud. This keeps
 your environment isolated and easy to remove afterwards.
 
-The fastest way to set up a machine cloud is with `concierge
-<https://github.com/canonical/concierge>`_, which bootstraps Juju on LXD for
-you:
+The fastest way to bootstrap Juju on LXD is with `concierge
+<https://github.com/canonical/concierge>`_:
 
 .. code-block:: bash
 
     sudo snap install --classic concierge
-    concierge prepare -p machine
+    sudo concierge prepare -p machine
 
 Alternatively, if you already have Juju and LXD installed, bootstrap a controller
-and add a model manually:
+manually:
 
 .. code-block:: bash
 
-    juju bootstrap localhost lxd
+    juju bootstrap localhost lxd tutorial-controller
+
+Then, regardless of how you bootstrapped, create a dedicated model for this
+tutorial:
+
+.. code-block:: bash
+
     juju add-model osquery-tutorial
 
 Deploy a principal application
@@ -69,26 +79,33 @@ tutorial. Let's deploy it now:
 
     juju deploy ubuntu --base ubuntu@24.04
 
+The ``--base`` flag pins the machine to Ubuntu 24.04, ensuring it matches a base
+the OSQuery subordinate supports.
+
 Deploy the OSQuery charm
 ------------------------
 
-Deploy the OSQuery charm. Because it's a subordinate, it stays in a ``waiting``
-state until it's integrated with a principal:
+Deploy the OSQuery charm:
 
 .. code-block:: bash
 
     juju deploy osquery
 
+Because it's a subordinate, it stays in a ``waiting``
+state until it's integrated with a principal.
+
 Integrate the charms
 --------------------
 
 Integrate the OSQuery charm with the principal application over the
-``general-info`` endpoint. This tells Juju to place the OSQuery agent on the same
-machine as the ``ubuntu`` unit:
+``general-info`` endpoint:
 
 .. code-block:: bash
 
     juju integrate ubuntu osquery
+
+This tells Juju to place the OSQuery agent on the same
+machine as the ``ubuntu`` unit.
 
 Verify the deployment
 ---------------------
@@ -106,12 +123,70 @@ status such as ``controller-env-uuid is required`` at this stage. Connecting the
 agent to a controller is covered in the :ref:`advanced tutorial
 <tutorial_advanced_deployment>`.
 
+To confirm the subordinate is attached to the principal, view the relation
+with:
+
+.. code-block:: bash
+
+    juju status --relations
+
+You should see the ``osquery`` unit nested under ``ubuntu/0`` and the
+``general-info`` relation listed at the bottom:
+
+.. code-block:: text
+
+    Model             Controller           Cloud/Region         Version  SLA          Timestamp
+    osquery-tutorial  tutorial-controller  localhost/localhost  3.6.0    unsupported  12:00:00Z
+
+    App      Version  Status   Scale  Charm    Channel        Rev  Exposed  Message
+    osquery           blocked      1  osquery  latest/stable   12  no       controller-env-uuid is required
+    ubuntu   24.04    active       1  ubuntu   latest/stable   26  no
+
+    Unit          Workload  Agent  Machine  Public address  Ports  Message
+    ubuntu/0*     active    idle   0        10.1.0.10
+      osquery/0*  blocked   idle            10.1.0.10               controller-env-uuid is required
+
+    Machine  State    Address    Inst id        Base          AZ  Message
+    0        started  10.1.0.10  juju-abc123-0  ubuntu@24.04       Running
+
+    Integration provider  Requirer              Interface  Type         Message
+    ubuntu:juju-info       osquery:general-info  juju-info  subordinate
+
 You can confirm that the ``osqueryd`` binary was installed on the machine by
 running a command inside the unit:
 
 .. code-block:: bash
 
     juju ssh ubuntu/0 osqueryd --version
+
+If the binary is installed, it prints its version:
+
+.. code-block:: text
+
+    osqueryd version 5.21.0
+
+The same package ships the ``osqueryi`` interactive shell, which lets you query
+the host's state with SQL. For example, let's list a few of the machine's running
+processes to see it in action:
+
+.. code-block:: bash
+
+    juju ssh ubuntu/0 osqueryi "SELECT pid, name FROM processes ORDER BY pid LIMIT 5;"
+
+osquery answers straight from the live system (your exact output will vary):
+
+.. code-block:: text
+
+    +-----+---------+
+    | pid | name    |
+    +-----+---------+
+    | 1   | systemd |
+    | ... | ...     |
+    +-----+---------+
+
+Note that the ``osqueryi`` shell is just a convenience for testing. Typically the agent
+runs in the background as a daemon and is controlled by the OSQuery Controller.
+See the :ref:`advanced tutorial <tutorial_advanced_deployment>` for instructions on enrolling the agent with a controller.
 
 Clean up the environment
 ------------------------
