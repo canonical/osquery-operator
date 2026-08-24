@@ -17,8 +17,8 @@ The OSQuery charm is stateless. All of its meaningful state lives elsewhere:
 As a result, there's no charm-specific data to back up or restore. To recover an
 OSQuery deployment, redeploy the charm and reapply its configuration.
 
-Back up
--------
+Back up configurations
+----------------------
 
 The only OSQuery-specific state you need to preserve is the charm's
 configuration. Capture it from the model so you can reapply it later:

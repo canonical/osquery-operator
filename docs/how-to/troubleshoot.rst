@@ -64,7 +64,10 @@ The agent won't enroll
 ----------------------
 
 If the daemon is running but the agent doesn't enroll with the controller,
-verify the controller-related configuration:
+enrollment failures are typically logged by ``osqueryd`` and visible in the
+``journalctl`` output shown above.
+
+In the event of an enrollment failure, verify the controller-related configuration:
 
 - ``controller-uri`` points at the correct hostname.
 - ``controller-env-uuid`` matches the environment assigned to your fleet.
@@ -72,6 +75,3 @@ verify the controller-related configuration:
   access to.
 - ``tls-server-certs``, ``tls-client-cert``, and ``tls-client-key`` contain the
   correct certificates and key.
-
-Enrollment failures are typically logged by ``osqueryd`` and visible in the
-``journalctl`` output shown above.

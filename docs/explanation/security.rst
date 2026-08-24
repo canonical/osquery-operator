@@ -17,7 +17,7 @@ Handling of sensitive material
 ------------------------------
 
 The charm handles several pieces of sensitive material: the OSQuery enrollment
-secret and the TLS client certificate and key used to authenticate to the
+secret, and the TLS client certificate and key used to authenticate to the
 controller.
 
 - The enrollment secret is provided as a `Juju secret
@@ -41,14 +41,14 @@ cryptographic overview <reference_cryptographic_overview>` for details.
 Threat considerations
 ---------------------
 
-- **Host access.** ``osqueryd`` runs as ``root`` and inspects sensitive
+- **Host access:** ``osqueryd`` runs as ``root`` and inspects sensitive
   operating-system state. Anyone with root access to a monitored host already has
   broad control of that host; the charm doesn't widen that boundary, but operators
   should apply the usual host-hardening practices.
-- **Secret exposure.** Because the enrollment secret and TLS key grant the agent
+- **Secret exposure:** Because the enrollment secret and TLS key grant the agent
   its identity with the controller, treat them as high-value credentials. Rotate
   them if you suspect compromise.
-- **Controller trust.** The agent trusts the controller identified by its
+- **Controller trust:** The agent trusts the controller identified by its
   configuration. Ensure the ``controller-uri`` and TLS CA are correct so the
   agent only enrolls with a controller you control.
 

@@ -32,7 +32,7 @@ Requires
         restricts the relation to units that share a machine.
 
 Because OSQuery is endpoint security monitoring software, it's designed to run
-alongside any workload. Relating it over the generic ``juju-info`` interface lets
+alongside any workload. Integrating the charm over the generic ``juju-info`` interface lets
 it attach to any principal machine charm — for example, the ``ubuntu`` charm — so
 you can monitor arbitrary hosts.
 

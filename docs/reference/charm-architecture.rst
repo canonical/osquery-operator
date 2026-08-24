@@ -18,7 +18,7 @@ Workload
 
 The charm installs the Canonical SecOps fork of OSQuery from a Launchpad-hosted
 PPA. Once installed, OSQuery runs as the ``osqueryd`` systemd service. The daemon
-reads its command-line flags from a *flagfile* on disk; the charm generates this
+reads its command-line flags from a flagfile on disk; the charm generates this
 flagfile from the Juju configuration, so changing a configuration value and
 restarting the daemon is how the charm applies changes to the workload.
 
@@ -29,7 +29,7 @@ tasks) and collects its logs.
 Reconcile pattern
 -----------------
 
-The charm follows a holistic *reconcile* pattern. A single handler,
+The charm follows a holistic reconcile pattern. A single handler,
 ``_reconcile``, is observed on every relevant lifecycle event —
 ``install``, ``upgrade-charm``, ``start``, ``config-changed``,
 ``secret-changed``, and ``update-status``. On each event the handler:

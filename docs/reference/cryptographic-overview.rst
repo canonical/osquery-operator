@@ -18,9 +18,9 @@ The OSQuery agent communicates with its OSQuery Controller exclusively over TLS.
 All enrollment, configuration retrieval, log delivery, and distributed-query
 traffic is carried over these TLS connections. The agent authenticates the
 controller using the CA certificate provided in the ``tls-server-certs``
-configuration option, and authenticates itself to the controller using the
+configuration option, and the agent authenticates itself to the controller using the
 client certificate and key provided in ``tls-client-cert`` and
-``tls-client-key``.
+``tls-client-key`` respectively.
 
 Secrets handling
 ----------------
@@ -29,7 +29,7 @@ Sensitive configuration values are delivered to the charm through mechanisms tha
 keep them out of plain-text configuration:
 
 - The enrollment secret is passed as a `Juju secret
-  <https://documentation.ubuntu.com/juju/3.6/reference/secret/>`_ referenced by
+  <https://canonical.com/juju/docs/juju-cli/3.6/reference/secret/>`_ referenced by
   the ``enroll-secret`` option, rather than as a plain configuration value.
 - The TLS certificates and key are supplied as file-backed configuration
   options.

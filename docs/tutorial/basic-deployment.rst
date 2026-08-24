@@ -19,7 +19,7 @@ the OSQuery charm as a subordinate, and confirm that the agent is running.
 What you'll need
 ----------------
 
-- A working station, e.g., a laptop, with amd64 architecture.
+- A working station, e.g., a laptop, with AMD64 architecture.
 - Juju 3 installed and bootstrapped to a machine controller. If you don't have
   one yet, the quickest option is to use a local `LXD
   <https://canonical.com/lxd>`_ cloud.
@@ -61,9 +61,9 @@ and add a model manually:
 Deploy a principal application
 ------------------------------
 
-A subordinate charm needs a principal to attach to. The ``ubuntu`` charm is a
-minimal principal that provisions a bare Ubuntu machine, which is ideal for this
-tutorial:
+Because the OSQuery charm is a subordinate, it needs a principal to attach to. The ``ubuntu`` charm is a
+minimal principal application that provisions a bare Ubuntu machine, which is ideal for this
+tutorial. Let's deploy it now:
 
 .. code-block:: bash
 

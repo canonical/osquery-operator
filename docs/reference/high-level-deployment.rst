@@ -18,12 +18,12 @@ Controller, which supplies the agents' configuration and collects their logs.
     flowchart TD
         subgraph host1["Machine 1"]
             principal1["Principal application unit"]
-            osquery1["OSQuery subordinate<br/>(osqueryd)"]
+            osquery1["OSQuery subordinate<br/>charm (osqueryd)"]
             principal1 -.->|general-info| osquery1
         end
         subgraph host2["Machine 2"]
             principal2["Principal application unit"]
-            osquery2["OSQuery subordinate<br/>(osqueryd)"]
+            osquery2["OSQuery subordinate<br/>charm (osqueryd)"]
             principal2 -.->|general-info| osquery2
         end
         controller["OSQuery Controller"]
@@ -34,7 +34,7 @@ Key points:
 
 - The ``general-info`` relation places one OSQuery subordinate unit on each
   principal machine. See :ref:`Relation endpoints <reference_relation_endpoints>`.
-- Each ``osqueryd`` agent is configured from the Juju configuration, which the
+- Each ``osqueryd`` agent is configured from Juju configurations, which the
   charm renders into an OSQuery flagfile. See :ref:`Configurations
   <reference_configurations>`.
 - All agents communicate with the OSQuery Controller over TLS. The controller,

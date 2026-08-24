@@ -6,7 +6,7 @@
 Actions
 =======
 
-`Juju actions <https://documentation.ubuntu.com/juju/3.6/reference/action/>`_ are
+`Juju actions <https://canonical.com/juju/docs/juju-cli/3.6/reference/action/>`_ are
 operations that a charm exposes so operators can run them on demand.
 
 The OSQuery charm doesn't define any actions. Its behavior is entirely

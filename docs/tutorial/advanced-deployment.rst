@@ -58,7 +58,7 @@ Provide the enrollment secret
 
 The enrollment secret authenticates the agent to the controller during
 enrollment. Because it's sensitive, it's delivered through a `Juju secret
-<https://documentation.ubuntu.com/juju/3.6/reference/secret/>`_ rather than a
+<https://canonical.com/juju/docs/juju-cli/3.6/reference/secret/>`_ rather than a
 plain configuration value.
 
 Create the secret and grant the charm access to it:

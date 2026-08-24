@@ -50,14 +50,14 @@ This design keeps the charm simple and predictable: there's exactly one code pat
 that brings the host to the desired state, so the charm behaves the same way
 regardless of which event triggered it. If a required value is missing, the charm
 reports a ``blocked`` status rather than failing, making misconfiguration easy to
-diagnose. See :ref:`the charm architecture <reference_charm_architecture>` for
+diagnose. See :ref:`the charm architecture documentation <reference_charm_architecture>` for
 the module-level breakdown.
 
 Separating workload logic from Juju logic
 -----------------------------------------
 
-The host-facing workload logic — installing the package and managing the service
-— lives in a module that deliberately imports nothing from Ops or Juju. This
+The host-facing workload logic (installing the package and managing the service)
+lives in a module that deliberately imports nothing from Ops or Juju. This
 separation makes the workload logic straightforward to unit test in isolation and
 keeps the charm's Juju-facing concerns (events, configuration, status) cleanly
 separated from its host-facing concerns.
