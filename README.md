@@ -51,7 +51,7 @@ for step-by-step instructions, including connecting the agent to a controller.
 
 ## Learn more
 
-- * [Developer documentation](https://osquery.readthedocs.io/en/latest/)
+- [Developer documentation](https://osquery.readthedocs.io/en/latest/)
 - [Charm documentation](https://github.com/canonical/osquery-operator/tree/main/docs)
 <!-- TODO: Replace the documentation link above with the published documentation
 site (Charmhub or Read the Docs) once available. -->

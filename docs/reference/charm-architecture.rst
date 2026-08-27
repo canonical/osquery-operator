@@ -17,7 +17,7 @@ Architecture overview
 ---------------------
 
 The OSQuery charm is a machine charm, so it is not containerized: there is no OCI
-image and no Pebble. Both the Juju unit agent (which runs the charm code) and the
+image and no Pebble services. Both the Juju unit agent (which runs the charm code) and the
 ``osqueryd`` workload it manages run directly on the principal's host, sharing
 the same machine as the principal unit. The charm's only moving parts are the
 charm code, the ``osqueryd`` systemd service, and the files the charm writes

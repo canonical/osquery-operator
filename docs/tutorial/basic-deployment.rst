@@ -104,7 +104,7 @@ Integrate the OSQuery charm with the principal application over the
 
     juju integrate ubuntu osquery
 
-This tells Juju to place the OSQuery agent on the same
+This command tells Juju to place the OSQuery agent on the same
 machine as the ``ubuntu`` unit.
 
 Verify the deployment

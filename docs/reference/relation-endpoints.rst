@@ -6,7 +6,7 @@
 Relation endpoints
 ==================
 
-`Relation endpoints <https://documentation.ubuntu.com/juju/3.6/reference/relation/>`_
+`Relation endpoints <https://canonical.com/juju/docs/juju-cli/3.6/reference/relation/>`_
 are the integration points a charm exposes so it can be connected to other
 applications.
 
