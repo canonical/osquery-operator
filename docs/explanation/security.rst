@@ -61,6 +61,9 @@ Best practices
 - Keep the charm up to date so the deployment benefits from security fixes in
   both the charm and the OSQuery package. See :ref:`how to upgrade
   <how_to_upgrade>`.
+- Rotate the enrollment secret and TLS credentials periodically as part of routine
+  credential hygiene. See `how to manage secrets <https://documentation.ubuntu.com/juju/3.6/howto/manage-secrets/>`_ for
+  updating a Juju secret's value.
 
 .. TODO: Link to the project's security policy and vulnerability-reporting
    process (SECURITY.md) once a public disclosure address is confirmed.

@@ -17,8 +17,8 @@ Release policy and schedule
 
 The OSQuery charm is released continuously: a new revision is published to the
 ``latest`` track whenever a change lands on the ``main`` branch and passes the
-full test suite. Release notes are published with every revision of the
-``latest`` track.
+full test suite. A release groups several of these revisions, and release notes
+are published for each release.
 
 Releases
 --------

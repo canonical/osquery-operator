@@ -33,7 +33,7 @@ through your normal secret-management process rather than relying on the model.
 
 To protect the model itself — including its configuration and secrets — back up
 the Juju controller. See the `Juju backup documentation
-<https://documentation.ubuntu.com/juju/3.6/howto/manage-controllers/#back-up-a-controller>`_.
+<https://canonical.com/juju/docs/juju-cli/3.6/howto/manage-controllers/#back-up-a-controller>`_.
 
 Restore
 -------

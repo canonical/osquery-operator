@@ -54,7 +54,7 @@ The fastest way to bootstrap Juju on LXD is with `concierge
     sudo snap install --classic concierge
     sudo concierge prepare -p machine
 
-Alternatively, if you already have Juju and LXD installed, bootstrap a controller
+Alternatively, if you already have Juju (3.6 or newer) and LXD (5.21 or newer) installed, bootstrap a controller
 manually:
 
 .. code-block:: bash

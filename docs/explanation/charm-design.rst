@@ -6,9 +6,6 @@
 Charm design
 ============
 
-A subordinate machine charm
----------------------------
-
 OSQuery is endpoint security monitoring software: its purpose is to observe the
 host it runs on. That job only makes sense on the same machine as the workload
 being monitored, so the charm is designed as a `subordinate charm

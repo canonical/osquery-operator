@@ -131,6 +131,21 @@ You should see the service reported as ``active (running)``:
                  ├─12345 /usr/bin/osqueryd --flagfile /etc/osquery/osquery.flags
                  └─12346 /usr/bin/osqueryd --flagfile /etc/osquery/osquery.flags
 
+Clean up the environment
+------------------------
+
+Once you're done, you can remove the model and everything in it:
+
+.. code-block:: bash
+
+    juju destroy-model osquery-tutorial --destroy-storage
+
+If you used ``concierge``, you can tear down the whole environment with:
+
+.. code-block:: bash
+
+    concierge restore
+
 Next steps
 ----------
 

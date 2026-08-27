@@ -22,7 +22,6 @@ These guides cover common day-to-day tasks for a running deployment.
     :hidden:
     :maxdepth: 1
 
-    Integrate with COS <integrate-with-cos>
     Troubleshoot <troubleshoot>
 
 Update and refresh

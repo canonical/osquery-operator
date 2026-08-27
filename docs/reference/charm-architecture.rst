@@ -107,7 +107,7 @@ from the host-facing logic:
         loop, reads configuration and secrets, and sets unit status.
     * - ``src/osquery.py``
       - Host workload management: installing and removing the OSQuery package
-        from the PPA and managing the ``osqueryd`` service. It contains no Juju
+        from the PPA and managing the ``osqueryd`` service. The module contains no Juju
         or Ops imports, so it can be reasoned about and tested in isolation.
     * - ``src/flags.py``
       - Translates Juju configuration values into the OSQuery flagfile and
