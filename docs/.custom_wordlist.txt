@@ -99,4 +99,11 @@ LXD
 concierge
 Terraform
 reconcile
+boolean
+declaratively
+Hardcoded
+misconfiguration
+plaintext
+subgraph
+systemd
 
