@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "documentation-project-creator": {
+      "source": "../skills-playground",
+      "sourceType": "local",
+      "computedHash": "3595befce77322aec7105fe20cf0598c8467a42fdf583fb2b29ccb5e5dc7c6dd"
+    }
+  }
+}

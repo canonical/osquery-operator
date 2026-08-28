@@ -10,7 +10,7 @@ OSQuery operator
 
 .. vale Canonical.007-Headings-sentence-case = YES
 
-A `Juju <https://juju.is/>`_ `charm <https://documentation.ubuntu.com/juju/3.6/reference/charm/>`_
+A `Juju <https://juju.is/>`_ :ref:`charm <juju:charm>`
 deploying and managing `OSQuery <https://www.osquery.io/>`_ on virtual machines and bare-metal hosts.
 
 .. TODO: Replace the upstream link above if a Canonical SecOps OSQuery product
@@ -18,8 +18,8 @@ deploying and managing `OSQuery <https://www.osquery.io/>`_ on virtual machines 
 
 OSQuery exposes an operating system as a high-performance relational database,
 letting security and operations teams query the state of a host with SQL. This
-charm deploys the Canonical SecOps fork of OSQuery as a `subordinate
-<https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm>`_
+charm deploys the Canonical SecOps fork of OSQuery as a
+:ref:`subordinate <juju:subordinate-charm>`
 agent that runs alongside a principal application on the same machine. It
 installs OSQuery from a Launchpad-hosted PPA, runs it in daemon mode, and
 connects it over TLS to a centrally managed OSQuery Controller that supplies the

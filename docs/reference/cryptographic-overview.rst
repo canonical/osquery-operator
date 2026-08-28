@@ -35,8 +35,8 @@ Secrets handling
 Sensitive configuration values are delivered to the charm through mechanisms that
 keep them out of plain-text configuration:
 
-- The enrollment secret is passed as a `Juju secret
-  <https://canonical.com/juju/docs/juju-cli/3.6/reference/secret/>`_ referenced by
+- The enrollment secret is passed as a
+  :ref:`Juju secret <juju:secret>` referenced by
   the ``enroll-secret`` option, rather than as a plain configuration value.
 - The TLS certificates and key are supplied as file-backed configuration
   options.

@@ -107,7 +107,7 @@ max-complexity = 10
 convention = "google"
 
 [tool.codespell]
-skip = "build,lib,venv,icon.svg,.tox,.git,.mypy_cache,.ruff_cache,.coverage,htmlcov,uv.lock,tmp"
+skip = "build,lib,venv,icon.svg,.tox,.git,.mypy_cache,.ruff_cache,.coverage,htmlcov,uv.lock,tmp,*/docs/_build/*,*/docs/_dev/*"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

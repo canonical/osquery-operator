@@ -32,8 +32,8 @@ in Juju secrets and file-backed configuration, back those source materials up
 through your normal secret-management process rather than relying on the model.
 
 To protect the model itself — including its configuration and secrets — back up
-the Juju controller. See the `Juju backup documentation
-<https://canonical.com/juju/docs/juju-cli/3.6/howto/manage-controllers/#back-up-a-controller>`_.
+the Juju controller. See the
+:ref:`Juju backup documentation <juju:manage-controllers>`.
 
 Restore
 -------

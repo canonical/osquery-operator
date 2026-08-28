@@ -12,38 +12,37 @@ renders the flagfile from the current configuration, and (re)starts the daemon.
 
 The following Juju events are observed:
 
-#. `install <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#install>`_:
+#. :ref:`install <juju:hook-install>`:
 
    installs OSQuery from the PPA and applies the initial configuration.
 
-#. `upgrade-charm <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#upgrade-charm>`_:
+#. :ref:`upgrade-charm <juju:hook-upgrade-charm>`:
 
    re-runs the reconcile after a charm upgrade.
 
-#. `start <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#start>`_:
+#. :ref:`start <juju:hook-start>`:
 
    reconciles when the unit starts.
 
-#. `config-changed <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#config-changed>`_:
+#. :ref:`config-changed <juju:hook-config-changed>`:
 
    rebuilds the flagfile and secret files whenever an option changes, then
    restarts the daemon.
 
-#. `secret-changed <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#secret-changed>`_:
+#. :ref:`secret-changed <juju:hook-secret-changed>`:
 
-   re-reads a Juju secret (for example the enrollment secret or TLS client 
+   re-reads a Juju secret (for example the enrollment secret or TLS client
    key) when its content is updated, and re-applies the configuration.
 
-#. `update-status <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#update-status>`_:
+#. :ref:`update-status <juju:hook-update-status>`:
 
    periodically reconciles so the unit self-heals and reports accurate status.
 
-#. `stop <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/#stop>`_:
+#. :ref:`stop <juju:hook-stop>`:
 
    stops the daemon and uninstalls the OSQuery package during tear-down.
 
 
 .. seealso::
 
-   See more in the Juju docs: `Hook
-   <https://canonical.com/juju/docs/juju-cli/latest/reference/hook/>`_
+   See more in the Juju docs: :ref:`Hook <juju:hook>`

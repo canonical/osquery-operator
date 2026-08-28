@@ -60,8 +60,8 @@ Provide the enrollment secret
 -----------------------------
 
 The enrollment secret authenticates the agent to the controller during
-enrollment. Because it's sensitive, it's delivered through a `Juju secret
-<https://canonical.com/juju/docs/juju-cli/3.6/reference/secret/>`_ rather than a
+enrollment. Because it's sensitive, it's delivered through a
+:ref:`Juju secret <juju:secret>` rather than a
 plain configuration value.
 
 The enrollment secret is optional, but without it a controller that requires

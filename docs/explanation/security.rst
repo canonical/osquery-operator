@@ -20,8 +20,8 @@ The charm handles several pieces of sensitive material: the OSQuery enrollment
 secret, and the TLS client certificate and key used to authenticate to the
 controller.
 
-The enrollment secret is provided as a `Juju secret
-<https://documentation.ubuntu.com/juju/3.6/reference/secret/>`_ rather than a
+The enrollment secret is provided as a
+:ref:`Juju secret <juju:secret>` rather than a
 plain configuration value, so it isn't stored in plain text in the model
 configuration. The TLS certificates and key are supplied as file-backed
 configuration options and written to disk on the host so ``osqueryd`` can read

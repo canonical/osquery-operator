@@ -8,8 +8,8 @@ Charm design
 
 OSQuery is endpoint security monitoring software: its purpose is to observe the
 host it runs on. That job only makes sense on the same machine as the workload
-being monitored, so the charm is designed as a `subordinate charm
-<https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm>`_
+being monitored, so the charm is designed as a
+:ref:`subordinate charm <juju:subordinate-charm>`
 that attaches to a principal application over the generic ``juju-info``
 interface. This lets a single OSQuery application monitor any principal machine
 charm without that charm needing to know anything about OSQuery.
