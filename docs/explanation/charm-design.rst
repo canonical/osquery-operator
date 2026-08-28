@@ -1,28 +1,63 @@
 .. meta::
-   :description: Understand the architectural design decisions and code structure of the __charm_name__ charm.
+   :description: An explanation of the design decisions behind the OSQuery charm.
 
 .. _explanation_charm_design:
 
 Charm design
 ============
 
-.. TODO: Remember to update this file for your charm!!
-   This document should offer perspective and opinion about the charm was designed,
-   and why those design decisions were made.
+OSQuery is endpoint security monitoring software: its purpose is to observe the
+host it runs on. That job only makes sense on the same machine as the workload
+being monitored, so the charm is designed as a `subordinate charm
+<https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm>`_
+that attaches to a principal application over the generic ``juju-info``
+interface. This lets a single OSQuery application monitor any principal machine
+charm without that charm needing to know anything about OSQuery.
 
-   Some guiding questions as you consider the content for this page:
-   * What are the user's questions about the charm? What are the use cases?
-   * What questions do you want the user to be asking about the charm and its design? Why would they want to read this document? What are the questions that this document is trying to answer?
-   * What sort of framing do the users need to understand this content?
-   * What is the relationship between the user and the charm (or its code)?
-   * What is the starting point for the user's thinking?
-   * How does the code come together to operate the underlying software/workload? 
+It's a machine charm rather than a Kubernetes charm because ``osqueryd`` runs as
+a host daemon that inspects operating-system state — processes, sockets,
+packages, and kernel events — which requires direct access to the host rather
+than a container sandbox.
 
-   There's no specific template or structure to follow here -- you should provide your
-   own perspective about the charm design. If a Mermaid diagram of the charm would enhance
-   the text, then include it in this document.
+Installing from a PPA
+---------------------
 
-   Some guiding points on the Mermaid diagram:
-   Limit the scope of this diagram to the charm only.
-   How is the charm containerized, and what pieces are of particular interest to the user?
-   Include those separate pieces in this diagram.
+The charm installs the Canonical SecOps fork of OSQuery from a Launchpad-hosted
+PPA using the host's package manager, and runs it as the ``osqueryd`` systemd
+service. Distributing the workload as a Debian package (rather than, say, a snap
+or an OCI image) keeps the agent close to the host it monitors and lets it use
+the platform's native service management.
+
+Configuration-driven reconciliation
+-----------------------------------
+
+The charm has no actions. Instead, all of its behavior is driven by
+configuration, and it applies that configuration through a holistic *reconcile*
+loop. Every relevant Juju event runs the same idempotent handler, which ensures
+OSQuery is installed, renders the configuration into the OSQuery flagfile, writes
+the file-backed secrets, restarts the daemon if needed, and reports status.
+
+This design keeps the charm simple and predictable: there's exactly one code path
+that brings the host to the desired state, so the charm behaves the same way
+regardless of which event triggered it. If a required value is missing, the charm
+reports a ``blocked`` status rather than failing, making misconfiguration easy to
+diagnose. See :ref:`the charm architecture documentation <reference_charm_architecture>` for
+the module-level breakdown.
+
+Separating workload logic from Juju logic
+-----------------------------------------
+
+The host-facing workload logic (installing the package and managing the service)
+lives in a module that deliberately imports nothing from Ops or Juju. This
+separation makes the workload logic straightforward to unit test in isolation and
+keeps the charm's Juju-facing concerns (events, configuration, status) cleanly
+separated from its host-facing concerns.
+
+Talking to a controller instead of Juju relations
+-------------------------------------------------
+
+An OSQuery fleet is coordinated by a central OSQuery Controller that owns the
+query schedules, telemetry rules, and log storage. The charm connects each agent
+to that controller directly over TLS rather than modelling the controller as a
+Juju relation. This keeps the charm aligned with how OSQuery fleets are operated
+in practice and avoids duplicating the controller's responsibilities in Juju.

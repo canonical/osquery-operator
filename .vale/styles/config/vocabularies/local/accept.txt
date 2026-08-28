@@ -1,2 +1,15 @@
 AI
+concierge
+Diátaxis
+flagfile
+Launchpad
+LXD
+OSQuery
+osqueryd
+PPA
+reconcile
 redeployments
+SecOps
+subordinate
+Terraform
+UUID

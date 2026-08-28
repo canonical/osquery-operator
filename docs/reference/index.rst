@@ -1,17 +1,12 @@
 .. meta::
-   :description: Technical reference documentation for the __charm_name__ charm, including actions, configurations, and architecture.
+   :description: Technical reference documentation for the OSQuery charm, including configurations, relations, and architecture.
 
 .. _reference_index:
 
 Reference
 =========
 
-.. TODO: Update the name of the charm!
-         The following subsections are examples and don't need to be followed exactly.
-         Define themes and subsections based on the charm's unique needs and features.
-         Provide 1-2 sentence introductions for each subsection.
-
-This section contains technical details and information about the __charm_name__ charm.
+This section contains technical details and information about the OSQuery charm.
 
 Charm usage
 -----------
@@ -38,8 +33,8 @@ including actions, configurations, and integrations.
 Architecture and deployments
 ----------------------------
 
-The following pages provide more details about the charm architecture and
-a high-level deployment with any required dependencies.
+The following pages provide more details about the charm architecture and a
+high-level deployment with any required dependencies.
 
 .. toctree::
     :hidden:
@@ -51,8 +46,8 @@ a high-level deployment with any required dependencies.
 Advanced topics
 ---------------
 
-These pages provide more details about advanced-level topics such
-as Terraform and cryptography.
+These pages provide more details about advanced-level topics such as Terraform
+and cryptography.
 
 .. toctree::
     :hidden:
@@ -61,3 +56,13 @@ as Terraform and cryptography.
     Cryptographic overview <cryptographic-overview>
     Terraform <terraform>
 
+Changelog
+---------
+
+The changelog records all notable changes to the OSQuery charm.
+
+.. toctree::
+    :hidden:
+    :maxdepth: 1
+
+    Changelog <../changelog>

@@ -1,18 +1,13 @@
 .. meta::
-   :description: Conceptual guides explaining the design and security of the __charm_name__ charm. 
+   :description: Explanation and background material for the OSQuery charm, including design and security.
 
 .. _explanation_index:
 
 Explanation
 ===========
 
-.. TODO: Update the name of the charm!
-         Note that, if there are less than 5 pages in this section,
-         you don't need to split up the pages into different themes
-         or subsections.
-
-The pages in this section provide additional context and deeper understanding
-of foundational topics and concepts related to the __charm_name__ charm.
+This section covers conceptual questions about the OSQuery charm. It clarifies
+and illuminates topics related to the charm's design and security.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 
@@ -20,6 +15,5 @@ of foundational topics and concepts related to the __charm_name__ charm.
     :hidden:
     :maxdepth: 1
 
-    Charm design overview <charm-design>
-    Security overview <security>
-
+    Charm design <charm-design>
+    Security <security>
