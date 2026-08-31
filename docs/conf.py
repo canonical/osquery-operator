@@ -160,8 +160,8 @@ rediraffe_dir_only = True
 # <first sentence of home page>".
 llms_txt_description = textwrap.dedent(
     """\
-    This is the documentation for the Sphinx Stack, a template repository that helps you
-    set up, build, and publish Sphinx documentation.
+    This is the documentation for the OSQuery operator, a Juju charm deploying and
+    managing OSQuery on virtual machines and bare-metal hosts.
     """
 )
 
