@@ -28,12 +28,14 @@ author = "Canonical Ltd."
 # The year in the copyright statement
 copyright = f"{datetime.date.today().year}"
 
+# Version
+version = f"{os.environ.get('READTHEDOCS_VERSION', 'local')}"
 # Sidebar documentation title
 # To disable the title, set it to an empty string.
 html_title = project + " documentation"
 
 # Documentation website URL
-ogp_site_url = os.environ.get("READTHEDOCS_CANONICAL_URL", "/")
+ogp_site_url = f"https://canonical.com/juju/docs/osquery-charm/{version}/"
 
 # Preview name of the documentation website
 # TODO: To use a different name for the project in previews, update the next line.
@@ -103,17 +105,19 @@ html_theme_options = {
 # Project slug
 # TODO: If your documentation is hosted on https://documentation.ubuntu.com/,
 #       uncomment and set to the RTD slug.
-# slug = ''
+slug = 'juju/docs/osquery-charm'
 
 #######################
 # Sitemap configuration: https://sphinx-sitemap.readthedocs.io/
 #######################
 
 # Use RTD canonical URL to ensure duplicate pages have a specific canonical URL
-html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "/")
+html_baseurl = f"https://canonical.com/juju/docs/osquery-charm/{version}/"
 
 # sphinx-sitemap uses html_baseurl to generate the full URL for each page:
 sitemap_url_scheme = "{link}"
+
+sitemap_filename = "doc-sitemap.xml"
 
 # Include `lastmod` dates in the sitemap:
 sitemap_show_lastmod = True
@@ -284,6 +288,6 @@ rst_prolog = """
 
 # Configuration for Intersphinx projects
 intersphinx_mapping = {
-    "juju": ("https://documentation.ubuntu.com/juju/3.6/", None),
-    "sphinx-stack": ("https://canonical-sphinx-stack.readthedocs-hosted.com/latest/", None),
+    "juju": ("https://canonical.com/juju/docs/juju-cli/3.6/", None),
+    "sphinx-stack": ("https://documentation.ubuntu.com/sphinx-stack/latest/", None),
 }
