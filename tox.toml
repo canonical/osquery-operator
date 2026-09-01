@@ -54,4 +54,9 @@ commands = [["bandit", "-c", "pyproject.toml", "-r", "src", "tests"]]
 [env.integration]
 description = "Run integration tests"
 dependency_groups = ["integration"]
-commands = [["pytest", "-v", "--tb", "native", "--ignore={[vars]tst_path}unit", "--log-cli-level=INFO", "-s", { replace = "posargs", extend = true }]]
+commands = [["pytest", "-v", "--tb", "native", "--ignore={[vars]tst_path}unit", "-m", "not osctrl", "--log-cli-level=INFO", "-s", { replace = "posargs", extend = true }]]
+
+[env.integration-osctrl]
+description = "Run integration tests against a real osctrl controller (needs nested virtualisation and Docker Hub access)"
+dependency_groups = ["integration"]
+commands = [["pytest", "-v", "--tb", "native", "--ignore={[vars]tst_path}unit", "-m", "osctrl", "--log-cli-level=INFO", "-s", { replace = "posargs", extend = true }]]

@@ -6,6 +6,8 @@
 import jubilant
 import pytest
 
+from .osctrl_manager import OsctrlVM
+
 # The principal charm the subordinate is related to. The `ubuntu` charm
 # provides the implicit `juju-info` interface required by this subordinate.
 PRINCIPAL_CHARM = "ubuntu"
@@ -39,3 +41,22 @@ def juju(request: pytest.FixtureRequest):
         return
     with jubilant.temp_model() as temp:
         yield temp
+
+
+@pytest.fixture(scope="session")
+def osctrl(request: pytest.FixtureRequest):
+    """Provide a running, freshly-provisioned osctrl controller VM.
+
+    The controller runs in a dedicated LXD VM outside Juju. It is reused across
+    runs by restoring a snapshot of the provisioned-but-empty stack, unless
+    ``--rebuild-osctrl`` is given.
+
+    Args:
+        request: the pytest request object.
+
+    Yields:
+        An OsctrlVM bound to the running controller.
+    """
+    vm = OsctrlVM(rebuild=request.config.getoption("--rebuild-osctrl"))
+    vm.ensure_up()
+    yield vm
