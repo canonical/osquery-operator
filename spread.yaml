@@ -31,5 +31,12 @@ integration-suites:
     working-dir: ./
     backends:
     - integration-test
+    # spread runs one job per test_*.py module, so the `osctrl` marker isn't
+    # needed to split the suites here. Use a CI tox env with no marker filter so
+    # every discovered module runs its own tests: test_charm (dummy controller)
+    # and test_osctrl (real osctrl in a nested LXD VM; the runner must expose
+    # /dev/kvm and reach Docker Hub).
+    environment:
+      TOX_ENV: integration-ci
     pytest-arguments-template: |
       --model testing

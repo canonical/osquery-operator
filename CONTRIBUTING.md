@@ -141,7 +141,14 @@ that can be used for linting and formatting code when you're preparing contribut
 * ``tox -e lint``: Runs a range of static code analysis to check the code.
 * ``tox -e static``: Runs other checks such as ``bandit`` for security issues.
 * ``tox -e unit``: Runs the unit tests.
-* ``tox -e integration``: Runs the integration tests.
+* ``tox -e integration``: Runs the integration tests (against a dummy controller).
+* ``tox -e integration-osctrl``: Runs the integration tests against a real
+  osctrl controller in an LXD VM (needs nested virtualisation and Docker Hub
+  access).
+
+See [`tests/integration/README.md`](tests/integration/README.md) for details on
+the integration suites, how to build the charms first, and how the osctrl test
+stack works.
 
 ### Build the rock and charm
 
