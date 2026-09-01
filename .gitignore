@@ -7,6 +7,8 @@ __pycache__/
 *.py[cod]
 .idea
 .vscode
+.agents/
+skills-lock.json
 .mypy_cache
 *.egg-info/
 */*.rock

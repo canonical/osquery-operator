@@ -310,6 +310,6 @@ version is bumped to review any newly added flags:
 
 .. seealso::
 
-   Read more about configurations in the Juju docs: `Configuration
-   <https://canonical.com/juju/docs/juju-cli/latest/reference/configuration/>`_
+   Read more about configurations in the Juju docs:
+   :ref:`Configuration <juju:configuration>`
 

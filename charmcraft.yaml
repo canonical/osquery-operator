@@ -19,7 +19,7 @@ description: |
   tasks) and to push the logs produced by its scheduled queries.
 
 links:
-  documentation: https://discourse.charmhub.io/
+  documentation: https://canonical.com/juju/docs/osquery-charm
   issues: https://github.com/canonical/osquery-operator/issues
   source: https://github.com/canonical/osquery-operator
 

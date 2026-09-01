@@ -124,6 +124,10 @@ As a subordinate, the charm attaches to a principal application through the
 places one OSQuery unit on each principal machine. See :ref:`Relation endpoints
 <reference_relation_endpoints>` for details.
 
+.. vale Canonical.004-Canonical-product-names = NO
+
 For the configuration options that drive the flagfile, see :ref:`Configurations
-<reference_configurations>`. For the events the charm observes, see :ref:`Juju
-events <reference_juju_events>`.
+<reference_configurations>`. For the events the charm observes, see
+:ref:`Juju events <reference_juju_events>`.
+
+.. vale Canonical.004-Canonical-product-names = YES

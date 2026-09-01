@@ -7,8 +7,8 @@ Deploy the OSQuery charm for the first time
 ===========================================
 
 The OSQuery charm installs and runs the ``osqueryd`` endpoint security
-monitoring agent on a machine. Because it's a `subordinate charm
-<https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm>`_,
+monitoring agent on a machine. Because it's a
+:ref:`subordinate charm <juju:subordinate-charm>`,
 it doesn't run on its own: it attaches to a *principal* application that occupies
 the machine. In this tutorial you'll deploy a simple principal application, add
 the OSQuery charm as a subordinate, and confirm that the agent is running.
