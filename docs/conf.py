@@ -82,12 +82,10 @@ html_context = {
     "author": author,
     # Documentation license information
     "license": {
-        # TODO: Specify your project's license.
-        # For the name, we recommend using the standard shorthand identifier from
-        # https://spdx.org/licenses
-        "name": "",
-        # TODO: Link directly to your project's license statement.
-        "url": "",
+        # The standard shorthand identifier from https://spdx.org/licenses
+        "name": "Apache-2.0",
+        # Link directly to the project's license statement.
+        "url": "https://github.com/canonical/osquery-operator/blob/main/LICENSE",
     },
 }
 
