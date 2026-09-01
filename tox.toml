@@ -60,3 +60,11 @@ commands = [["pytest", "-v", "--tb", "native", "--ignore={[vars]tst_path}unit", 
 description = "Run integration tests against a real osctrl controller (needs nested virtualisation and Docker Hub access)"
 dependency_groups = ["integration"]
 commands = [["pytest", "-v", "--tb", "native", "--ignore={[vars]tst_path}unit", "-m", "osctrl", "--log-cli-level=INFO", "-s", { replace = "posargs", extend = true }]]
+
+# CI entrypoint used by spread, which runs one job per test module. Because the
+# module path already selects the tests, no `-m` marker filter is applied here;
+# each module (test_charm and test_osctrl) simply runs its own tests.
+[env.integration-ci]
+description = "Run integration tests on CI (spread invokes this per module, no marker filter)"
+dependency_groups = ["integration"]
+commands = [["pytest", "-v", "--tb", "native", "--ignore={[vars]tst_path}unit", "--log-cli-level=INFO", "-s", { replace = "posargs", extend = true }]]
