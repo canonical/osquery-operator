@@ -1,0 +1,56 @@
+name: osctrl integration tests
+
+# This suite stands up a *real* osctrl controller inside a dedicated LXD virtual
+# machine (not a system container) and drives the full enrolment + log-shipping
+# path against it. It is intentionally kept out of the default, required
+# integration check (which runs `tox -e integration`, i.e. `-m "not osctrl"`) so
+# that the fast per-PR gate does not depend on the extra infrastructure below.
+#
+# Runner requirements:
+#   * Nested virtualisation / KVM (`/dev/kvm`) so LXD can launch a VM. Standard
+#     GitHub-hosted `ubuntu-*` runners expose `/dev/kvm`; self-hosted runners
+#     must have nested virtualisation enabled.
+#   * Outbound access to Docker Hub to pull the `jmpsec/osctrl-*` images.
+#
+# It is triggered manually (and can be wired to a schedule) rather than on every
+# pull request.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every Wednesday at 07:00 UTC, an hour after the standard integration
+    # suite, to catch osctrl-side regressions without gating pull requests.
+    - cron: "0 7 * * 3"
+
+jobs:
+  integration-osctrl:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Verify KVM availability
+        run: |
+          if [ ! -e /dev/kvm ]; then
+            echo "::error::/dev/kvm is not available; this runner cannot launch an LXD VM."
+            exit 1
+          fi
+
+      - name: Install tooling
+        run: |
+          sudo snap install concierge charmcraft astral-uv --classic
+          uv python install
+          uv tool install tox --with tox-uv
+
+      - name: Prepare Juju and LXD
+        run: sudo concierge prepare --verbose
+
+      - name: Sync integration dependencies
+        run: uv sync --group integration
+
+      - name: Build charms
+        run: uv run --group integration opcli artifacts build
+
+      - name: Run osctrl integration tests
+        run: tox -e integration-osctrl -- --model testing
