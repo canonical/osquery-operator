@@ -259,10 +259,12 @@ class OsctrlVM:
     @staticmethod
     def _wait(predicate, *, timeout: int, description: str, interval: int = 5) -> None:
         """Poll ``predicate`` until it is truthy or ``timeout`` seconds elapse."""
+        logger.info("Waiting for %s (timeout %ds)", description, timeout)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             try:
                 if predicate():
+                    logger.info("Satisfied: %s", description)
                     return
             except OsctrlError:
                 pass

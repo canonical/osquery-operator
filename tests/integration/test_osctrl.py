@@ -13,6 +13,7 @@ scheduled-query result logs that land in osctrl's database.
 
 import base64
 import contextlib
+import logging
 import uuid
 
 import jubilant
@@ -20,6 +21,8 @@ import pytest
 
 from .conftest import CHARM_NAME, PRINCIPAL_CHARM
 from .osctrl_manager import OsctrlVM
+
+logger = logging.getLogger(__name__)
 
 # osctrl publishes packages for this base and it is enough to prove the path.
 BASE = "ubuntu@24.04"
@@ -131,6 +134,8 @@ def test_osquery_enrols_with_real_osctrl_and_ships_logs(
             timeout=5 * 60,
             description="osquery to enrol against osctrl",
         )
+        logger.info("osctrl reports %d enrolled node(s)", osctrl.node_count())
+
         # osquery ships status logs and scheduled-query result logs to osctrl.
         osctrl.wait_for(
             lambda: osctrl.status_log_count() >= 1,
@@ -142,10 +147,20 @@ def test_osquery_enrols_with_real_osctrl_and_ships_logs(
             timeout=5 * 60,
             description="scheduled-query result logs to reach osctrl",
         )
+        logger.info(
+            "osctrl received %d status log row(s) and %d result log row(s)",
+            osctrl.status_log_count(),
+            osctrl.result_log_count(),
+        )
 
         # The enrolled node is the principal machine. osctrl records the
         # fully-qualified hostname osquery reports.
-        assert osctrl.node_hostname() == _sh(juju, unit, "hostname -f").strip()
+        enrolled_hostname = osctrl.node_hostname()
+        expected_hostname = _sh(juju, unit, "hostname -f").strip()
+        logger.info(
+            "Enrolled node hostname %r (expected %r)", enrolled_hostname, expected_hostname
+        )
+        assert enrolled_hostname == expected_hostname
     finally:
         juju.remove_application(osquery_app, destroy_storage=True)
         juju.remove_application(principal_app, destroy_storage=True)
