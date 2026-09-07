@@ -4,6 +4,7 @@ Diátaxis
 flagfile
 Launchpad
 LXD
+osctrl
 OSQuery
 osqueryd
 PPA
