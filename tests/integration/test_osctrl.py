@@ -17,7 +17,6 @@ import logging
 import uuid
 
 import jubilant
-import pytest
 
 from .conftest import CHARM_NAME, PRINCIPAL_CHARM
 from .osctrl_manager import OsctrlVM
@@ -44,7 +43,6 @@ def _put_file(juju: jubilant.Juju, unit: str, path: str, content: str) -> None:
     _sh(juju, unit, f"echo {encoded} | base64 -d > {path}")
 
 
-@pytest.mark.osctrl
 def test_osquery_enrols_with_real_osctrl_and_ships_logs(
     juju: jubilant.Juju, charm_paths, osctrl: OsctrlVM
 ):

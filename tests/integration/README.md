@@ -3,15 +3,15 @@
 These tests deploy the OSQuery subordinate charm onto real Juju machines (LXD)
 and exercise it end to end. There are two suites:
 
-| Suite | File | Controller | Marker | tox env |
-| --- | --- | --- | --- | --- |
-| Charm behaviour | [`test_charm.py`](test_charm.py) | A minimal **dummy** HTTPS controller co-located on the principal machine | *(none)* | `integration` |
-| Real osctrl | [`test_osctrl.py`](test_osctrl.py) | A **real** [osctrl](https://osctrl.net/) deployment in a dedicated LXD VM | `osctrl` | `integration-osctrl` |
+| Suite | File | Controller |
+| --- | --- | --- |
+| Charm behaviour | [`test_charm.py`](test_charm.py) | A minimal **dummy** HTTPS controller co-located on the principal machine |
+| Real osctrl | [`test_osctrl.py`](test_osctrl.py) | A **real** [osctrl](https://osctrl.net/) deployment in a dedicated LXD VM |
 
-The `osctrl` marker separates the two suites for **local** runs: `tox -e
-integration` runs the fast charm suite (`-m "not osctrl"`), while `tox -e
-integration-osctrl` runs the real-osctrl suite (`-m osctrl`). On CI both suites
-run on every pull request — see [Continuous integration](#continuous-integration).
+`tox -e integration` runs both suites. To run just one, pass its file (or a `-k`
+filter) as a pytest argument — see [Running the tests](#running-the-tests). On CI
+both suites run on every pull request — see
+[Continuous integration](#continuous-integration).
 
 ## Contents
 
@@ -66,11 +66,13 @@ Pass `--model testing` to reuse the concierge-created model; without `--model`
 the `juju` fixture creates a temporary model per test module.
 
 ```bash
-# Default suite (dummy controller). Excludes the osctrl suite.
+# All integration tests. The osctrl suite needs nested virtualisation and
+# Docker Hub access (see Suite 2 below).
 tox -e integration -- --model testing
 
-# Real-osctrl suite only.
-tox -e integration-osctrl -- --model testing
+# A single suite: pass its file as a pytest argument.
+tox -e integration -- --model testing tests/integration/test_charm.py
+tox -e integration -- --model testing tests/integration/test_osctrl.py
 ```
 
 Useful pytest options (defined in [`../conftest.py`](../conftest.py)):
@@ -81,11 +83,10 @@ Useful pytest options (defined in [`../conftest.py`](../conftest.py)):
 | `--rebuild-osctrl` | Delete and rebuild the osctrl VM from scratch instead of restoring its provisioned snapshot. |
 | `--keep-models` | Keep temporarily-created models after the run. |
 
-Run a single test by node id, e.g.:
+Run a subset by keyword, e.g.:
 
 ```bash
-tox -e integration-osctrl -- --model testing \
-  tests/integration/test_osctrl.py::test_osquery_enrols_with_real_osctrl_and_ships_logs
+tox -e integration -- --model testing -k deploy_and_relate
 ```
 
 ## Suite 1: charm behaviour (`test_charm.py`)
@@ -179,25 +180,12 @@ appends the controller certificate directly to that bundle. In production, a
 publicly trusted controller certificate is already present in the bundle and no
 machine change is needed.
 
-## Markers
-
-The `osctrl` marker is registered in `pyproject.toml`:
-
-```toml
-[tool.pytest.ini_options]
-markers = [
-  "osctrl: integration tests that stand up a real osctrl controller in an LXD VM (requires nested virtualisation and Docker Hub access)",
-]
-```
-
-Select or exclude the osctrl suite with `-m osctrl` / `-m "not osctrl"`.
-
 ## Continuous integration
 
 Both suites run on **every pull request** through the shared spread/opcli
 workflow ([`../../.github/workflows/integration_test.yaml`](../../.github/workflows/integration_test.yaml),
 which calls `canonical/charm-ci`). spread auto-discovers one job per test module
-and runs it with the `integration-ci` tox env (no marker filter), so
+and runs it with the `integration` tox env, passing the module path so
 `test_charm.py` and `test_osctrl.py` each run their own tests.
 
 Because the osctrl job stands up a real controller, the CI runner must expose
