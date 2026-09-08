@@ -188,7 +188,7 @@ class OsctrlVM:
             "limits.memory=4GiB",
         )
         self._wait_agent()
-        self._exec("cloud-init status --wait")
+        self._wait_cloud_init()
 
         logger.info("Copying the osctrl stack into the VM")
         self._exec(f"rm -rf {self._REMOTE_DIR}")
@@ -223,6 +223,20 @@ class OsctrlVM:
             timeout=timeout,
             description="LXD agent to be ready",
         )
+
+    def _wait_cloud_init(self) -> None:
+        """Wait for cloud-init to finish provisioning the VM.
+
+        ``cloud-init status --wait`` exits 2 when it reaches a *done* state that
+        also recorded recoverable errors -- transient boot-time warnings that do
+        not affect provisioning -- so success is judged by the reported status
+        (any ``done``) rather than the exit code, failing only on ``error``.
+        """
+        output = self._exec("cloud-init status --wait --long", check=False)
+        if "status: done" not in output:
+            raise OsctrlError(f"cloud-init did not finish cleanly:\n{output}")
+        if "recoverable_errors" in output:
+            logger.warning("cloud-init finished with recoverable errors:\n%s", output)
 
     def _wait_stack_ready(self, *, timeout: int = 300) -> None:
         """Wait until Docker is up and the osctrl TLS endpoint answers."""
