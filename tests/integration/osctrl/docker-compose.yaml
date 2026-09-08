@@ -1,0 +1,107 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Minimal osctrl stack for the integration tests. It runs the released osctrl
+# images (no local build) behind an nginx TLS terminator, exactly the surface
+# an osquery agent talks to:
+#
+#   osquery --443--> nginx --9000--> osctrl-tls --> postgres / redis
+#
+# The osctrl-cli service is only used for one-off administrative commands via
+# `docker compose run` and therefore sits behind a profile so `up` ignores it.
+# The tests read enrolled nodes and osquery logs straight from Postgres, so no
+# API component is needed.
+
+name: osctrl
+
+services:
+  osctrl-postgres:
+    image: postgres:${POSTGRES_VERSION}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+      POSTGRES_USER: ${POSTGRES_DB_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
+    command: ["postgres", "-c", "max_connections=300"]
+    networks:
+      - osctrl-backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_DB_USERNAME} -d ${POSTGRES_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  osctrl-redis:
+    image: redis:${REDIS_VERSION}
+    restart: unless-stopped
+    networks:
+      - osctrl-backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  osctrl-tls:
+    image: ${OSCTRL_IMAGE_ORG}/osctrl-tls:${OSCTRL_VERSION}
+    restart: unless-stopped
+    environment:
+      - SERVICE_LISTENER=0.0.0.0
+      - SERVICE_PORT=9000
+      - SERVICE_HOST=0.0.0.0
+      - SERVICE_AUTH=none
+      - SERVICE_LOGGER=db
+      - LOGGER_DB_SAME=true
+      - SERVICE_LOG_FORMAT=console
+      - SERVICE_POSTURE_ENABLED=true
+      - SERVICE_CONFIG_ENABLED=true
+      - DB_HOST=osctrl-postgres
+      - DB_NAME=${POSTGRES_DB_NAME}
+      - DB_USER=${POSTGRES_DB_USERNAME}
+      - DB_PASS=${POSTGRES_DB_PASSWORD}
+      - REDIS_HOST=osctrl-redis
+      # Trust the docker network so the real client IP is taken from the
+      # X-Forwarded-For header nginx sets, not the nginx container's own IP.
+      - SERVICE_TRUSTED_PROXIES=172.16.0.0/12
+    networks:
+      - osctrl-backend
+    depends_on:
+      osctrl-postgres:
+        condition: service_healthy
+      osctrl-redis:
+        condition: service_healthy
+
+  osctrl-nginx:
+    image: nginx:${NGINX_VERSION}
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    networks:
+      - osctrl-backend
+    volumes:
+      - ./osctrl-nginx.conf:/etc/nginx/conf.d/osctrl.conf:ro
+      - ./certs/osctrl.crt:/etc/ssl/certs/osctrl.crt:ro
+      - ./certs/osctrl.key:/etc/ssl/private/osctrl.key:ro
+    depends_on:
+      - osctrl-tls
+
+  # Administrative CLI. The released image's entrypoint is /bin/bash, and
+  # mutating commands need the global --db flag to use the local database, e.g.:
+  #   docker compose run --rm --entrypoint /opt/osctrl/bin/osctrl-cli \
+  #       osctrl-cli --db environment show -n dev
+  osctrl-cli:
+    image: ${OSCTRL_IMAGE_ORG}/osctrl-cli:${OSCTRL_VERSION}
+    profiles: ["cli"]
+    environment:
+      - DB_HOST=osctrl-postgres
+      - DB_NAME=${POSTGRES_DB_NAME}
+      - DB_USER=${POSTGRES_DB_USERNAME}
+      - DB_PASS=${POSTGRES_DB_PASSWORD}
+    networks:
+      - osctrl-backend
+    depends_on:
+      osctrl-postgres:
+        condition: service_healthy
+
+networks:
+  osctrl-backend:

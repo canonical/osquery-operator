@@ -4,9 +4,11 @@ Diátaxis
 flagfile
 Launchpad
 LXD
+osctrl
 OSQuery
 osqueryd
 PPA
+pytest
 reconcile
 redeployments
 SecOps
