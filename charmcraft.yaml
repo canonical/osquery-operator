@@ -184,6 +184,9 @@ config:
       type: int
       default: 600
       description: Sets `--logger_tls_period`, seconds between TLS log flushes.
+    tls-dump:
+      type: boolean
+      description: Sets `--tls_dump`, dumping the raw TLS request and response bodies to the status log for debugging.
     tls-enroll-max-attempts:
       type: int
       description: Sets `--tls_enroll_max_attempts`, the number of enrollment retries.
@@ -193,6 +196,9 @@ config:
     tls-session-timeout:
       type: int
       description: Sets `--tls_session_timeout`, the TLS session cache timeout in seconds.
+    verbose:
+      type: boolean
+      description: Sets `--verbose`, enabling verbose informational logging, including TLS enrollment and config activity.
     watchdog-delay:
       type: int
       description: Sets `--watchdog_delay`, seconds to delay watchdog checks after start.
