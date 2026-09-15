@@ -249,6 +249,10 @@ meaning of each flag.
      - int
      - ``600``
      - ``--logger_tls_period``
+   * - ``tls-dump``
+     - boolean
+     -
+     - ``--tls_dump``
    * - ``tls-enroll-max-attempts``
      - int
      -
@@ -261,6 +265,10 @@ meaning of each flag.
      - int
      -
      - ``--tls_session_timeout``
+   * - ``verbose``
+     - boolean
+     -
+     - ``--verbose``
    * - ``watchdog-delay``
      - int
      -
