@@ -27,3 +27,10 @@ def pytest_addoption(parser):
         action="store",
         help="temporarily-created model name",
     )
+    parser.addoption(
+        "--rebuild-osctrl",
+        action="store_true",
+        default=False,
+        help="delete and rebuild the osctrl VM from scratch instead of "
+        "restoring its provisioned snapshot",
+    )
