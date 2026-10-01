@@ -14,11 +14,14 @@ PRINCIPAL_CHARM = "ubuntu"
 # The name of the charm under test, as declared in charmcraft.yaml. This is the
 # key used to look up the built charm files in the `charm_paths` fixture.
 CHARM_NAME = "osquery"
-# The apt package the subordinate installs on the principal's machine.
-PACKAGE_NAME = "osquery"
+# The snap the subordinate installs on the principal's machine, the systemd unit
+# snapd generates for its daemon, and the directory holding its flagfile.
+SNAP_NAME = "c-osquery"
+OSQUERYD_UNIT = "snap.c-osquery.osqueryd"
+OSQUERY_ETC = "/var/snap/c-osquery/common/etc/osquery"
 
-# The Ubuntu bases the charm supports. The OSQuery PPA publishes packages for
-# each of these releases, so the charm is built and tested against all of them.
+# The Ubuntu bases the charm supports. A single snap build serves all of them,
+# but the charm is built and tested against each base.
 BASES = ["ubuntu@22.04", "ubuntu@24.04", "ubuntu@26.04"]
 
 

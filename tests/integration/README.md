@@ -98,9 +98,10 @@ VM is required.
 - **`test_deploy_and_relate[<base>]`** — parametrised over all supported bases.
   Deploys the `ubuntu` principal and the matching OSQuery subordinate artifact,
   relates them, sets the two required controller options, and asserts the
-  OSQuery apt package is installed and the generated
-  `/etc/osquery/osquery.flags` reflects the configuration. Removing the
-  subordinate uninstalls the package.
+  `c-osquery` snap is installed (classic, tracking the default `latest/edge`
+  channel) and the generated
+  `/var/snap/c-osquery/common/etc/osquery/osquery.flags` reflects the
+  configuration. Removing the subordinate removes the snap.
 - **`test_daemon_enrols_and_honours_config`** — starts the dummy controller on
   the principal (reachable at `controller-uri=localhost` on osquery's hard-coded
   port 443) and asserts, end to end, that the subordinate is `blocked` until the
@@ -112,9 +113,9 @@ VM is required.
 ## Suite 2: real osctrl (`test_osctrl.py`)
 
 `test_osquery_enrols_with_real_osctrl_and_ships_logs` proves the full path
-against a genuine osctrl controller, with **no TLS certificate handed to the
-charm** — onboarding uses only an enrollment token, exactly as a real fleet
-would.
+against a genuine osctrl controller: onboarding with an enrollment token, as a
+real fleet would, plus the controller's self-signed certificate (see the gotcha
+below).
 
 Flow:
 
@@ -122,13 +123,12 @@ Flow:
    its UUID and enrollment secret.
 2. Deploy the `ubuntu` principal and OSQuery subordinate; confirm the
    subordinate `blocked`s until the controller options are set.
-3. Make the controller reachable and trusted on the principal machine:
-   - add an `osctrl.lxd` `/etc/hosts` entry pointing at the VM's bridge IP;
-   - append the controller certificate to osquery's **own** CA bundle (see the
-     gotcha below).
+3. Make the controller reachable on the principal machine by adding an
+   `osctrl.lxd` `/etc/hosts` entry pointing at the VM's bridge IP.
 4. Configure the subordinate (`controller-uri`, `controller-env-uuid`,
-   `enroll-secret` as a Juju secret, and short logger/config periods) and wait
-   for it to go `active`.
+   `tls-server-certs` with the controller certificate, `enroll-secret` as a
+   Juju secret, and short logger/config periods) and wait for it to go
+   `active`.
 5. Assert, reading osctrl's Postgres directly, that the node enrolled and that
    osquery shipped both status logs and scheduled-query result logs, and that
    the recorded node hostname matches the machine's FQDN.
@@ -172,13 +172,16 @@ The VM persists between runs; delete it manually with `lxc delete osctrl
 
 ### Gotcha: osquery uses its own CA bundle
 
-osquery ships as a statically linked binary and validates TLS against its own
-certificate bundle at `/opt/osquery/share/osquery/certs/certs.pem` (a Mozilla
-bundle), **not** the system trust store. Installing a CA into the system store
-(e.g. `update-ca-certificates`) has no effect on osquery. The test therefore
-appends the controller certificate directly to that bundle. In production, a
-publicly trusted controller certificate is already present in the bundle and no
-machine change is needed.
+osquery validates TLS against its own certificate bundle (a Mozilla bundle),
+**not** the system trust store, so installing a CA into the system store (e.g.
+`update-ca-certificates`) has no effect on osquery. The snap's daemon wrapper
+points `--tls_server_certs` at
+`/snap/c-osquery/current/opt/osquery/share/osquery/certs/certs.pem`, which lives
+in the snap's read-only squashfs and cannot be extended. The test therefore
+hands the self-signed controller certificate to the charm through
+`tls-server-certs`; the charm-rendered flag overrides the wrapper's default. In
+production, a publicly trusted controller certificate is already present in the
+bundle and the option can stay unset.
 
 ## Continuous integration
 
@@ -199,9 +202,12 @@ expose `/dev/kvm`.
   first; the fixture reads `artifacts.build.yaml`.
 - **osctrl test times out at enrollment:** confirm the VM is reachable at
   `osctrl.lxd:443` from the principal (the test adds the hosts entry) and that
-  the controller certificate was appended to osquery's bundle. Check the daemon
-  with `journalctl -u osqueryd` on the principal machine — repeated
-  `certificate verify failed` means the bundle append did not take effect.
+  `--tls_server_certs` in
+  `/var/snap/c-osquery/common/etc/osquery/osquery.flags` points at the
+  certificate the charm wrote. Check the daemon with
+  `journalctl -u snap.c-osquery.osqueryd` on the principal machine — repeated
+  `certificate verify failed` means the certificate does not match the one the
+  controller presents.
 - **Stale controller state:** rerun with `--rebuild-osctrl`, or `lxc delete
   osctrl --force` to force a fresh provision.
 - **No `/dev/kvm`:** the osctrl suite cannot launch an LXD VM; run it on a host

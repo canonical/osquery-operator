@@ -12,7 +12,7 @@ from pathlib import Path
 import jubilant
 import pytest
 
-from .conftest import BASES, CHARM_NAME, PACKAGE_NAME, PRINCIPAL_CHARM
+from .conftest import BASES, CHARM_NAME, OSQUERY_ETC, OSQUERYD_UNIT, PRINCIPAL_CHARM, SNAP_NAME
 
 # A single base is enough for the behavioural tests below; they exercise the
 # running daemon rather than the per-base packaging, which test_deploy_and_relate
@@ -38,6 +38,15 @@ def _osqueryd_count(juju: jubilant.Juju, unit: str) -> int:
     return int(out or "0")
 
 
+def _snap_list(juju: jubilant.Juju, unit: str) -> dict | None:
+    """Return the ``snap list`` tracking channel and notes, or None if absent."""
+    out = _sh(juju, unit, f"snap list {SNAP_NAME} 2>/dev/null | tail -n +2 || true").split()
+    if not out:
+        return None
+    # Columns: Name Version Rev Tracking Publisher Notes
+    return {"tracking": out[3], "notes": out[-1]}
+
+
 def _principal_unit(juju: jubilant.Juju, app: str) -> str:
     """Return the first unit name of ``app`` (robust to non-zero unit indices)."""
     status = juju.status()
@@ -49,16 +58,16 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
     """The subordinate deploys, relates to a principal and becomes active.
 
     The charm is built for each supported Ubuntu base, so this test runs once
-    per base to confirm the base-specific artifact installs OSQuery from the
-    PPA on a matching principal machine.
+    per base to confirm the base-specific artifact installs the OSQuery snap on
+    a matching principal machine.
 
     Steps:
     - Deploy the `ubuntu` principal application on the base under test.
     - Deploy the matching OSQuery subordinate artifact for that base.
     - Relate the two, set the required controller options and wait for active.
-    - Confirm OSQuery is installed on the principal machine.
+    - Confirm the OSQuery snap is installed, classic, on the configured channel.
     - Confirm the generated flagfile reflects the configuration.
-    - Remove the subordinate and confirm OSQuery is uninstalled.
+    - Remove the subordinate and confirm the snap is removed.
     """
     # Give each base its own application names so the parametrised runs can
     # share a single Juju model without colliding.
@@ -85,46 +94,26 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
     )
     unit = _principal_unit(juju, principal_app)
 
-    # The subordinate installs OSQuery onto the principal's machine.
-    installed = juju.exec(
-        "dpkg-query",
-        "-f",
-        "${db:Status-Status}",
-        "-W",
-        PACKAGE_NAME,
-        unit=unit,
-        wait=60,
-    )
-    assert installed.stdout.strip() == "installed"
+    # The subordinate installs the OSQuery snap onto the principal's machine,
+    # with classic confinement, tracking the charm's default channel.
+    assert _snap_list(juju, unit) == {"tracking": "latest/edge", "notes": "classic"}
 
     # The generated flagfile reflects the configuration: controller-uri becomes
     # the TLS hostname and controller-env-uuid expands into the config endpoint.
     flagfile = juju.exec(
         "cat",
-        "/etc/osquery/osquery.flags",
+        f"{OSQUERY_ETC}/osquery.flags",
         unit=unit,
         wait=60,
     )
     assert "--tls_hostname=controller.example.com:443" in flagfile.stdout
     assert "--config_tls_endpoint=/test-env-uuid/config" in flagfile.stdout
 
-    # Removing the subordinate runs its stop hook, which uninstalls OSQuery.
+    # Removing the subordinate runs its stop hook, which removes the snap.
     juju.remove_application(osquery_app)
     juju.wait(lambda status: osquery_app not in status.apps, timeout=10 * 60)
 
-    # After `apt-get remove` the package leaves the "installed" state (dpkg still
-    # knows it while config files linger, so check the status field, not the
-    # exit code).
-    removed = juju.exec(
-        "dpkg-query",
-        "-f",
-        "${db:Status-Status}",
-        "-W",
-        PACKAGE_NAME,
-        unit=unit,
-        wait=60,
-    )
-    assert removed.stdout.strip() != "installed"
+    assert _snap_list(juju, unit) is None
 
 
 def _wait_for_stable_osqueryd_count(
@@ -187,7 +176,7 @@ def test_daemon_enrols_and_honours_config(juju: jubilant.Juju, charm_paths):
     - the subordinate is ``blocked`` until the required controller options are
       set;
     - once configured, ``osqueryd`` is genuinely running (checked via systemd
-      and the process table, since there is no osquery CLI on the host), meaning
+      and the process table, without relying on the osquery CLI), meaning
       stable and not crash-looping;
     - a secret option (the enrollment secret) and a plain option
       (``host-identifier``) took effect: the real daemon enrols and the
@@ -249,7 +238,7 @@ def test_daemon_enrols_and_honours_config(juju: jubilant.Juju, charm_paths):
         # enabled (osquery's default) there is a watchdog parent plus a worker:
         # two osqueryd processes. A stable count also proves it is not
         # crash-looping.
-        assert _sh(juju, unit, "systemctl is-active osqueryd || true").strip() == "active"
+        assert _sh(juju, unit, f"systemctl is-active {OSQUERYD_UNIT} || true").strip() == "active"
         assert _wait_for_stable_osqueryd_count(juju, unit, 2)
 
         # The daemon enrols on start; wait for the controller to record it. This
@@ -266,7 +255,7 @@ def test_daemon_enrols_and_honours_config(juju: jubilant.Juju, charm_paths):
             lambda status: jubilant.all_active(status, principal_app, osquery_app),
             timeout=10 * 60,
         )
-        assert "--disable_watchdog=true" in _sh(juju, unit, "cat /etc/osquery/osquery.flags")
+        assert "--disable_watchdog=true" in _sh(juju, unit, f"cat {OSQUERY_ETC}/osquery.flags")
         assert _wait_for_stable_osqueryd_count(juju, unit, 1)
     finally:
         with contextlib.suppress(jubilant.CLIError, ValueError, KeyError, StopIteration):
