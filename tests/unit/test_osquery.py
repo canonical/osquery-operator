@@ -5,7 +5,6 @@
 
 import os
 import stat
-import subprocess  # nosec B404
 
 import pytest
 
@@ -13,120 +12,129 @@ import osquery
 from errors import OSQueryConfigError, OSQueryInstallError
 
 
-def test_install_success(monkeypatch):
-    commands = []
-    added = []
+def _api_error(cls):
+    """Build a charmlibs.snap API error of type ``cls`` for a test."""
+    return cls("boom", kind="test", value=None)
 
-    def fake_run(cmd, check, capture_output):
-        commands.append(cmd)
-        return subprocess.CompletedProcess(cmd, 0)
 
-    monkeypatch.setattr(osquery.subprocess, "run", fake_run)
-    monkeypatch.setattr(
-        osquery.apt, "add_package", lambda name, update_cache: added.append((name, update_cache))
-    )
+def test_install_ensures_classic_snap_on_channel(monkeypatch):
+    calls = []
 
-    osquery.install()
+    def fake_ensure(name, channel, *, classic, update):
+        calls.append((name, channel, classic, update))
+        return True
 
-    # The PPA is added and the latest package is installed via the apt library.
-    assert any(osquery.PPA in cmd for cmd in commands)
-    assert added == [(osquery.PACKAGE_NAME, True)]
+    monkeypatch.setattr(osquery.snap, "ensure_installed", fake_ensure)
+
+    assert osquery.install("latest/edge") is True
+    # Classic confinement is required, and the store is not polled for updates
+    # on every reconcile: snapd refreshes the revision on its own.
+    assert calls == [(osquery.SNAP_NAME, "latest/edge", True, False)]
+
+
+def test_install_reports_no_change(monkeypatch):
+    monkeypatch.setattr(osquery.snap, "ensure_installed", lambda *_a, **_k: None)
+
+    assert osquery.install("latest/edge") is False
+
+
+def test_install_unavailable_channel_raises_config_error(monkeypatch):
+    def fail(*_args, **_kwargs):
+        raise _api_error(osquery.snap.ChannelNotAvailableError)
+
+    monkeypatch.setattr(osquery.snap, "ensure_installed", fail)
+
+    with pytest.raises(OSQueryConfigError, match="nope/stable"):
+        osquery.install("nope/stable")
 
 
 def test_install_failure_raises(monkeypatch):
-    def fake_run(cmd, check, capture_output):
-        raise subprocess.CalledProcessError(1, cmd)
+    def fail(*_args, **_kwargs):
+        raise _api_error(osquery.snap.ChangeError)
 
-    monkeypatch.setattr(osquery.subprocess, "run", fake_run)
-
-    with pytest.raises(OSQueryInstallError):
-        osquery.install()
-
-
-def test_install_apt_failure_raises(monkeypatch):
-    def fake_run(cmd, check, capture_output):
-        return subprocess.CompletedProcess(cmd, 0)
-
-    def fail(name, update_cache):
-        raise osquery.apt.PackageError("boom")
-
-    monkeypatch.setattr(osquery.subprocess, "run", fake_run)
-    monkeypatch.setattr(osquery.apt, "add_package", fail)
+    monkeypatch.setattr(osquery.snap, "ensure_installed", fail)
 
     with pytest.raises(OSQueryInstallError):
-        osquery.install()
+        osquery.install("latest/edge")
+
+
+def test_install_snapd_unreachable_raises(monkeypatch):
+    def fail(*_args, **_kwargs):
+        raise osquery.snap.SocketNotFoundError("no snapd")
+
+    monkeypatch.setattr(osquery.snap, "ensure_installed", fail)
+
+    with pytest.raises(OSQueryInstallError):
+        osquery.install("latest/edge")
 
 
 def test_is_installed_true(monkeypatch):
-    class FakePackage:
-        version = "5.21.0custom19~noble1"
-
-    monkeypatch.setattr(
-        osquery.apt.DebianPackage, "from_installed_package", lambda name: FakePackage()
-    )
+    monkeypatch.setattr(osquery.snap, "list_one", lambda name: object())
     assert osquery.is_installed() is True
 
 
 def test_is_installed_false(monkeypatch):
-    def raise_not_found(name):
-        raise osquery.apt.PackageNotFoundError()
+    def raise_not_installed(name):
+        raise _api_error(osquery.snap.NotInstalledError)
 
-    monkeypatch.setattr(osquery.apt.DebianPackage, "from_installed_package", raise_not_found)
+    monkeypatch.setattr(osquery.snap, "list_one", raise_not_installed)
     assert osquery.is_installed() is False
 
 
-def test_is_running_delegates_to_systemd(monkeypatch):
-    monkeypatch.setattr(osquery.systemd, "service_running", lambda name: True)
-    assert osquery.is_running() is True
-
-
-def test_stop_when_running(monkeypatch):
-    stopped: dict = {}
-    monkeypatch.setattr(osquery, "is_installed", lambda: True)
-    monkeypatch.setattr(osquery.systemd, "service_running", lambda name: True)
-    monkeypatch.setattr(
-        osquery.systemd, "service_stop", lambda name: stopped.setdefault("name", name)
-    )
-
-    osquery.stop()
-
-    assert stopped["name"] == osquery.SERVICE_NAME
-
-
-def test_stop_when_not_installed_is_noop(monkeypatch):
-    monkeypatch.setattr(osquery, "is_installed", lambda: False)
-
+def test_is_installed_snapd_error_raises(monkeypatch):
     def fail(name):
-        raise AssertionError("service_stop should not be called")
+        raise osquery.snap.ConnectionError("snapd restarting")
 
-    monkeypatch.setattr(osquery.systemd, "service_stop", fail)
+    monkeypatch.setattr(osquery.snap, "list_one", fail)
 
-    osquery.stop()
+    with pytest.raises(OSQueryInstallError):
+        osquery.is_installed()
 
 
-def test_uninstall_success(monkeypatch):
-    removed: dict = {}
-    monkeypatch.setattr(osquery, "stop", lambda: removed.setdefault("stopped", True))
-    monkeypatch.setattr(
-        osquery.apt, "remove_package", lambda name: removed.setdefault("name", name)
-    )
+def test_is_running_checks_snap_systemd_unit(monkeypatch):
+    seen = []
+
+    def fake_running(name):
+        seen.append(name)
+        return True
+
+    monkeypatch.setattr(osquery.systemd, "service_running", fake_running)
+
+    assert osquery.is_running() is True
+    assert seen == ["snap.c-osquery.osqueryd"]
+
+
+def test_uninstall_purges_snap(monkeypatch):
+    calls = []
+    monkeypatch.setattr(osquery.snap, "remove", lambda name, *, purge: calls.append((name, purge)))
 
     osquery.uninstall()
 
-    assert removed["stopped"] is True
-    assert removed["name"] == osquery.PACKAGE_NAME
+    # Purged so no snapshot of the secrets under $SNAP_COMMON is kept.
+    assert calls == [(osquery.SNAP_NAME, True)]
 
 
 def test_uninstall_failure_raises(monkeypatch):
-    monkeypatch.setattr(osquery, "stop", lambda: None)
+    def fail(name, *, purge):
+        raise _api_error(osquery.snap.ChangeError)
 
-    def fail(name):
-        raise osquery.apt.PackageError("boom")
-
-    monkeypatch.setattr(osquery.apt, "remove_package", fail)
+    monkeypatch.setattr(osquery.snap, "remove", fail)
 
     with pytest.raises(OSQueryInstallError):
         osquery.uninstall()
+
+
+def test_config_paths_live_under_snap_common():
+    """Every managed file lives where the snap's daemon wrapper reads it."""
+    for path in (
+        osquery.FLAGFILE_PATH,
+        osquery.ENROLL_SECRET_PATH,
+        osquery.SERVER_CERTS_PATH,
+        osquery.CLIENT_CERT_PATH,
+        osquery.CLIENT_KEY_PATH,
+    ):
+        assert path.startswith("/var/snap/c-osquery/common/etc/osquery/")
+    assert osquery.FLAGFILE_PATH == "/var/snap/c-osquery/common/etc/osquery/osquery.flags"
 
 
 @pytest.fixture(name="as_current_user")
@@ -269,26 +277,33 @@ def test_write_file_write_failure_raises_config_error(monkeypatch, tmp_path, as_
 
 
 def test_restart_enables_and_restarts(monkeypatch):
-    calls = []
+    calls: list[tuple] = []
     monkeypatch.setattr(
-        osquery.systemd, "service_enable", lambda name: calls.append(("enable", name))
+        osquery.snap,
+        "start",
+        lambda name, services, *, enable: calls.append(("start", name, services, enable)),
     )
     monkeypatch.setattr(
-        osquery.systemd, "service_restart", lambda name: calls.append(("restart", name))
+        osquery.snap,
+        "restart",
+        lambda name, services: calls.append(("restart", name, services)),
     )
 
     osquery.restart()
 
-    assert calls == [("enable", osquery.SERVICE_NAME), ("restart", osquery.SERVICE_NAME)]
+    assert calls == [
+        ("start", osquery.SNAP_NAME, osquery.SERVICE_NAME, True),
+        ("restart", osquery.SNAP_NAME, osquery.SERVICE_NAME),
+    ]
 
 
 def test_restart_failure_raises(monkeypatch):
-    monkeypatch.setattr(osquery.systemd, "service_enable", lambda name: None)
+    monkeypatch.setattr(osquery.snap, "start", lambda *_a, **_k: None)
 
-    def fail(name):
-        raise osquery.systemd.SystemdError("boom")
+    def fail(*_args, **_kwargs):
+        raise _api_error(osquery.snap.ChangeError)
 
-    monkeypatch.setattr(osquery.systemd, "service_restart", fail)
+    monkeypatch.setattr(osquery.snap, "restart", fail)
 
     with pytest.raises(OSQueryInstallError):
         osquery.restart()

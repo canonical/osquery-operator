@@ -12,7 +12,7 @@ import osquery
 def patch_workload_fixture(monkeypatch):
     """Patch all host-level workload side effects.
 
-    The osquery module talks to apt, systemd and the local filesystem. For unit
+    The osquery module talks to snapd, systemd and the local filesystem. For unit
     tests we replace those side effects with in-memory recorders so the charm
     logic can be exercised without touching the host.
 
@@ -25,6 +25,7 @@ def patch_workload_fixture(monkeypatch):
             self.installed = False
             self.uninstalled = False
             self.install_count = 0
+            self.channel = None
             self.restarted = 0
             self.running = False
             self.flagfile = None
@@ -32,9 +33,13 @@ def patch_workload_fixture(monkeypatch):
 
     recorder = Recorder()
 
-    def fake_install():
+    def fake_install(channel):
+        # Mirrors the real install: a no-op when already tracking the channel.
+        changed = not (recorder.installed and recorder.channel == channel)
         recorder.installed = True
-        recorder.install_count += 1
+        recorder.channel = channel
+        recorder.install_count += int(changed)
+        return changed
 
     def fake_uninstall():
         recorder.uninstalled = True
