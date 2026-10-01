@@ -152,26 +152,29 @@ You should see the ``osquery`` unit nested under ``ubuntu/0`` and the
     Integration provider  Requirer              Interface  Type         Message
     ubuntu:juju-info       osquery:general-info  juju-info  subordinate
 
-You can confirm that the ``osqueryd`` binary was installed on the machine by
+You can confirm that the ``c-osquery`` snap was installed on the machine by
 running a command inside the unit:
 
 .. code-block:: bash
 
-    juju ssh ubuntu/0 osqueryd --version
+    juju ssh ubuntu/0 snap list c-osquery
 
-If the binary is installed, it prints its version:
+If the snap is installed, it's listed with its version and the channel it
+tracks (your revision may differ):
 
 .. code-block:: text
 
-    osqueryd version 5.21.0
+    Name       Version  Rev  Tracking     Publisher                Notes
+    c-osquery  5.21.0   2    latest/edge  secops-service-account   classic
 
-The same package ships the ``osqueryi`` interactive shell, which lets you query
+The same snap ships the ``osqueryi`` interactive shell, as
+``c-osquery.osqueryi``, which lets you query
 the host's state with SQL. For example, let's list a few of the machine's running
 processes to see it in action:
 
 .. code-block:: bash
 
-    juju ssh ubuntu/0 osqueryi "SELECT pid, name FROM processes ORDER BY pid LIMIT 5;"
+    juju ssh ubuntu/0 c-osquery.osqueryi "SELECT pid, name FROM processes ORDER BY pid LIMIT 5;"
 
 osquery answers straight from the live system (your exact output will vary):
 

@@ -114,22 +114,24 @@ can confirm the daemon is running on the host with:
 
 .. code-block:: bash
 
-    juju ssh ubuntu/0 systemctl status osqueryd
+    juju ssh ubuntu/0 systemctl status snap.c-osquery.osqueryd
 
 You should see the service reported as ``active (running)``:
 
 .. code-block:: text
 
-    ● osqueryd.service - The osquery daemon
-         Loaded: loaded (/lib/systemd/system/osqueryd.service; enabled; vendor preset: enabled)
+    ● snap.c-osquery.osqueryd.service - Service for snap application c-osquery.osqueryd
+         Loaded: loaded (/etc/systemd/system/snap.c-osquery.osqueryd.service; enabled; vendor preset: enabled)
+        Drop-In: /etc/systemd/system/snap.c-osquery.osqueryd.service.d
+                 └─override.conf
          Active: active (running) since Mon 2026-08-25 10:00:00 UTC; 1min ago
        Main PID: 12345 (osqueryd)
           Tasks: 8 (limit: 4915)
          Memory: 20.0M
             CPU: 250ms
-         CGroup: /system.slice/osqueryd.service
-                 ├─12345 /usr/bin/osqueryd --flagfile /etc/osquery/osquery.flags
-                 └─12346 /usr/bin/osqueryd --flagfile /etc/osquery/osquery.flags
+         CGroup: /system.slice/snap.c-osquery.osqueryd.service
+                 ├─12345 /snap/c-osquery/2/opt/osquery/bin/osqueryd --config_path /var/snap/c-osquery/common/etc/osquery/osquery.conf ...
+                 └─12346 /snap/c-osquery/2/opt/osquery/bin/osqueryd --config_path /var/snap/c-osquery/common/etc/osquery/osquery.conf ...
 
 Clean up the environment
 ------------------------
