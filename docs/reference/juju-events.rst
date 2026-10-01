@@ -14,7 +14,8 @@ The following Juju events are observed:
 
 #. :ref:`install <juju:hook-install>`:
 
-   installs OSQuery from the PPA and applies the initial configuration.
+   installs the ``c-osquery`` snap from the configured ``snap-channel`` and
+   applies the initial configuration.
 
 #. :ref:`upgrade-charm <juju:hook-upgrade-charm>`:
 
@@ -40,7 +41,8 @@ The following Juju events are observed:
 
 #. :ref:`stop <juju:hook-stop>`:
 
-   stops the daemon and uninstalls the OSQuery package during tear-down.
+   removes the ``c-osquery`` snap (which stops the daemon) and purges its data
+   during tear-down.
 
 
 .. seealso::

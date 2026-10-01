@@ -48,13 +48,19 @@ The daemon isn't running
 ------------------------
 
 If the charm reports ``active`` but OSQuery doesn't appear to be working, e.g. 
-it's not visible from the OSQuery controller, check the ``osqueryd`` service on the
-unit's machine:
+it's not visible from the OSQuery controller, check the snap's
+``c-osquery.osqueryd`` service (systemd unit ``snap.c-osquery.osqueryd.service``)
+on the unit's machine:
 
 .. code-block:: bash
 
-    juju ssh <principal>/0 systemctl status osqueryd
-    juju ssh <principal>/0 journalctl -u osqueryd --no-pager
+    juju ssh <principal>/0 snap services c-osquery
+    juju ssh <principal>/0 systemctl status snap.c-osquery.osqueryd
+    juju ssh <principal>/0 sudo journalctl -u snap.c-osquery.osqueryd --no-pager
+
+The flagfile the charm rendered is at
+``/var/snap/c-osquery/common/etc/osquery/osquery.flags``, and ``snap list
+c-osquery`` shows the installed revision and the channel it tracks.
 
 The charm renders an OSQuery flagfile from the Juju configuration and restarts
 the daemon whenever the configuration changes. If the daemon fails to start,

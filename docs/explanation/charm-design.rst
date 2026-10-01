@@ -19,14 +19,16 @@ a host daemon that inspects operating-system state — processes, sockets,
 packages, and kernel events — which requires direct access to the host rather
 than a container sandbox.
 
-Installing from a PPA
----------------------
+Installing from a snap
+----------------------
 
-The charm installs the Canonical SecOps fork of OSQuery from a Launchpad-hosted
-PPA using the host's package manager, and runs it as the ``osqueryd`` systemd
-service. Distributing the workload as a Debian package (rather than, say, a snap
-or an OCI image) keeps the agent close to the host it monitors and lets it use
-the platform's native service management.
+The charm installs the Canonical SecOps fork of OSQuery from the
+`c-osquery snap <https://snapcraft.io/c-osquery>`_, on the channel set in
+``snap-channel``, and runs the ``osqueryd`` daemon as the snap's
+``snap.c-osquery.osqueryd`` systemd service. A single snap build serves every
+supported Ubuntu base and is the artifact the fork tests before each release.
+The snap uses classic confinement because OSQuery's eBPF backend needs
+host-wide tracing privileges that no strict-confinement interface grants.
 
 Configuration-driven reconciliation
 -----------------------------------
@@ -47,7 +49,7 @@ the module-level breakdown.
 Separating workload logic from Juju logic
 -----------------------------------------
 
-The host-facing workload logic (installing the package and managing the service)
+The host-facing workload logic (installing the snap and managing the service)
 lives in a module that deliberately imports nothing from Ops or Juju. This
 separation makes the workload logic straightforward to unit test in isolation and
 keeps the charm's Juju-facing concerns (events, configuration, status) cleanly

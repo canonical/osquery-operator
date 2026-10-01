@@ -59,7 +59,7 @@ Best practices
 - Restrict who can access the Juju model, since model access implies control over
   the charm's configuration and secrets.
 - Keep the charm up to date so the deployment benefits from security fixes in
-  both the charm and the OSQuery package. See :ref:`how to upgrade
+  both the charm and the OSQuery snap. See :ref:`how to upgrade
   <how_to_upgrade>`.
 - Rotate the enrollment secret and TLS credentials periodically as part of routine
   credential hygiene. See `how to manage secrets <https://documentation.ubuntu.com/juju/3.6/howto/manage-secrets/>`_ for

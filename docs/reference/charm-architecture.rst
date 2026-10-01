@@ -8,7 +8,7 @@ Charm architecture
 
 The OSQuery charm is a subordinate machine charm. Rather than running a workload
 in a container, it installs and manages the ``osqueryd`` daemon directly on the
-principal's machine using the host's package manager and ``systemd``.
+principal's machine as the ``c-osquery`` snap, managed through ``snapd``.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 .. vale Canonical.500-Repeated-words = NO
@@ -20,8 +20,8 @@ The OSQuery charm is a machine charm, so it is not containerized: there is no OC
 image and no Pebble services. Both the Juju unit agent (which runs the charm code) and the
 ``osqueryd`` workload it manages run directly on the principal's host, sharing
 the same machine as the principal unit. The charm's only moving parts are the
-charm code, the ``osqueryd`` systemd service, and the files the charm writes
-under ``/etc/osquery``.
+charm code, the ``osqueryd`` snap service, and the files the charm writes
+under ``/var/snap/c-osquery/common/etc/osquery``.
 
 .. mermaid::
 
@@ -31,8 +31,8 @@ under ``/etc/osquery``.
             subgraph agent["Juju unit agent"]
                 charm["OSQuery charm code<br/>(charm.py reconcile)"]
             end
-            osqueryd["osqueryd<br/>systemd service"]
-            subgraph files["/etc/osquery"]
+            osqueryd["osqueryd<br/>(c-osquery snap service)"]
+            subgraph files["/var/snap/c-osquery/common/etc/osquery"]
                 flagfile["osquery.flags"]
                 secrets["enroll.secret<br/>TLS certificates"]
             end
@@ -49,8 +49,10 @@ under ``/etc/osquery``.
 Workload
 --------
 
-The charm installs the Canonical SecOps fork of OSQuery from a Launchpad-hosted
-PPA. Once installed, OSQuery runs as the ``osqueryd`` systemd service. The daemon
+The charm installs the Canonical SecOps fork of OSQuery from the ``c-osquery``
+snap, with classic confinement, from the channel set in ``snap-channel``. Once
+installed, OSQuery runs as the snap's ``c-osquery.osqueryd`` service (the
+``snap.c-osquery.osqueryd.service`` systemd unit). The daemon
 reads its command-line flags from a flagfile on disk; the charm generates this
 flagfile from the Juju configuration, so changing a configuration value and
 restarting the daemon is how the charm applies changes to the workload.
@@ -67,7 +69,8 @@ The charm follows a holistic reconcile pattern. A single handler,
 ``install``, ``upgrade-charm``, ``start``, ``config-changed``,
 ``secret-changed``, and ``update-status``. On each event the handler:
 
-#. Ensures OSQuery is installed, installing it from the PPA if it isn't.
+#. Ensures the OSQuery snap is installed and tracks the configured
+   ``snap-channel``, installing or refreshing it if it doesn't.
 #. Renders the current Juju configuration into the OSQuery flagfile and writes
    the file-backed secrets (the enrollment secret and TLS material) to disk.
 #. Restarts the ``osqueryd`` daemon if necessary.
@@ -82,8 +85,8 @@ handled separately to clean up the workload when the unit is removed.
 
     flowchart TD
         event["Lifecycle event<br/>(install, config-changed, ...)"] --> reconcile["_reconcile"]
-        reconcile --> installed{"OSQuery<br/>installed?"}
-        installed -->|no| install["Install from PPA"]
+        reconcile --> installed{"Snap installed<br/>on channel?"}
+        installed -->|no| install["Install or refresh snap"]
         installed -->|yes| render["Render flagfile<br/>+ write secrets"]
         install --> render
         render --> valid{"Config<br/>valid?"}
@@ -106,8 +109,8 @@ from the host-facing logic:
       - The ``OSQueryCharm`` class. Observes Juju events, drives the reconcile
         loop, reads configuration and secrets, and sets unit status.
     * - ``src/osquery.py``
-      - Host workload management: installing and removing the OSQuery package
-        from the PPA and managing the ``osqueryd`` service. The module contains no Juju
+      - Host workload management: installing, refreshing, and removing the
+        ``c-osquery`` snap and managing its ``c-osquery.osqueryd`` service. The module contains no Juju
         or Ops imports, so it can be reasoned about and tested in isolation.
     * - ``src/flags.py``
       - Translates Juju configuration values into the OSQuery flagfile and
