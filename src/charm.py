@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 # Environment variable Juju exposes to hooks when an HTTPS proxy is configured
 # for the model. OSQuery routes its outbound TLS traffic through it.
 HTTPS_PROXY_ENV = "JUJU_CHARM_HTTPS_PROXY"
+# Snap channel option; configures the charm, not the flagfile.
+SNAP_CHANNEL_CONFIG = "snap-channel"
 
 
 class OSQueryCharm(ops.CharmBase):
@@ -42,15 +44,19 @@ class OSQueryCharm(ops.CharmBase):
     def _reconcile(self, _: ops.EventBase) -> None:
         """Reconcile the host with the desired charm state.
 
-        Ensures OSQuery is installed, applies the current configuration and
-        reports the resulting unit status. The handler is idempotent and safe to
-        run on every lifecycle event, so a single reconcile method drives the
-        whole charm (a holistic approach).
+        Ensures OSQuery is installed from the configured snap channel, applies
+        the current configuration and reports the resulting unit status. The
+        handler is idempotent and safe to run on every lifecycle event, so a
+        single reconcile method drives the whole charm (a holistic approach).
         """
         try:
+            channel = str(self.config.get(SNAP_CHANNEL_CONFIG) or "")
+            if not channel:
+                raise OSQueryConfigError(f"missing required configuration: {SNAP_CHANNEL_CONFIG}")
             if not osquery.is_installed():
                 self.unit.status = ops.MaintenanceStatus("installing OSQuery")
-                osquery.install()
+            # Installs, or refreshes if the tracked channel differs.
+            osquery.install(channel)
             self.unit.status = ops.MaintenanceStatus("configuring OSQuery")
             self._configure()
             self.unit.status = ops.ActiveStatus()
