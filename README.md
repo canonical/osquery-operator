@@ -17,8 +17,8 @@ letting security and operations teams query the state of a host with SQL. This
 charm deploys the Canonical SecOps fork of OSQuery as a
 [subordinate](https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm)
 agent that runs alongside a principal application on the same machine. It
-installs OSQuery from a Launchpad-hosted PPA, runs it as the `osqueryd` daemon,
-and connects it over TLS to a centrally managed OSQuery Controller that supplies
+installs OSQuery from the [`c-osquery` snap](https://snapcraft.io/c-osquery),
+runs it as the `osqueryd` daemon, and connects it over TLS to a centrally managed OSQuery Controller that supplies
 the agent's configuration and collects its logs.
 
 Like any Juju charm, this charm supports one-line deployment, configuration,

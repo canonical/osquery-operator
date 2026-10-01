@@ -11,8 +11,8 @@ description: |
   A subordinate machine charm that deploys and manages the Canonical SecOps
   fork of OSQuery for endpoint security monitoring.
 
-  The charm installs OSQuery from a Launchpad-hosted PPA and runs OSQuery in
-  daemon mode.
+  The charm installs OSQuery from the `c-osquery` snap (classic confinement)
+  and runs OSQuery in daemon mode.
 
   OSQuery opens an outbound TLS connection to a centrally managed OSQuery
   Controller to fetch its configuration (schedules, telemetry rules and query
@@ -42,6 +42,14 @@ requires:
 
 config:
   options:
+    # --- Options that configure the charm itself (not rendered as flags) ---
+    snap-channel:
+      type: string
+      default: latest/edge
+      description: >
+        Snap Store channel the `c-osquery` snap is installed from and tracks,
+        for example `latest/edge`. Changing it refreshes the snap onto the new
+        channel. The unit is blocked if the channel is empty or unavailable.
     # --- Options with a custom mapping to one or more OSQuery flags ---
     controller-uri:
       type: string
@@ -62,26 +70,26 @@ config:
       type: secret
       description: >
         Juju secret holding the enrollment secret used to authenticate the agent
-        with the controller. The value is written to /etc/osquery/enroll.secret
+        with the controller. The value is written to /var/snap/c-osquery/common/etc/osquery/enroll.secret
         (owned by root, mode 600) and referenced through `--enroll_secret_path`.
         The secret should expose the value under a field named `enroll-secret`.
     tls-server-certs:
       type: string
       description: >
         PEM-encoded CA bundle used to verify the OSQuery Controller's server
-        certificate. Written to /etc/osquery/certs/server-ca.pem and referenced
+        certificate. Written to /var/snap/c-osquery/common/etc/osquery/certs/server-ca.pem and referenced
         through `--tls_server_certs`.
     tls-client-cert:
       type: string
       description: >
         PEM-encoded client certificate the agent presents to the controller.
-        Written to /etc/osquery/certs/client-ca.pem and referenced through
+        Written to /var/snap/c-osquery/common/etc/osquery/certs/client-ca.pem and referenced through
         `--tls_client_cert`.
     tls-client-key:
       type: secret
       description: >
         Juju secret holding the PEM-encoded private key matching
-        `tls-client-cert`. Written to /etc/osquery/certs/client-key.pem (owned by
+        `tls-client-cert`. Written to /var/snap/c-osquery/common/etc/osquery/certs/client-key.pem (owned by
         root, mode 600) and referenced through `--tls_client_key`. The secret
         should expose the value under a field named `tls-client-key`.
     # --- Options with a one-to-one mapping to a flag of the same name ---
