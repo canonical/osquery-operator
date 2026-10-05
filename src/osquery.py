@@ -11,37 +11,36 @@ lifecycle.
 
 import logging
 import os
-import subprocess  # nosec B404
 from pathlib import Path
 
-from charmlibs import apt, systemd
+from charmlibs import snap, systemd
 
 from errors import OSQueryConfigError, OSQueryInstallError
 
 logger = logging.getLogger(__name__)
 
-# Launchpad-hosted PPA that distributes the custom OSQuery fork (based on
-# 5.21.0) with eBPF support.
-PPA = "ppa:jjimenezgarcia/osquery"
-PACKAGE_NAME = "osquery"
+# Canonical SecOps OSQuery fork (5.21.0, eBPF). Classic confinement: eBPF
+# needs privileges no strict-confinement interface grants.
+SNAP_NAME = "c-osquery"
+# The snap's daemon app and its systemd unit.
 SERVICE_NAME = "osqueryd"
+SYSTEMD_UNIT = f"snap.{SNAP_NAME}.{SERVICE_NAME}"
 
-# OSQuery reads its command-line flags from this flagfile on startup. The deb
-# package ships a systemd unit whose environment file points ``FLAG_FILE`` here,
-# so writing the charm-generated flags to this path makes the daemon pick them
-# up on the next restart.
-CONFIG_DIR = "/etc/osquery"
-CERTS_DIR = "/etc/osquery/certs"
-FLAGFILE_PATH = "/etc/osquery/osquery.flags"
+# The snap's daemon reads its flagfile from $SNAP_COMMON/etc/osquery, which
+# survives snap refreshes.
+SNAP_COMMON = f"/var/snap/{SNAP_NAME}/common"
+CONFIG_DIR = f"{SNAP_COMMON}/etc/osquery"
+CERTS_DIR = f"{CONFIG_DIR}/certs"
+FLAGFILE_PATH = f"{CONFIG_DIR}/osquery.flags"
 # File-backed configuration options are materialised at these paths and then
 # referenced from the flagfile.
-ENROLL_SECRET_PATH = "/etc/osquery/enroll.secret"  # nosec B105 - path, not a secret value
-SERVER_CERTS_PATH = "/etc/osquery/certs/server-ca.pem"
-CLIENT_CERT_PATH = "/etc/osquery/certs/client-ca.pem"
-CLIENT_KEY_PATH = "/etc/osquery/certs/client-key.pem"
+ENROLL_SECRET_PATH = f"{CONFIG_DIR}/enroll.secret"  # nosec B105 - path, not a secret value
+SERVER_CERTS_PATH = f"{CERTS_DIR}/server-ca.pem"
+CLIENT_CERT_PATH = f"{CERTS_DIR}/client-ca.pem"
+CLIENT_KEY_PATH = f"{CERTS_DIR}/client-key.pem"
 
 # Ownership applied to every file and directory the charm manages under
-# ``/etc/osquery``. Hooks run as root on the host, so these resolve to the
+# ``CONFIG_DIR``. Hooks run as root on the host, so these resolve to the
 # ``root`` user and group. They are module-level so unit tests (which do not run
 # as root) can override them to the test user before exercising the writers.
 FILE_OWNER_UID = 0
@@ -55,74 +54,73 @@ FLAGFILE_MODE = 0o640
 SECURE_DIR_MODE = 0o700
 
 
-def install() -> None:
-    """Install the latest OSQuery package from the Launchpad PPA.
+def install(channel: str) -> bool:
+    """Ensure the OSQuery snap is installed and tracking ``channel``.
 
-    Steps:
-    - Add the Launchpad PPA (which also imports its signing key).
-    - Refresh the apt cache and install the latest OSQuery version.
+    Installs the snap (with classic confinement) when it is absent, and
+    refreshes it onto ``channel`` when it currently tracks a different one. When
+    the snap already tracks ``channel`` nothing is done: the store is not
+    queried, and snapd's own automatic refreshes keep the revision current.
 
-    This function is idempotent: adding an already-present PPA and installing an
-    already-present package are both no-ops.
+    This function is idempotent and cheap to call on every reconcile.
+
+    Args:
+        channel: the Snap Store channel to track, for example ``latest/edge``.
+
+    Returns:
+        ``True`` if the snap was installed or refreshed, ``False`` otherwise.
 
     Raises:
-        OSQueryInstallError: if adding the repository or installing the package
-            fails.
+        OSQueryConfigError: if ``channel`` does not exist for the snap.
+        OSQueryInstallError: if installing or refreshing the snap fails.
     """
     try:
-        logger.info("Adding OSQuery PPA %s", PPA)
-        # add-apt-repository transparently resolves the PPA URL and imports the
-        # Launchpad signing key, which the apt library cannot do on its own.
-        subprocess.run(  # nosec B603
-            ["/usr/bin/add-apt-repository", "--yes", PPA],
-            check=True,
-            capture_output=True,
-        )
-        logger.info("Installing %s package", PACKAGE_NAME)
-        apt.add_package(PACKAGE_NAME, update_cache=True)
-    except (subprocess.CalledProcessError, apt.Error) as exc:
-        raise OSQueryInstallError(f"failed to install {PACKAGE_NAME}: {exc}") from exc
+        logger.info("Ensuring %s snap is installed from %s", SNAP_NAME, channel)
+        return bool(snap.ensure_installed(SNAP_NAME, channel, classic=True, update=False))
+    except snap.ChannelNotAvailableError as exc:
+        raise OSQueryConfigError(
+            f"snap channel '{channel}' is not available for {SNAP_NAME}"
+        ) from exc
+    except snap.Error as exc:
+        raise OSQueryInstallError(f"failed to install {SNAP_NAME}: {exc}") from exc
 
 
 def uninstall() -> None:
-    """Stop the service and remove the OSQuery package from the system.
+    """Remove the OSQuery snap from the system.
+
+    snapd stops the daemon before removing the snap. The removal purges the
+    snap's data instead of saving an automatic snapshot, because
+    ``$SNAP_COMMON`` holds the enrollment secret and the TLS client key, which
+    must not outlive the unit.
 
     Raises:
-        OSQueryInstallError: if removing the package fails.
+        OSQueryInstallError: if removing the snap fails.
     """
-    stop()
     try:
-        logger.info("Removing %s package", PACKAGE_NAME)
-        apt.remove_package(PACKAGE_NAME)
-    except apt.Error as exc:
-        raise OSQueryInstallError(f"failed to remove {PACKAGE_NAME}: {exc}") from exc
+        logger.info("Removing %s snap", SNAP_NAME)
+        snap.remove(SNAP_NAME, purge=True)
+    except snap.Error as exc:
+        raise OSQueryInstallError(f"failed to remove {SNAP_NAME}: {exc}") from exc
 
 
 def is_installed() -> bool:
-    """Return whether the OSQuery package is installed (at any version)."""
-    try:
-        apt.DebianPackage.from_installed_package(PACKAGE_NAME)
-        return True
-    except apt.PackageNotFoundError:
-        return False
-
-
-def stop() -> None:
-    """Stop the OSQuery daemon if it is running.
+    """Return whether the OSQuery snap is installed (on any channel).
 
     Raises:
-        OSQueryInstallError: if the service fails to stop.
+        OSQueryInstallError: if snapd cannot be queried.
     """
     try:
-        if is_installed() and systemd.service_running(SERVICE_NAME):
-            systemd.service_stop(SERVICE_NAME)
-    except systemd.SystemdError as exc:
-        raise OSQueryInstallError(f"failed to stop {SERVICE_NAME}: {exc}") from exc
+        snap.list_one(SNAP_NAME)
+        return True
+    except snap.NotInstalledError:
+        return False
+    except snap.Error as exc:
+        raise OSQueryInstallError(f"failed to query {SNAP_NAME}: {exc}") from exc
 
 
 def is_running() -> bool:
     """Return whether the OSQuery daemon is currently running."""
-    return systemd.service_running(SERVICE_NAME)
+    return systemd.service_running(SYSTEMD_UNIT)
 
 
 def _write_file(path: str, content: str, *, file_mode: int, dir_mode: int) -> bool:
@@ -240,8 +238,8 @@ def restart() -> None:
         OSQueryInstallError: if the service fails to start.
     """
     try:
-        logger.info("Enabling and restarting %s", SERVICE_NAME)
-        systemd.service_enable(SERVICE_NAME)
-        systemd.service_restart(SERVICE_NAME)
-    except systemd.SystemdError as exc:
-        raise OSQueryInstallError(f"failed to restart {SERVICE_NAME}: {exc}") from exc
+        logger.info("Enabling and restarting %s.%s", SNAP_NAME, SERVICE_NAME)
+        snap.start(SNAP_NAME, SERVICE_NAME, enable=True)
+        snap.restart(SNAP_NAME, SERVICE_NAME)
+    except snap.Error as exc:
+        raise OSQueryInstallError(f"failed to restart {SNAP_NAME}.{SERVICE_NAME}: {exc}") from exc

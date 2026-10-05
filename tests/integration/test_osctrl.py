@@ -6,12 +6,11 @@
 Unlike the tests in ``test_charm.py`` that use a minimal dummy controller, this
 test stands up a genuine osctrl deployment (in a dedicated LXD VM) and checks
 the full path: the charm enrolls osquery against osctrl over TLS -- trusting the
-controller certificate through osquery's own certificate bundle, with no
-certificates handed to the charm -- and osquery then ships status and
-scheduled-query result logs that land in osctrl's database.
+controller's self-signed certificate through the ``tls-server-certs`` option --
+and osquery then ships status and scheduled-query result logs that land in
+osctrl's database.
 """
 
-import base64
 import contextlib
 import logging
 import uuid
@@ -37,26 +36,20 @@ def _principal_unit(juju: jubilant.Juju, app: str) -> str:
     return next(iter(juju.status().apps[app].units))
 
 
-def _put_file(juju: jubilant.Juju, unit: str, path: str, content: str) -> None:
-    """Write ``content`` to ``path`` on ``unit`` (base64 to avoid quoting issues)."""
-    encoded = base64.b64encode(content.encode()).decode()
-    _sh(juju, unit, f"echo {encoded} | base64 -d > {path}")
-
-
 def test_osquery_enrols_with_real_osctrl_and_ships_logs(
     juju: jubilant.Juju, charm_paths, osctrl: OsctrlVM
 ):
-    """Osquery enrols against a real osctrl and ships logs, with no certs to the charm.
+    """Osquery enrols against a real osctrl and ships logs.
 
     Steps:
     - Create a fresh osctrl TLS environment (with a scheduled query) and read its
       UUID and enrollment secret.
     - Deploy the ``ubuntu`` principal and the OSQuery subordinate; confirm the
       subordinate blocks until the controller options are set.
-    - Make the controller reachable and trusted on the principal machine: add an
-      ``osctrl.lxd`` hosts entry and install the controller certificate into
-      osquery's own certificate bundle. No TLS certificate is given to the charm.
-    - Configure the subordinate to point at osctrl and wait for it to go active.
+    - Make the controller reachable on the principal machine with an
+      ``osctrl.lxd`` hosts entry.
+    - Configure the subordinate to point at osctrl, trusting its self-signed
+      certificate through ``tls-server-certs``, and wait for it to go active.
     - Assert, reading osctrl's database directly, that the node enrolled and that
       osquery shipped both status logs and scheduled-query result logs.
     """
@@ -83,9 +76,7 @@ def test_osquery_enrols_with_real_osctrl_and_ships_logs(
         )
         unit = _principal_unit(juju, principal_app)
 
-        # Make the controller reachable at its stable name and trusted by the
-        # machine. The charm is given no certificates: osquery must validate the
-        # controller against a certificate the machine already trusts.
+        # Make the controller reachable at its stable name.
         controller_ip = osctrl.ip_address()
         _sh(
             juju,
@@ -93,29 +84,20 @@ def test_osquery_enrols_with_real_osctrl_and_ships_logs(
             f"grep -q ' {OsctrlVM.HOSTNAME}$' /etc/hosts "
             f"|| echo '{controller_ip} {OsctrlVM.HOSTNAME}' >> /etc/hosts",
         )
-        # osquery is statically linked and validates TLS against its own CA
-        # bundle (a Mozilla bundle shipped with the package), not the system
-        # trust store, so the controller certificate is appended there. In
-        # production a publicly trusted controller certificate would already be
-        # trusted via this bundle, needing no machine changes.
-        osquery_ca_bundle = "/opt/osquery/share/osquery/certs/certs.pem"
-        remote_cert = "/tmp/osctrl.crt"  # nosec B108 - path on the ephemeral test machine
-        _put_file(juju, unit, remote_cert, osctrl.server_certificate())
-        # The subordinate is freshly deployed on this machine, so the bundle is
-        # pristine; append the controller certificate to it exactly once.
-        _sh(juju, unit, f"cat {remote_cert} >> {osquery_ca_bundle}")
 
         # Supply the enrollment secret as a Juju user secret.
         secret_uri = juju.add_secret(secret_name, {"enroll-secret": env.secret})
         juju.grant_secret(secret_uri, osquery_app)
 
-        # Point the subordinate at osctrl. Short logger/config periods keep the
-        # test quick without changing what is being verified. No TLS certs.
+        # Point the subordinate at osctrl. Its certificate is self-signed and
+        # the snap's CA bundle is read-only, so it goes in tls-server-certs.
+        # Short logger/config periods keep the test quick.
         juju.config(
             osquery_app,
             {
                 "controller-uri": OsctrlVM.HOSTNAME,
                 "controller-env-uuid": env.uuid,
+                "tls-server-certs": osctrl.server_certificate(),
                 "enroll-secret": str(secret_uri),
                 "logger-tls-period": 10,
                 "config-refresh": 10,

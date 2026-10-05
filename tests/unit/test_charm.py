@@ -8,7 +8,10 @@ from ops import testing
 
 import osquery
 from charm import OSQueryCharm
-from errors import OSQueryInstallError
+from errors import OSQueryConfigError, OSQueryInstallError
+
+# The snap channel charmcraft.yaml defaults the snap-channel option to.
+DEFAULT_CHANNEL = "latest/edge"
 
 # The two options a working deployment must always set.
 VALID_CONFIG = {
@@ -41,6 +44,7 @@ def test_reconcile_installs_and_configures_when_missing(ctx, patch_workload, eve
 
     assert patch_workload.installed is True
     assert patch_workload.install_count == 1
+    assert patch_workload.channel == DEFAULT_CHANNEL
     assert patch_workload.restarted == 1
     assert patch_workload.flagfile is not None
     assert "--tls_hostname=controller.example.com:443" in patch_workload.flagfile
@@ -48,14 +52,73 @@ def test_reconcile_installs_and_configures_when_missing(ctx, patch_workload, eve
 
 
 def test_reconcile_is_idempotent_when_already_installed(ctx, patch_workload):
-    """Reconciling with OSQuery already installed does not reinstall."""
+    """Reconciling with OSQuery already on the configured channel does not reinstall."""
     patch_workload.installed = True
+    patch_workload.channel = DEFAULT_CHANNEL
     state = testing.State(config=VALID_CONFIG)
 
     out = ctx.run(ctx.on.update_status(), state)
 
     assert patch_workload.install_count == 0
     assert out.unit_status == testing.ActiveStatus()
+
+
+def test_snap_channel_option_selects_channel(ctx, patch_workload):
+    """The snap is installed from the channel set in snap-channel."""
+    state = testing.State(config={**VALID_CONFIG, "snap-channel": "5.21/stable"})
+
+    out = ctx.run(ctx.on.install(), state)
+
+    assert patch_workload.channel == "5.21/stable"
+    assert out.unit_status == testing.ActiveStatus()
+
+
+def test_snap_channel_change_refreshes_snap(ctx, patch_workload):
+    """Changing snap-channel moves an installed snap onto the new channel."""
+    patch_workload.installed = True
+    patch_workload.channel = DEFAULT_CHANNEL
+    state = testing.State(config={**VALID_CONFIG, "snap-channel": "latest/beta"})
+
+    ctx.run(ctx.on.config_changed(), state)
+
+    assert patch_workload.install_count == 1
+    assert patch_workload.channel == "latest/beta"
+
+
+def test_snap_channel_not_rendered_as_flag(ctx, patch_workload):
+    """snap-channel configures the charm, so it never reaches the flagfile."""
+    state = testing.State(config=VALID_CONFIG)
+
+    ctx.run(ctx.on.config_changed(), state)
+
+    assert "snap_channel" not in patch_workload.flagfile
+
+
+def test_empty_snap_channel_blocks(ctx, patch_workload):
+    """An empty snap-channel blocks the unit before anything is installed."""
+    state = testing.State(config={**VALID_CONFIG, "snap-channel": ""})
+
+    out = ctx.run(ctx.on.config_changed(), state)
+
+    assert out.unit_status == testing.BlockedStatus("missing required configuration: snap-channel")
+    assert patch_workload.installed is False
+
+
+def test_unavailable_snap_channel_blocks(ctx, monkeypatch):
+    """A channel the store does not offer blocks the unit with a clear message."""
+    monkeypatch.setattr("osquery.is_installed", lambda: False)
+
+    def fail_install(channel):
+        raise OSQueryConfigError(f"snap channel '{channel}' is not available for c-osquery")
+
+    monkeypatch.setattr("osquery.install", fail_install)
+    state = testing.State(config={**VALID_CONFIG, "snap-channel": "nope/stable"})
+
+    out = ctx.run(ctx.on.config_changed(), state)
+
+    assert out.unit_status == testing.BlockedStatus(
+        "snap channel 'nope/stable' is not available for c-osquery"
+    )
 
 
 def test_reconcile_does_not_restart_when_config_unchanged(ctx, patch_workload):
@@ -112,7 +175,7 @@ def test_missing_required_config_blocks(ctx, patch_workload):
     assert isinstance(out.unit_status, testing.BlockedStatus)
     assert "controller-uri" in out.unit_status.message
     assert "controller-env-uuid" in out.unit_status.message
-    # The package is still installed, but no flagfile is written and the daemon
+    # The snap is still installed, but no flagfile is written and the daemon
     # is not restarted while required configuration is missing.
     assert patch_workload.installed is True
     assert patch_workload.flagfile is None
@@ -212,7 +275,7 @@ def test_reconcile_failure_sets_blocked_status(ctx, monkeypatch, event):
     """A workload error during install is converted to blocked status."""
     monkeypatch.setattr("osquery.is_installed", lambda: False)
 
-    def fail_install():
+    def fail_install(channel):
         raise OSQueryInstallError("install failed")
 
     monkeypatch.setattr("osquery.install", fail_install)

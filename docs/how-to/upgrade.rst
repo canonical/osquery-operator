@@ -6,8 +6,9 @@
 How to upgrade
 ==============
 
-Upgrading the OSQuery charm refreshes the charm code and, where applicable, the
-version of OSQuery installed on the host. Because the charm is stateless, upgrades
+Upgrading the OSQuery charm refreshes the charm code. The OSQuery agent itself
+is the ``c-osquery`` snap, which snapd refreshes automatically within the
+channel set in the ``snap-channel`` option. Because the charm is stateless, upgrades
 don't require any data migration.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
@@ -42,6 +43,16 @@ To upgrade to a specific channel or revision, pass ``--channel`` or
 After the refresh, the charm reconciles the agent: it re-renders the OSQuery
 flagfile and restarts ``osqueryd`` if anything changed.
 
+Change the OSQuery snap channel
+-------------------------------
+
+To move the agent to a different snap channel, set ``snap-channel``. The charm
+refreshes the snap onto the new channel on its next reconcile:
+
+.. code-block:: bash
+
+    juju config osquery snap-channel=latest/stable
+
 Verify the upgrade
 ------------------
 
@@ -51,9 +62,9 @@ Watch the deployment until it settles back into an ``active`` state:
 
     juju status --watch 2s
 
-Confirm the OSQuery version on the host if the upgrade included a new agent
-release:
+Confirm the OSQuery version and snap channel on the host if the upgrade
+included a new agent release:
 
 .. code-block:: bash
 
-    juju ssh <principal>/0 osqueryd --version
+    juju ssh <principal>/0 snap list c-osquery

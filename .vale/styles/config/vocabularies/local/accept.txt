@@ -10,6 +10,7 @@ osqueryd
 PPA
 pytest
 reconcile
+snapd
 redeployments
 SecOps
 subordinate

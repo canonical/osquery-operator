@@ -1,0 +1,28 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Install OSQuery from the c-osquery snap instead of the PPA
+  author: jjimenezgarcia
+  type: breaking
+  description: >
+    The charm now installs the Canonical SecOps fork of OSQuery from the
+    c-osquery snap (classic confinement) instead of the Launchpad PPA, and
+    manages the snap's osqueryd service (snap.c-osquery.osqueryd). A new
+    snap-channel option, defaulting to latest/edge, selects the channel the
+    snap tracks; changing it refreshes the snap. The flagfile and the
+    file-backed secrets and certificates now live under
+    /var/snap/c-osquery/common/etc/osquery instead of /etc/osquery. Removing
+    the unit removes the snap and purges its data. Existing units installed
+    from the PPA are not migrated.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/15"
+    related_doc: https://github.com/canonical/osquery-operator/blob/main/docs/explanation/charm-design.rst
+    related_issue:
+  visibility: public
+  highlight: true

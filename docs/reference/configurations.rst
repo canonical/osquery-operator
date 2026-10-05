@@ -18,8 +18,10 @@ On every configuration change the charm:
 #. Resolves each option (including any referenced Juju secrets)
 #. Writes the file-backed options (enrollment secret and TLS material) to disk
    with strict ownership and permissions
-#. Renders the OSQuery flagfile to ``/etc/osquery/osquery.flags``
-#. Enables and restarts the ``osqueryd`` service so the new flags take effect
+#. Renders the OSQuery flagfile to ``/var/snap/c-osquery/common/etc/osquery/osquery.flags``,
+   where the ``c-osquery`` snap's daemon reads it
+#. Enables and restarts the snap's ``c-osquery.osqueryd`` service so the new flags take
+   effect
 
 The flagfile is the `OSQuery flagfile
 <https://osquery.readthedocs.io/en/stable/installation/cli-flags/#flagfile>`_.
@@ -62,6 +64,16 @@ options.
       * - ``--carver_continue_endpoint``
         - ``/<uuid>/block``
 
+Snap channel
+------------
+
+``snap-channel``
+   Snap Store channel the ``c-osquery`` snap is installed from and tracks.
+   Defaults to ``latest/edge``. Changing it refreshes the snap onto the new
+   channel. This option configures the charm itself and isn't rendered into the
+   flagfile. If it's empty, or the channel isn't available for the snap, the unit
+   reports ``blocked``.
+
 File-backed options
 -------------------
 
@@ -80,19 +92,19 @@ with ``700`` permissions.
      - Flag
    * - ``enroll-secret``
      - secret
-     - ``/etc/osquery/enroll.secret``
+     - ``/var/snap/c-osquery/common/etc/osquery/enroll.secret``
      - ``--enroll_secret_path``
    * - ``tls-server-certs``
      - string
-     - ``/etc/osquery/certs/server-ca.pem``
+     - ``/var/snap/c-osquery/common/etc/osquery/certs/server-ca.pem``
      - ``--tls_server_certs``
    * - ``tls-client-cert``
      - string
-     - ``/etc/osquery/certs/client-ca.pem``
+     - ``/var/snap/c-osquery/common/etc/osquery/certs/client-ca.pem``
      - ``--tls_client_cert``
    * - ``tls-client-key``
      - secret
-     - ``/etc/osquery/certs/client-key.pem``
+     - ``/var/snap/c-osquery/common/etc/osquery/certs/client-key.pem``
      - ``--tls_client_key``
 
 .. _configurations_secrets:
