@@ -8,7 +8,7 @@ version_schema: 2
 changes:
 - title: Install OSQuery from the c-osquery snap instead of the PPA
   author: jjimenezgarcia
-  type: major
+  type: breaking
   description: >
     The charm now installs the Canonical SecOps fork of OSQuery from the
     c-osquery snap (classic confinement) instead of the Launchpad PPA, and
