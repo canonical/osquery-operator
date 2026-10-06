@@ -24,6 +24,7 @@ kinds of configuration options:
 from collections import OrderedDict
 from collections.abc import Mapping
 from typing import Any
+from urllib.parse import urlsplit
 
 import osquery
 
@@ -138,6 +139,18 @@ def _render(value: Any) -> str:
     return str(value)
 
 
+def proxy_address(proxy: str) -> str:
+    """Return ``proxy`` as the ``host:port`` osquery's ``--proxy_hostname`` expects.
+
+    osquery splits the value at its first ``:``, so a URL breaks it:
+    ``http://squid.internal:3128`` becomes ``squid.internal:3128``.
+    """
+    parts = urlsplit(proxy if "://" in proxy else f"//{proxy}")
+    if not parts.hostname:
+        return proxy
+    return f"{parts.hostname}:{parts.port}" if parts.port else parts.hostname
+
+
 def build_flags(values: Mapping[str, Any], proxy_hostname: str) -> "OrderedDict[str, str]":
     """Build the ordered mapping of OSQuery flags from resolved config values.
 
@@ -147,8 +160,8 @@ def build_flags(values: Mapping[str, Any], proxy_hostname: str) -> "OrderedDict[
 
     Args:
         values: mapping of option name to its resolved value.
-        proxy_hostname: value of ``JUJU_CHARM_HTTPS_PROXY``; the ``proxy_hostname``
-            flag is only emitted when this is non-empty.
+        proxy_hostname: the model's HTTPS proxy; the ``proxy_hostname`` flag is
+            only emitted when this is non-empty.
 
     Returns:
         An ordered mapping of flag name to rendered string value.
@@ -183,7 +196,7 @@ def build_flags(values: Mapping[str, Any], proxy_hostname: str) -> "OrderedDict[
     # Hardcoded flag: route OSQuery's outbound traffic through the Juju proxy
     # when one is configured for the model.
     if proxy_hostname:
-        flags["proxy_hostname"] = proxy_hostname
+        flags["proxy_hostname"] = proxy_address(proxy_hostname)
 
     return flags
 

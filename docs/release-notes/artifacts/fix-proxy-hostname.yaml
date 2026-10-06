@@ -1,0 +1,25 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Version of the artifact schema
+version_schema: 2
+
+# The key holding the change(s)
+changes:
+- title: Fixed the osquery proxy flag and added support for the legacy model proxy
+  author: jjimenezgarcia
+  type: bugfix
+  description: >
+    The charm passed the model's proxy to osquery's --proxy_hostname as a URL
+    (for example http://squid.internal:3128), but osquery expects host:port,
+    so it couldn't reach the controller through the proxy. The charm now
+    passes host:port (squid.internal:3128). It also reads the legacy
+    https-proxy model setting when juju-https-proxy isn't set, so models using
+    the legacy proxy settings get the flag too.
+  urls:
+    pr:
+      - "https://github.com/canonical/osquery-operator/pull/18"
+    related_doc: https://github.com/canonical/osquery-operator/blob/main/docs/reference/configurations.rst
+    related_issue:
+  visibility: public
+  highlight: false

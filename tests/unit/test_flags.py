@@ -5,6 +5,8 @@
 
 from collections import OrderedDict
 
+import pytest
+
 import flags
 import osquery
 
@@ -102,7 +104,23 @@ def test_file_backed_flags_omitted_when_unset():
 def test_proxy_hostname_only_when_set():
     assert "proxy_hostname" not in flags.build_flags(valid_values(), "")
     result = flags.build_flags(valid_values(), "http://proxy:3128")
-    assert result["proxy_hostname"] == "http://proxy:3128"
+    assert result["proxy_hostname"] == "proxy:3128"
+
+
+@pytest.mark.parametrize(
+    ("proxy", "expected"),
+    [
+        ("http://squid.internal:3128", "squid.internal:3128"),
+        ("http://squid.internal:3128/", "squid.internal:3128"),
+        ("https://user:pass@squid.internal:3128", "squid.internal:3128"),
+        ("squid.internal:3128", "squid.internal:3128"),
+        ("squid.internal", "squid.internal"),
+        ("http://", "http://"),
+    ],
+)
+def test_proxy_address_is_host_port(proxy, expected):
+    # osquery splits --proxy_hostname at its first ":", so a scheme breaks it.
+    assert flags.proxy_address(proxy) == expected
 
 
 def test_render_flagfile_format():

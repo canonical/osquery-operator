@@ -16,9 +16,10 @@ from errors import OSQueryConfigError, OSQueryError
 
 logger = logging.getLogger(__name__)
 
-# Environment variable Juju exposes to hooks when an HTTPS proxy is configured
-# for the model. OSQuery routes its outbound TLS traffic through it.
-HTTPS_PROXY_ENV = "JUJU_CHARM_HTTPS_PROXY"
+# Where Juju puts the model's HTTPS proxy in the hook environment:
+# juju-https-proxy, then the legacy https-proxy. OSQuery routes its outbound
+# TLS traffic through the first one set.
+HTTPS_PROXY_ENVS = ("JUJU_CHARM_HTTPS_PROXY", "HTTPS_PROXY", "https_proxy")
 # Snap channel option; configures the charm, not the flagfile.
 SNAP_CHANNEL_CONFIG = "snap-channel"
 
@@ -84,7 +85,7 @@ class OSQueryCharm(ops.CharmBase):
 
         changed = self._write_config_files(values)
 
-        proxy_hostname = os.environ.get(HTTPS_PROXY_ENV, "")
+        proxy_hostname = next((os.environ[e] for e in HTTPS_PROXY_ENVS if os.environ.get(e)), "")
         flagfile = flags.render_flagfile(flags.build_flags(values, proxy_hostname))
         changed = osquery.write_flagfile(flagfile) or changed
 

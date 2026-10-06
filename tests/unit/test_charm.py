@@ -242,13 +242,42 @@ def test_public_cert_written_with_public_writer(ctx, patch_workload):
 
 
 def test_proxy_hostname_flag_from_env(ctx, patch_workload, monkeypatch):
-    """The hardcoded proxy_hostname flag comes from JUJU_CHARM_HTTPS_PROXY."""
+    """proxy_hostname comes from juju-https-proxy (JUJU_CHARM_HTTPS_PROXY), as host:port."""
     monkeypatch.setenv("JUJU_CHARM_HTTPS_PROXY", "http://proxy:3128")
     state = testing.State(config=VALID_CONFIG)
 
     ctx.run(ctx.on.config_changed(), state)
 
-    assert "--proxy_hostname=http://proxy:3128" in patch_workload.flagfile
+    assert "--proxy_hostname=proxy:3128\n" in patch_workload.flagfile
+
+
+@pytest.mark.parametrize("name", ["HTTPS_PROXY", "https_proxy"])
+def test_proxy_hostname_flag_from_legacy_proxy(ctx, patch_workload, monkeypatch, name):
+    """On models with the legacy https-proxy, Juju sets HTTPS_PROXY/https_proxy instead."""
+    monkeypatch.setenv(name, "http://squid.internal:3128")
+    state = testing.State(config=VALID_CONFIG)
+
+    ctx.run(ctx.on.config_changed(), state)
+
+    assert "--proxy_hostname=squid.internal:3128\n" in patch_workload.flagfile
+
+
+def test_juju_proxy_wins_over_legacy_proxy(ctx, patch_workload, monkeypatch):
+    monkeypatch.setenv("JUJU_CHARM_HTTPS_PROXY", "http://juju-proxy:3128")
+    monkeypatch.setenv("HTTPS_PROXY", "http://legacy-proxy:3128")
+    state = testing.State(config=VALID_CONFIG)
+
+    ctx.run(ctx.on.config_changed(), state)
+
+    assert "--proxy_hostname=juju-proxy:3128\n" in patch_workload.flagfile
+
+
+def test_no_proxy_flag_without_proxy(ctx, patch_workload):
+    state = testing.State(config=VALID_CONFIG)
+
+    ctx.run(ctx.on.config_changed(), state)
+
+    assert "proxy_hostname" not in patch_workload.flagfile
 
 
 def test_stop_uninstalls_workload(ctx, patch_workload):
