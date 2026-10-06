@@ -8,6 +8,13 @@ import pytest
 import osquery
 
 
+@pytest.fixture(autouse=True)
+def no_proxy_env(monkeypatch):
+    """Keep the test runner's own proxy out of the rendered flagfile."""
+    for name in ("JUJU_CHARM_HTTPS_PROXY", "HTTPS_PROXY", "https_proxy"):
+        monkeypatch.delenv(name, raising=False)
+
+
 @pytest.fixture(name="patch_workload")
 def patch_workload_fixture(monkeypatch):
     """Patch all host-level workload side effects.
