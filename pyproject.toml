@@ -4,7 +4,7 @@
 [project]
 name = "osquery-operator"
 version = "0.1.0"
-description = "Subordinate charm for the OSQuery endpoint security monitoring agent."
+description = "Subordinate charm for the osquery endpoint security monitoring agent."
 readme = "README.md"
 # Ubuntu 22.04 (one of the supported bases) ships Python 3.10, so the charm must
 # remain compatible with it. Keep this in sync with the oldest supported base.

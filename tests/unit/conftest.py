@@ -1,7 +1,7 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Shared fixtures for the OSQuery charm unit tests."""
+"""Shared fixtures for the osquery charm unit tests."""
 
 import pytest
 

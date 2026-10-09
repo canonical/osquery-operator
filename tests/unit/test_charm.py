@@ -1,14 +1,14 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Unit tests for the OSQuery charm lifecycle."""
+"""Unit tests for the osquery charm lifecycle."""
 
 import pytest
 from ops import testing
 
 import osquery
-from charm import OSQueryCharm
-from errors import OSQueryConfigError, OSQueryInstallError
+from charm import OsqueryCharm
+from errors import OsqueryConfigError, OsqueryInstallError
 
 # The snap channel charmcraft.yaml defaults the snap-channel option to.
 DEFAULT_CHANNEL = "latest/edge"
@@ -23,7 +23,7 @@ VALID_CONFIG = {
 @pytest.fixture(name="ctx")
 def ctx_fixture():
     """Return an ops testing context for the charm."""
-    return testing.Context(OSQueryCharm)
+    return testing.Context(OsqueryCharm)
 
 
 @pytest.mark.parametrize(
@@ -52,7 +52,7 @@ def test_reconcile_installs_and_configures_when_missing(ctx, patch_workload, eve
 
 
 def test_reconcile_is_idempotent_when_already_installed(ctx, patch_workload):
-    """Reconciling with OSQuery already on the configured channel does not reinstall."""
+    """Reconciling with osquery already on the configured channel does not reinstall."""
     patch_workload.installed = True
     patch_workload.channel = DEFAULT_CHANNEL
     state = testing.State(config=VALID_CONFIG)
@@ -109,7 +109,7 @@ def test_unavailable_snap_channel_blocks(ctx, monkeypatch):
     monkeypatch.setattr("osquery.is_installed", lambda: False)
 
     def fail_install(channel):
-        raise OSQueryConfigError(f"snap channel '{channel}' is not available for c-osquery")
+        raise OsqueryConfigError(f"snap channel '{channel}' is not available for c-osquery")
 
     monkeypatch.setattr("osquery.install", fail_install)
     state = testing.State(config={**VALID_CONFIG, "snap-channel": "nope/stable"})
@@ -305,7 +305,7 @@ def test_reconcile_failure_sets_blocked_status(ctx, monkeypatch, event):
     monkeypatch.setattr("osquery.is_installed", lambda: False)
 
     def fail_install(channel):
-        raise OSQueryInstallError("install failed")
+        raise OsqueryInstallError("install failed")
 
     monkeypatch.setattr("osquery.install", fail_install)
     state = testing.State(config=VALID_CONFIG)
@@ -319,7 +319,7 @@ def test_stop_failure_sets_blocked_status(ctx, monkeypatch):
     """A custom workload error is converted to blocked status during stop."""
 
     def fail_uninstall():
-        raise OSQueryInstallError("remove failed")
+        raise OsqueryInstallError("remove failed")
 
     monkeypatch.setattr("osquery.uninstall", fail_uninstall)
     state = testing.State()

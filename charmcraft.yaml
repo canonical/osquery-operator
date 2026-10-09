@@ -3,18 +3,18 @@
 
 name: osquery
 type: charm
-title: OSQuery
+title: osquery
 
-summary: Subordinate charm for the OSQuery endpoint security monitoring agent.
+summary: Subordinate charm for the osquery endpoint security monitoring agent.
 
 description: |
   A subordinate machine charm that deploys and manages the Canonical SecOps
-  fork of OSQuery for endpoint security monitoring.
+  fork of osquery for endpoint security monitoring.
 
-  The charm installs OSQuery from the `c-osquery` snap (classic confinement)
-  and runs OSQuery in daemon mode.
+  The charm installs osquery from the `c-osquery` snap (classic confinement)
+  and runs osquery in daemon mode.
 
-  OSQuery opens an outbound TLS connection to a centrally managed OSQuery
+  Osquery opens an outbound TLS connection to a centrally managed osquery
   Controller to fetch its configuration (schedules, telemetry rules and query
   tasks) and to push the logs produced by its scheduled queries.
 
@@ -23,7 +23,7 @@ links:
   issues: https://github.com/canonical/osquery-operator/issues
   source: https://github.com/canonical/osquery-operator
 
-# OSQuery runs co-located with a principal application on the same machine and
+# Osquery runs co-located with a principal application on the same machine and
 # monitors its host, therefore the charm is a subordinate.
 subordinate: true
 
@@ -50,17 +50,17 @@ config:
         Snap Store channel the `c-osquery` snap is installed from and tracks,
         for example `latest/edge`. Changing it refreshes the snap onto the new
         channel. The unit is blocked if the channel is empty or unavailable.
-    # --- Options with a custom mapping to one or more OSQuery flags ---
+    # --- Options with a custom mapping to one or more osquery flags ---
     controller-uri:
       type: string
       description: >
-        Required. Hostname of the OSQuery Controller the agent connects to over
+        Required. Hostname of the osquery Controller the agent connects to over
         TLS. Sets the `--tls_hostname` flag to `<controller-uri>:443`. The unit
         is blocked until this option is set.
     controller-env-uuid:
       type: string
       description: >
-        Required. UUID of the environment on the OSQuery Controller. It expands
+        Required. UUID of the environment on the osquery Controller. It expands
         into every per-environment TLS endpoint flag (`--enroll_tls_endpoint`,
         `--config_tls_endpoint`, `--logger_tls_endpoint`,
         `--distributed_tls_read_endpoint`, `--distributed_tls_write_endpoint`,
@@ -76,7 +76,7 @@ config:
     tls-server-certs:
       type: string
       description: >
-        PEM-encoded CA bundle used to verify the OSQuery Controller's server
+        PEM-encoded CA bundle used to verify the osquery Controller's server
         certificate. Written to /var/snap/c-osquery/common/etc/osquery/certs/server-ca.pem and referenced
         through `--tls_server_certs`.
     tls-client-cert:
@@ -119,7 +119,7 @@ config:
     config-plugin:
       type: string
       default: tls
-      description: Sets `--config_plugin`, the plugin OSQuery uses to fetch its configuration.
+      description: Sets `--config_plugin`, the plugin osquery uses to fetch its configuration.
     config-enable-backup:
       type: boolean
       description: Sets `--config_enable_backup`, keeping a backup of the last working config.
@@ -180,7 +180,7 @@ config:
     logger-plugin:
       type: string
       default: tls
-      description: Sets `--logger_plugin`, the plugin OSQuery uses to ship logs.
+      description: Sets `--logger_plugin`, the plugin osquery uses to ship logs.
     logger-stderr:
       type: boolean
       description: Sets `--logger_stderr`, mirroring status logs to stderr.

@@ -1,4 +1,4 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Integration tests for the OSQuery charm."""
+"""Integration tests for the osquery charm."""

@@ -1,7 +1,7 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Fixtures for the OSQuery charm integration tests."""
+"""Fixtures for the osquery charm integration tests."""
 
 import jubilant
 import pytest

@@ -1,12 +1,12 @@
 .. meta::
-   :description: An overview of the OSQuery charm's architecture, modules, and reconcile flow.
+   :description: An overview of the osquery charm's architecture, modules, and reconcile flow.
 
 .. _reference_charm_architecture:
 
 Charm architecture
 ==================
 
-The OSQuery charm is a subordinate machine charm. Rather than running a workload
+The osquery charm is a subordinate machine charm. Rather than running a workload
 in a container, it installs and manages the ``osqueryd`` daemon directly on the
 principal's machine as the ``c-osquery`` snap, managed through ``snapd``.
 
@@ -16,7 +16,7 @@ principal's machine as the ``c-osquery`` snap, managed through ``snapd``.
 Architecture overview
 ---------------------
 
-The OSQuery charm is a machine charm, so it is not containerized: there is no OCI
+The osquery charm is a machine charm, so it is not containerized: there is no OCI
 image and no Pebble services. Both the Juju unit agent (which runs the charm code) and the
 ``osqueryd`` workload it manages run directly on the principal's host, sharing
 the same machine as the principal unit. The charm's only moving parts are the
@@ -29,7 +29,7 @@ under ``/var/snap/c-osquery/common/etc/osquery``.
         subgraph machine["Principal machine (no container)"]
             principal["Principal unit"]
             subgraph agent["Juju unit agent"]
-                charm["OSQuery charm code<br/>(charm.py reconcile)"]
+                charm["osquery charm code<br/>(charm.py reconcile)"]
             end
             osqueryd["osqueryd<br/>(c-osquery snap service)"]
             subgraph files["/var/snap/c-osquery/common/etc/osquery"]
@@ -43,21 +43,21 @@ under ``/var/snap/c-osquery/common/etc/osquery``.
             osqueryd -->|reads| flagfile
             osqueryd -->|reads| secrets
         end
-        controller["OSQuery Controller"]
+        controller["osquery Controller"]
         osqueryd -->|TLS: enroll / config / logs| controller
 
 Workload
 --------
 
-The charm installs the Canonical SecOps fork of OSQuery from the ``c-osquery``
+The charm installs the Canonical SecOps fork of osquery from the ``c-osquery``
 snap, with classic confinement, from the channel set in ``snap-channel``. Once
-installed, OSQuery runs as the snap's ``c-osquery.osqueryd`` service (the
+installed, osquery runs as the snap's ``c-osquery.osqueryd`` service (the
 ``snap.c-osquery.osqueryd.service`` systemd unit). The daemon
 reads its command-line flags from a flagfile on disk; the charm generates this
 flagfile from the Juju configuration, so changing a configuration value and
 restarting the daemon is how the charm applies changes to the workload.
 
-The agent connects outward over TLS to a centrally managed OSQuery Controller,
+The agent connects outward over TLS to a centrally managed osquery Controller,
 which supplies its configuration (query schedules, telemetry rules, and query
 tasks) and collects its logs.
 
@@ -69,9 +69,9 @@ The charm follows a holistic reconcile pattern. A single handler,
 ``install``, ``upgrade-charm``, ``start``, ``config-changed``,
 ``secret-changed``, and ``update-status``. On each event the handler:
 
-#. Ensures the OSQuery snap is installed and tracks the configured
+#. Ensures the osquery snap is installed and tracks the configured
    ``snap-channel``, installing or refreshing it if it doesn't.
-#. Renders the current Juju configuration into the OSQuery flagfile and writes
+#. Renders the current Juju configuration into the osquery flagfile and writes
    the file-backed secrets (the enrollment secret and TLS material) to disk.
 #. Restarts the ``osqueryd`` daemon if necessary.
 #. Reports the resulting unit status.
@@ -106,25 +106,25 @@ from the host-facing logic:
     * - Module
       - Responsibility
     * - ``src/charm.py``
-      - The ``OSQueryCharm`` class. Observes Juju events, drives the reconcile
+      - The ``OsqueryCharm`` class. Observes Juju events, drives the reconcile
         loop, reads configuration and secrets, and sets unit status.
     * - ``src/osquery.py``
       - Host workload management: installing, refreshing, and removing the
         ``c-osquery`` snap and managing its ``c-osquery.osqueryd`` service. The module contains no Juju
         or Ops imports, so it can be reasoned about and tested in isolation.
     * - ``src/flags.py``
-      - Translates Juju configuration values into the OSQuery flagfile and
+      - Translates Juju configuration values into the osquery flagfile and
         determines which required options are unset.
     * - ``src/errors.py``
-      - The charm's exception hierarchy, including ``OSQueryError``,
-        ``OSQueryConfigError``, and ``OSQueryInstallError``.
+      - The charm's exception hierarchy, including ``OsqueryError``,
+        ``OsqueryConfigError``, and ``OsqueryInstallError``.
 
 Juju integration
 ----------------
 
 As a subordinate, the charm attaches to a principal application through the
 ``general-info`` relation (interface ``juju-info``, ``container`` scope). This
-places one OSQuery unit on each principal machine. See :ref:`Relation endpoints
+places one osquery unit on each principal machine. See :ref:`Relation endpoints
 <reference_relation_endpoints>` for details.
 
 .. vale Canonical.004-Canonical-product-names = NO

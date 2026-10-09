@@ -1,7 +1,7 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Integration tests that deploy the OSQuery subordinate charm."""
+"""Integration tests that deploy the osquery subordinate charm."""
 
 import contextlib
 import json
@@ -58,14 +58,14 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
     """The subordinate deploys, relates to a principal and becomes active.
 
     The charm is built for each supported Ubuntu base, so this test runs once
-    per base to confirm the base-specific artifact installs the OSQuery snap on
+    per base to confirm the base-specific artifact installs the osquery snap on
     a matching principal machine.
 
     Steps:
     - Deploy the `ubuntu` principal application on the base under test.
-    - Deploy the matching OSQuery subordinate artifact for that base.
+    - Deploy the matching osquery subordinate artifact for that base.
     - Relate the two, set the required controller options and wait for active.
-    - Confirm the OSQuery snap is installed, classic, on the configured channel.
+    - Confirm the osquery snap is installed, classic, on the configured channel.
     - Confirm the generated flagfile reflects the configuration.
     - Remove the subordinate and confirm the snap is removed.
     """
@@ -94,7 +94,7 @@ def test_deploy_and_relate(juju: jubilant.Juju, charm_paths, base: str):
     )
     unit = _principal_unit(juju, principal_app)
 
-    # The subordinate installs the OSQuery snap onto the principal's machine,
+    # The subordinate installs the osquery snap onto the principal's machine,
     # with classic confinement, tracking the charm's default channel.
     assert _snap_list(juju, unit) == {"tracking": "latest/edge", "notes": "classic"}
 

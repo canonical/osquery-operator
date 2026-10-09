@@ -11,7 +11,7 @@ changes:
   type: minor
   description: >
     Added a configuration reference describing every charm option, how they map
-    onto the OSQuery flagfile and which options are required, and documented the
+    onto the osquery flagfile and which options are required, and documented the
     Juju events the charm reacts to.
   urls:
     pr:

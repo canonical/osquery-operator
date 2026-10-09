@@ -11,9 +11,9 @@ changes:
   type: minor
   description: >
     Added a reusable Terraform module under the terraform/ directory that
-    deploys the OSQuery subordinate charm using the Juju Terraform provider.
+    deploys the osquery subordinate charm using the Juju Terraform provider.
     The module omits the units directive (as required for subordinate charms)
-    and exposes the general-info endpoint so consumers can relate OSQuery to a
+    and exposes the general-info endpoint so consumers can relate osquery to a
     principal machine application. It ships terraform tests that deploy an
     ubuntu principal, integrate the charm and assert it reaches active status.
   urls:

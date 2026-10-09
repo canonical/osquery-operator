@@ -1,12 +1,12 @@
 .. meta::
-   :description: Reference for the Terraform module shipped with the OSQuery charm.
+   :description: Reference for the Terraform module shipped with the osquery charm.
 
 .. _reference_terraform:
 
 Terraform
 =========
 
-The OSQuery charm ships a Terraform module that wraps the `Juju Terraform
+The osquery charm ships a Terraform module that wraps the `Juju Terraform
 provider <https://registry.terraform.io/providers/juju/juju/latest>`_, so you can
 deploy and manage the charm declaratively. The module source lives in the
 ``terraform/`` directory of the `code repository <https://github.com/canonical/osquery-operator>`_.
@@ -23,7 +23,7 @@ Module contents
     * - File
       - Purpose
     * - ``main.tf``
-      - Declares the ``juju_application`` resource for the OSQuery charm.
+      - Declares the ``juju_application`` resource for the osquery charm.
     * - ``variables.tf``
       - Declares the module's input variables.
     * - ``outputs.tf``
@@ -31,11 +31,11 @@ Module contents
     * - ``versions.tf``
       - Pins the required Terraform and provider versions.
 
-Because OSQuery is a subordinate charm, the module intentionally omits the
-``units`` input: Juju co-locates one OSQuery unit next to every unit of the
+Because osquery is a subordinate charm, the module intentionally omits the
+``units`` input: Juju co-locates one osquery unit next to every unit of the
 principal application it's related to. The module exposes an ``app_name`` output
 and a ``requires`` output that surfaces the ``general-info`` endpoint, so
-higher-level modules can integrate OSQuery with a principal application.
+higher-level modules can integrate osquery with a principal application.
 
 The authoritative description of the module's inputs and outputs is maintained
 alongside the module itself in the

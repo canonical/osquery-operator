@@ -21,7 +21,7 @@ variable "model_uuid" {
   type = string
 }
 
-# OSQuery is a subordinate charm, so it needs a principal application to be
+# Osquery is a subordinate charm, so it needs a principal application to be
 # scheduled onto a machine. `ubuntu` is a minimal principal machine charm that
 # provides the `juju-info` interface every principal exposes.
 resource "juju_application" "ubuntu" {

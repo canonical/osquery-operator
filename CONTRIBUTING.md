@@ -1,6 +1,6 @@
 # Contributing
 
-This document explains the processes and practices recommended for contributing enhancements to the OSQuery charm.
+This document explains the processes and practices recommended for contributing enhancements to the osquery charm.
 
 ## Overview
 
@@ -84,7 +84,7 @@ we use the [Canonical contributor license agreement](https://assets.ubuntu.com/v
 
 #### Canonical contributor agreement
 
-Canonical welcomes contributions to the OSQuery charm. Please check out our
+Canonical welcomes contributions to the osquery charm. Please check out our
 [contributor agreement](https://ubuntu.com/legal/contributors) if you're interested in contributing to the solution.
 
 The CLA sign-off is simple line at the

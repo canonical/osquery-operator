@@ -1,4 +1,4 @@
-# OSQuery Terraform module
+# osquery Terraform module
 
 This folder contains a base [Terraform][Terraform] module for the `osquery` charm.
 
@@ -6,7 +6,7 @@ The module uses the [Terraform Juju provider][Terraform Juju provider] to model 
 deployment onto any machine cloud environment managed by [Juju][Juju].
 
 `osquery` is a **subordinate machine charm**. It does not run on its own machine;
-instead Juju co-locates one OSQuery unit next to every unit of the principal
+instead Juju co-locates one osquery unit next to every unit of the principal
 application it is related to over the `juju-info` interface. For this reason the
 module deliberately does not expose a `units` variable — the unit count is
 derived from the principal.
@@ -43,7 +43,7 @@ module "osquery" {
 }
 ```
 
-Because OSQuery is a subordinate, you must relate it to a principal machine
+Because osquery is a subordinate, you must relate it to a principal machine
 application over its `general-info` endpoint. For example, to monitor a
 `ubuntu` principal:
 

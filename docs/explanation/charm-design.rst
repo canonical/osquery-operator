@@ -1,18 +1,18 @@
 .. meta::
-   :description: An explanation of the design decisions behind the OSQuery charm.
+   :description: An explanation of the design decisions behind the osquery charm.
 
 .. _explanation_charm_design:
 
 Charm design
 ============
 
-OSQuery is endpoint security monitoring software: its purpose is to observe the
+Osquery is endpoint security monitoring software: its purpose is to observe the
 host it runs on. That job only makes sense on the same machine as the workload
 being monitored, so the charm is designed as a
 :ref:`subordinate charm <juju:subordinate-charm>`
 that attaches to a principal application over the generic ``juju-info``
-interface. This lets a single OSQuery application monitor any principal machine
-charm without that charm needing to know anything about OSQuery.
+interface. This lets a single osquery application monitor any principal machine
+charm without that charm needing to know anything about osquery.
 
 It's a machine charm rather than a Kubernetes charm because ``osqueryd`` runs as
 a host daemon that inspects operating-system state — processes, sockets,
@@ -22,12 +22,12 @@ than a container sandbox.
 Installing from a snap
 ----------------------
 
-The charm installs the Canonical SecOps fork of OSQuery from the
+The charm installs the Canonical SecOps fork of osquery from the
 `c-osquery snap <https://snapcraft.io/c-osquery>`_, on the channel set in
 ``snap-channel``, and runs the ``osqueryd`` daemon as the snap's
 ``snap.c-osquery.osqueryd`` systemd service. A single snap build serves every
 supported Ubuntu base and is the artifact the fork tests before each release.
-The snap uses classic confinement because OSQuery's eBPF backend needs
+The snap uses classic confinement because osquery's eBPF backend needs
 host-wide tracing privileges that no strict-confinement interface grants.
 
 Configuration-driven reconciliation
@@ -36,7 +36,7 @@ Configuration-driven reconciliation
 The charm has no actions. Instead, all of its behavior is driven by
 configuration, and it applies that configuration through a holistic *reconcile*
 loop. Every relevant Juju event runs the same idempotent handler, which ensures
-OSQuery is installed, renders the configuration into the OSQuery flagfile, writes
+osquery is installed, renders the configuration into the osquery flagfile, writes
 the file-backed secrets, restarts the daemon if needed, and reports status.
 
 This design keeps the charm simple and predictable: there's exactly one code path
@@ -58,8 +58,8 @@ separated from its host-facing concerns.
 Talking to a controller instead of Juju relations
 -------------------------------------------------
 
-An OSQuery fleet is coordinated by a central OSQuery Controller that owns the
+An osquery fleet is coordinated by a central osquery Controller that owns the
 query schedules, telemetry rules, and log storage. The charm connects each agent
 to that controller directly over TLS rather than modelling the controller as a
-Juju relation. This keeps the charm aligned with how OSQuery fleets are operated
+Juju relation. This keeps the charm aligned with how osquery fleets are operated
 in practice and avoids duplicating the controller's responsibilities in Juju.

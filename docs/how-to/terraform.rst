@@ -1,5 +1,5 @@
 .. meta::
-   :description: Learn how to deploy the OSQuery charm with Terraform.
+   :description: Learn how to deploy the osquery charm with Terraform.
 
 .. _how_to_terraform:
 
@@ -7,7 +7,7 @@ How to deploy with Terraform
 ============================
 
 This charm ships a `Terraform <https://www.terraform.io/>`_ module that wraps the
-Juju provider, so you can manage an OSQuery deployment declaratively alongside the
+Juju provider, so you can manage an osquery deployment declaratively alongside the
 rest of your infrastructure.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
@@ -46,6 +46,6 @@ Initialize the working directory, review the plan, and apply it:
     terraform plan
     terraform apply
 
-After ``terraform apply`` completes, integrate the OSQuery subordinate with a
+After ``terraform apply`` completes, integrate the osquery subordinate with a
 principal application and configure it as described in the :ref:`advanced
 tutorial <tutorial_advanced_deployment>`.

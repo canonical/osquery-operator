@@ -1,12 +1,12 @@
 .. meta::
-   :description: Reference documentation for the configuration options of the OSQuery charm.
+   :description: Reference documentation for the configuration options of the osquery charm.
 
 .. _reference_configurations:
 
 Configurations
 ==============
 
-The OSQuery charm is configured entirely through Juju configuration options.
+The osquery charm is configured entirely through Juju configuration options.
 The charm doesn't use cross-charm relations for configuration: you set options with
 ``juju config`` and the charm applies them.
 
@@ -18,16 +18,16 @@ On every configuration change the charm:
 #. Resolves each option (including any referenced Juju secrets)
 #. Writes the file-backed options (enrollment secret and TLS material) to disk
    with strict ownership and permissions
-#. Renders the OSQuery flagfile to ``/var/snap/c-osquery/common/etc/osquery/osquery.flags``,
+#. Renders the osquery flagfile to ``/var/snap/c-osquery/common/etc/osquery/osquery.flags``,
    where the ``c-osquery`` snap's daemon reads it
 #. Enables and restarts the snap's ``c-osquery.osqueryd`` service so the new flags take
    effect
 
-The flagfile is the `OSQuery flagfile
+The flagfile is the `osquery flagfile
 <https://osquery.readthedocs.io/en/stable/installation/cli-flags/#flagfile>`_.
-Each charm option maps to one or more OSQuery command-line flags. Unset options that
+Each charm option maps to one or more osquery command-line flags. Unset options that
 have no charm default are omitted from the flagfile, so
-OSQuery falls back to its own built-in defaults.
+osquery falls back to its own built-in defaults.
 
 Required options
 ----------------
@@ -37,7 +37,7 @@ both are set, the unit reports ``blocked`` with a message naming the missing
 options.
 
 ``controller-uri``
-   Hostname of the OSQuery Controller. It sets ``--tls_hostname`` to
+   Hostname of the osquery Controller. It sets ``--tls_hostname`` to
    ``<controller-uri>:443``.
 
 ``controller-env-uuid``
@@ -135,10 +135,10 @@ One-to-one options
 The remaining options map directly to a single flag of the same name, with
 dashes replaced by underscores (for example, ``carver-block-size`` sets
 ``--carver_block_size``). Options that have a charm default are always passed
-to the OSQuery workload. Options without a default are only passed once the
+to the osquery workload. Options without a default are only passed once the
 user sets them to a specific value.
 
-The following table lists all one-to-one options. Please refer to the `OSQuery flagfile
+The following table lists all one-to-one options. Please refer to the `osquery flagfile
 <https://osquery.readthedocs.io/en/stable/installation/cli-flags/#flagfile>`_ for the
 meaning of each flag.
 
@@ -304,9 +304,9 @@ Hardcoded flags
 Some flags are always managed by the charm and are not exposed as options:
 
 ``--proxy_hostname``
-   Set from the model's HTTPS proxy, so OSQuery routes its outbound TLS traffic
+   Set from the model's HTTPS proxy, so osquery routes its outbound TLS traffic
    through it: ``juju-https-proxy`` (``JUJU_CHARM_HTTPS_PROXY``), or else the
-   legacy ``https-proxy`` (``HTTPS_PROXY``). OSQuery expects ``host:port``, so
+   legacy ``https-proxy`` (``HTTPS_PROXY``). Osquery expects ``host:port``, so
    the charm drops the scheme: ``http://squid.internal:3128`` becomes
    ``--proxy_hostname=squid.internal:3128``. It is only emitted when the model
    has an HTTPS proxy.
@@ -320,10 +320,10 @@ Some flags are always managed by the charm and are not exposed as options:
 Keeping the option list up to date
 ----------------------------------
 
-The set of supported flags is derived systematically from the OSQuery fork's
+The set of supported flags is derived systematically from the osquery fork's
 source. The ``scripts/extract_flags.py`` helper scans the source tree and
 exports every flag definition (along with whether it is a plugin flag,
-remote-configurable, or shell-only) to a CSV. Re-run the script whenever the OSQuery
+remote-configurable, or shell-only) to a CSV. Re-run the script whenever the osquery
 version is bumped to review any newly added flags:
 
 .. code-block:: bash

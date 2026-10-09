@@ -2,7 +2,7 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Charm for the OSQuery endpoint security monitoring agent."""
+"""Charm for the osquery endpoint security monitoring agent."""
 
 import logging
 import os
@@ -12,20 +12,20 @@ import ops
 
 import flags
 import osquery
-from errors import OSQueryConfigError, OSQueryError
+from errors import OsqueryConfigError, OsqueryError
 
 logger = logging.getLogger(__name__)
 
 # Where Juju puts the model's HTTPS proxy in the hook environment:
-# juju-https-proxy, then the legacy https-proxy. OSQuery routes its outbound
+# juju-https-proxy, then the legacy https-proxy. Osquery routes its outbound
 # TLS traffic through the first one set.
 HTTPS_PROXY_ENVS = ("JUJU_CHARM_HTTPS_PROXY", "HTTPS_PROXY", "https_proxy")
 # Snap channel option; configures the charm, not the flagfile.
 SNAP_CHANNEL_CONFIG = "snap-channel"
 
 
-class OSQueryCharm(ops.CharmBase):
-    """Subordinate charm that manages the OSQuery agent on the host."""
+class OsqueryCharm(ops.CharmBase):
+    """Subordinate charm that manages the osquery agent on the host."""
 
     def __init__(self, framework: ops.Framework):
         """Initialize the charm and observe lifecycle events.
@@ -45,7 +45,7 @@ class OSQueryCharm(ops.CharmBase):
     def _reconcile(self, _: ops.EventBase) -> None:
         """Reconcile the host with the desired charm state.
 
-        Ensures OSQuery is installed from the configured snap channel, applies
+        Ensures osquery is installed from the configured snap channel, applies
         the current configuration and reports the resulting unit status. The
         handler is idempotent and safe to run on every lifecycle event, so a
         single reconcile method drives the whole charm (a holistic approach).
@@ -53,35 +53,35 @@ class OSQueryCharm(ops.CharmBase):
         try:
             channel = str(self.config.get(SNAP_CHANNEL_CONFIG) or "")
             if not channel:
-                raise OSQueryConfigError(f"missing required configuration: {SNAP_CHANNEL_CONFIG}")
+                raise OsqueryConfigError(f"missing required configuration: {SNAP_CHANNEL_CONFIG}")
             if not osquery.is_installed():
-                self.unit.status = ops.MaintenanceStatus("installing OSQuery")
+                self.unit.status = ops.MaintenanceStatus("installing osquery")
             # Installs, or refreshes if the tracked channel differs.
             osquery.install(channel)
-            self.unit.status = ops.MaintenanceStatus("configuring OSQuery")
+            self.unit.status = ops.MaintenanceStatus("configuring osquery")
             self._configure()
             self.unit.status = ops.ActiveStatus()
-        except OSQueryConfigError as exc:
+        except OsqueryConfigError as exc:
             # A configuration problem is (usually) something the operator can
             # fix, so surface it plainly without a scary traceback.
-            logger.warning("OSQuery configuration problem: %s", exc)
+            logger.warning("osquery configuration problem: %s", exc)
             self.unit.status = ops.BlockedStatus(str(exc))
-        except OSQueryError as exc:
-            logger.exception("Failed to reconcile OSQuery workload")
+        except OsqueryError as exc:
+            logger.exception("Failed to reconcile osquery workload")
             self.unit.status = ops.BlockedStatus(str(exc))
 
     def _configure(self) -> None:
         """Render the flagfile and secret files, then (re)start the daemon.
 
         Raises:
-            OSQueryConfigError: if a required option is unset, a referenced
+            OsqueryConfigError: if a required option is unset, a referenced
                 secret is missing, or a file cannot be written.
         """
         values = self._config_values()
 
         missing = flags.missing_required(values)
         if missing:
-            raise OSQueryConfigError("missing required configuration: " + ", ".join(missing))
+            raise OsqueryConfigError("missing required configuration: " + ", ".join(missing))
 
         changed = self._write_config_files(values)
 
@@ -89,7 +89,7 @@ class OSQueryCharm(ops.CharmBase):
         flagfile = flags.render_flagfile(flags.build_flags(values, proxy_hostname))
         changed = osquery.write_flagfile(flagfile) or changed
 
-        # OSQuery only reads its flagfile at start-up, so restart when the
+        # Osquery only reads its flagfile at start-up, so restart when the
         # rendered config changed. Also (re)start if the daemon is not running
         # (for example after a reboot or a fresh install) even when nothing
         # changed, so reconcile self-heals a stopped service.
@@ -143,7 +143,7 @@ class OSQueryCharm(ops.CharmBase):
             The secret value, or ``None`` if the option is unset.
 
         Raises:
-            OSQueryConfigError: if the secret cannot be accessed or does not
+            OsqueryConfigError: if the secret cannot be accessed or does not
                 expose a usable field.
         """
         secret_id = self.config.get(config_key)
@@ -153,26 +153,26 @@ class OSQueryCharm(ops.CharmBase):
             secret = self.model.get_secret(id=str(secret_id))
             content = secret.get_content(refresh=True)
         except ops.SecretNotFoundError as exc:
-            raise OSQueryConfigError(
+            raise OsqueryConfigError(
                 f"secret for '{config_key}' not found; grant it to this application"
             ) from exc
         if config_key in content:
             return content[config_key]
         if len(content) == 1:
             return next(iter(content.values()))
-        raise OSQueryConfigError(
+        raise OsqueryConfigError(
             f"secret for '{config_key}' must expose a single field or a field named '{config_key}'"
         )
 
     def _on_stop(self, _: ops.EventBase) -> None:
-        """Stop and uninstall OSQuery during unit tear-down."""
+        """Stop and uninstall osquery during unit tear-down."""
         try:
-            self.unit.status = ops.MaintenanceStatus("removing OSQuery")
+            self.unit.status = ops.MaintenanceStatus("removing osquery")
             osquery.uninstall()
-        except OSQueryError as exc:
-            logger.exception("Failed to stop OSQuery workload cleanly")
+        except OsqueryError as exc:
+            logger.exception("Failed to stop osquery workload cleanly")
             self.unit.status = ops.BlockedStatus(str(exc))
 
 
 if __name__ == "__main__":  # pragma: nocover
-    ops.main(OSQueryCharm)
+    ops.main(OsqueryCharm)

@@ -1,12 +1,12 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Translation of charm configuration into an OSQuery flagfile.
+"""Translation of charm configuration into an osquery flagfile.
 
 This module is intentionally free of any Ops/Juju imports. It takes a plain
 mapping of resolved configuration values (secrets already resolved to their
 plaintext by the charm) and produces the ``--flag=value`` lines that make up the
-OSQuery flagfile, plus the metadata the charm needs to materialise file-backed
+osquery flagfile, plus the metadata the charm needs to materialise file-backed
 options on disk.
 
 The mapping is derived directly from the charm specification. There are three
@@ -132,7 +132,7 @@ def missing_required(values: Mapping[str, Any]) -> list[str]:
 
 
 def _render(value: Any) -> str:
-    """Render a configuration value the way OSQuery expects it in a flagfile."""
+    """Render a configuration value the way osquery expects it in a flagfile."""
     if isinstance(value, bool):
         # gflags expects lower-case boolean literals.
         return "true" if value else "false"
@@ -152,10 +152,10 @@ def proxy_address(proxy: str) -> str:
 
 
 def build_flags(values: Mapping[str, Any], proxy_hostname: str) -> "OrderedDict[str, str]":
-    """Build the ordered mapping of OSQuery flags from resolved config values.
+    """Build the ordered mapping of osquery flags from resolved config values.
 
     The required options are assumed to be present; call :func:`missing_required`
-    first. Options that are unset (``None``) are omitted so OSQuery falls back to
+    first. Options that are unset (``None``) are omitted so osquery falls back to
     its own defaults.
 
     Args:
@@ -193,7 +193,7 @@ def build_flags(values: Mapping[str, Any], proxy_hostname: str) -> "OrderedDict[
             continue
         flags[name.replace("-", "_")] = _render(value)
 
-    # Hardcoded flag: route OSQuery's outbound traffic through the Juju proxy
+    # Hardcoded flag: route osquery's outbound traffic through the Juju proxy
     # when one is configured for the model.
     if proxy_hostname:
         flags["proxy_hostname"] = proxy_address(proxy_hostname)

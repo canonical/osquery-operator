@@ -6,12 +6,12 @@ version_schema: 2
 
 # The key holding the change(s)
 changes:
-- title: Added configuration options to build the OSQuery flagfile
+- title: Added configuration options to build the osquery flagfile
   author: m2-farzan
   type: minor
   description: >
     Introduced the charm's configuration surface. The charm now translates its
-    options into the OSQuery flagfile at /etc/osquery/osquery.flags and
+    options into the osquery flagfile at /etc/osquery/osquery.flags and
     (re)starts the daemon so changes take effect. Two options, controller-uri
     and controller-env-uuid, are required and the unit blocks until they are
     set; controller-env-uuid expands into every per-environment TLS endpoint.

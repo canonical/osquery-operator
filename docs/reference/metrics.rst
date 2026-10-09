@@ -1,15 +1,15 @@
 .. meta::
-   :description: Reference for the metrics exposed by the OSQuery charm.
+   :description: Reference for the metrics exposed by the osquery charm.
 
 .. _reference_metrics:
 
 Metrics
 =======
 
-The OSQuery charm doesn't currently expose Juju or Prometheus metrics.
+The osquery charm doesn't currently expose Juju or Prometheus metrics.
 
-OSQuery's operational data — scheduled query results, telemetry, and status
-logs — is shipped directly to the OSQuery Controller over TLS, which is the
+Osquery's operational data — scheduled query results, telemetry, and status
+logs — is shipped directly to the osquery Controller over TLS, which is the
 system of record for that data. The charm doesn't presently surface a separate
 metrics endpoint for Juju or for the Canonical Observability Stack.
 

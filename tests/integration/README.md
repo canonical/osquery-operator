@@ -1,6 +1,6 @@
 # Integration tests
 
-These tests deploy the OSQuery subordinate charm onto real Juju machines (LXD)
+These tests deploy the osquery subordinate charm onto real Juju machines (LXD)
 and exercise it end to end. There are two suites:
 
 | Suite | File | Controller |
@@ -96,7 +96,7 @@ principal machine that records enrollment request bodies. No external network or
 VM is required.
 
 - **`test_deploy_and_relate[<base>]`** — parametrised over all supported bases.
-  Deploys the `ubuntu` principal and the matching OSQuery subordinate artifact,
+  Deploys the `ubuntu` principal and the matching osquery subordinate artifact,
   relates them, sets the two required controller options, and asserts the
   `c-osquery` snap is installed (classic, tracking the default `latest/edge`
   channel) and the generated
@@ -121,7 +121,7 @@ Flow:
 
 1. Create a fresh osctrl TLS environment (with a fast scheduled query) and read
    its UUID and enrollment secret.
-2. Deploy the `ubuntu` principal and OSQuery subordinate; confirm the
+2. Deploy the `ubuntu` principal and osquery subordinate; confirm the
    subordinate `blocked`s until the controller options are set.
 3. Make the controller reachable on the principal machine by adding an
    `osctrl.lxd` `/etc/hosts` entry pointing at the VM's bridge IP.

@@ -1,12 +1,12 @@
 .. meta::
-   :description: Technical reference documentation for the OSQuery charm, including configurations, relations, and architecture.
+   :description: Technical reference documentation for the osquery charm, including configurations, relations, and architecture.
 
 .. _reference_index:
 
 Reference
 =========
 
-This section contains technical details and information about the OSQuery charm.
+This section contains technical details and information about the osquery charm.
 
 Charm usage
 -----------
@@ -59,7 +59,7 @@ and cryptography.
 Changelog
 ---------
 
-The changelog records all notable changes to the OSQuery charm.
+The changelog records all notable changes to the osquery charm.
 
 .. toctree::
     :hidden:
