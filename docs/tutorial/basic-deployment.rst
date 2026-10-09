@@ -1,17 +1,17 @@
 .. meta::
-   :description: Deploy the OSQuery charm for the first time and relate it to a principal application.
+   :description: Deploy the osquery charm for the first time and relate it to a principal application.
 
 .. _tutorial_basic_deployment:
 
-Deploy the OSQuery charm for the first time
+Deploy the osquery charm for the first time
 ===========================================
 
-The OSQuery charm installs and runs the ``osqueryd`` endpoint security
+The osquery charm installs and runs the ``osqueryd`` endpoint security
 monitoring agent on a machine. Because it's a
 :ref:`subordinate charm <juju:subordinate-charm>`,
 it doesn't run on its own: it attaches to a *principal* application that occupies
 the machine. In this tutorial you'll deploy a simple principal application, add
-the OSQuery charm as a subordinate, and confirm that the agent is running.
+the osquery charm as a subordinate, and confirm that the agent is running.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 .. vale Canonical.500-Repeated-words = NO
@@ -35,7 +35,7 @@ What you'll do
 
 - Set up an isolated environment.
 - Deploy a principal application.
-- Deploy the OSQuery charm as a subordinate.
+- Deploy the osquery charm as a subordinate.
 - Integrate the two charms.
 - Verify the deployment.
 - Clean up the environment.
@@ -71,7 +71,7 @@ tutorial:
 Deploy a principal application
 ------------------------------
 
-Because the OSQuery charm is a subordinate, it needs a principal to attach to. The ``ubuntu`` charm is a
+Because the osquery charm is a subordinate, it needs a principal to attach to. The ``ubuntu`` charm is a
 minimal principal application that provisions a bare Ubuntu machine, which is ideal for this
 tutorial. Let's deploy it now:
 
@@ -80,12 +80,12 @@ tutorial. Let's deploy it now:
     juju deploy ubuntu --base ubuntu@24.04
 
 The ``--base`` flag pins the machine to Ubuntu 24.04, ensuring it matches a base
-the OSQuery subordinate supports.
+the osquery subordinate supports.
 
-Deploy the OSQuery charm
+Deploy the osquery charm
 ------------------------
 
-Deploy the OSQuery charm:
+Deploy the osquery charm:
 
 .. code-block:: bash
 
@@ -97,14 +97,14 @@ state until it's integrated with a principal.
 Integrate the charms
 --------------------
 
-Integrate the OSQuery charm with the principal application over the
+Integrate the osquery charm with the principal application over the
 ``general-info`` endpoint:
 
 .. code-block:: bash
 
     juju integrate ubuntu osquery
 
-This command tells Juju to place the OSQuery agent on the same
+This command tells Juju to place the osquery agent on the same
 machine as the ``ubuntu`` unit.
 
 Verify the deployment
@@ -117,8 +117,8 @@ Watch the deployment settle with:
     juju status --watch 2s
 
 Wait until the ``ubuntu`` application is ``active`` and the ``osquery``
-subordinate reaches a settled state. The OSQuery charm blocks until it's told
-which OSQuery Controller to enroll with, so it's expected to report a blocked
+subordinate reaches a settled state. The osquery charm blocks until it's told
+which osquery Controller to enroll with, so it's expected to report a blocked
 status such as ``controller-env-uuid is required`` at this stage. Connecting the
 agent to a controller is covered in the :ref:`advanced tutorial
 <tutorial_advanced_deployment>`.
@@ -188,7 +188,7 @@ osquery answers straight from the live system (your exact output will vary):
     +-----+---------+
 
 Note that the ``osqueryi`` shell is just a convenience for testing. Typically the agent
-runs in the background as a daemon and is controlled by the OSQuery Controller.
+runs in the background as a daemon and is controlled by the osquery Controller.
 See the :ref:`advanced tutorial <tutorial_advanced_deployment>` for instructions on enrolling the agent with a controller.
 
 Clean up the environment
@@ -210,4 +210,4 @@ Next steps
 ----------
 
 Now that you have a basic deployment, continue to the :ref:`advanced tutorial
-<tutorial_advanced_deployment>` to connect the agent to an OSQuery Controller.
+<tutorial_advanced_deployment>` to connect the agent to an osquery Controller.

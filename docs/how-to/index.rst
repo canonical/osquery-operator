@@ -1,12 +1,12 @@
 .. meta::
-   :description: How-to guides for operating the OSQuery charm, including basic operations, upgrades, and development.
+   :description: How-to guides for operating the osquery charm, including basic operations, upgrades, and development.
 
 .. _how_to_index:
 
 How-to guides
 =============
 
-Manage the full operations lifecycle of the OSQuery charm, from initial
+Manage the full operations lifecycle of the osquery charm, from initial
 deployment through production maintenance. Each guide assumes that you've
 already deployed the charm with Juju.
 
@@ -27,7 +27,7 @@ These guides cover common day-to-day tasks for a running deployment.
 Update and refresh
 ------------------
 
-Backups, redeployments, and upgrades keep the OSQuery charm current and let it
+Backups, redeployments, and upgrades keep the osquery charm current and let it
 benefit from new features and fixes.
 
 .. toctree::

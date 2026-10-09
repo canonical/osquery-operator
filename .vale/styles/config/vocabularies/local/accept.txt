@@ -5,7 +5,8 @@ flagfile
 Launchpad
 LXD
 osctrl
-OSQuery
+osquery
+Osquery
 osqueryd
 PPA
 pytest

@@ -1,14 +1,14 @@
 .. meta::
-   :description: Connect the OSQuery agent to an OSQuery Controller using Juju configuration and secrets.
+   :description: Connect the osquery agent to an osquery Controller using Juju configuration and secrets.
 
 .. _tutorial_advanced_deployment:
 
-Connect the OSQuery agent to a controller
+Connect the osquery agent to a controller
 =========================================
 
 In the :ref:`basic tutorial <tutorial_basic_deployment>` you deployed the
-OSQuery charm and confirmed that the ``osqueryd`` daemon was installed. In this
-tutorial you'll finish the deployment by connecting the agent to an OSQuery
+osquery charm and confirmed that the ``osqueryd`` daemon was installed. In this
+tutorial you'll finish the deployment by connecting the agent to an osquery
 Controller, which supplies the agent's configuration (query schedules, telemetry
 rules, and query tasks) and collects its logs.
 
@@ -19,7 +19,7 @@ What you'll need
 ----------------
 
 - The deployment from the :ref:`basic tutorial <tutorial_basic_deployment>`.
-- The connection details for an OSQuery Controller:
+- The connection details for an osquery Controller:
 
   - The controller's hostname or URI.
   - The environment UUID assigned to your fleet.
@@ -27,7 +27,7 @@ What you'll need
   - Optionally, the TLS certificates used to authenticate to the controller, if
     your controller is configured to require them.
 
-.. TODO: Link to the OSQuery Controller documentation once it's published, so
+.. TODO: Link to the osquery Controller documentation once it's published, so
    readers know how to obtain these values.
 
 What you'll do
@@ -88,7 +88,7 @@ against its bundle of publicly trusted certificate authorities. Provide it only
 to pin a private or self-signed certificate authority.
 
 When they're needed, the ``.pem`` files must be generated beforehand and
-registered with the OSQuery Controller. Generating and registering them is
+registered with the osquery Controller. Generating and registering them is
 out of scope for this tutorial. Once you have them, provide the server CA, the
 client certificate, and the client key as file-backed configuration options:
 
@@ -108,7 +108,7 @@ Watch the status until the charm settles into ``active``:
 
     juju status --watch 2s
 
-Once the configuration is complete and valid, the charm renders the OSQuery
+Once the configuration is complete and valid, the charm renders the osquery
 flagfile, restarts ``osqueryd``, and the agent enrolls with the controller. You
 can confirm the daemon is running on the host with:
 

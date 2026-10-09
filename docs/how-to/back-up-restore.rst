@@ -1,26 +1,26 @@
 .. meta::
-   :description: Learn why the OSQuery charm needs no data backup, and how to back up and restore its configuration.
+   :description: Learn why the osquery charm needs no data backup, and how to back up and restore its configuration.
 
 .. _how_to_back_up_restore:
 
 How to back up and restore
 ==========================
 
-The OSQuery charm is stateless. All of its meaningful state lives elsewhere:
+The osquery charm is stateless. All of its meaningful state lives elsewhere:
 
 - The agent's configuration (query schedules, telemetry rules, and query tasks)
-  is owned by the OSQuery Controller and fetched over TLS at runtime.
+  is owned by the osquery Controller and fetched over TLS at runtime.
 - The agent's logs are shipped to the controller rather than retained locally.
 - The charm's own settings (the Juju configuration and secrets) are stored in
   the Juju controller as part of the model.
 
 As a result, there's no charm-specific data to back up or restore. To recover an
-OSQuery deployment, redeploy the charm and reapply its configuration.
+osquery deployment, redeploy the charm and reapply its configuration.
 
 Back up configurations
 ----------------------
 
-The only OSQuery-specific state you need to preserve is the charm's
+The only osquery-specific state you need to preserve is the charm's
 configuration. Capture it from the model so you can reapply it later:
 
 .. code-block:: bash

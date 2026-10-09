@@ -20,7 +20,7 @@ jobs:
       contents: read
     secrets: inherit
     with:
-      # OSQuery is a machine subordinate charm and its terraform test deploys a
+      # Osquery is a machine subordinate charm and its terraform test deploys a
       # machine principal (ubuntu), so the tests need an LXD (machine)
       # controller, not a Kubernetes one.
       #k8s-controller: true

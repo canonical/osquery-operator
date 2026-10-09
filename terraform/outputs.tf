@@ -9,7 +9,7 @@ output "application" {
 output "requires" {
   description = "Integration endpoints (relations) that this charm requires."
   value = {
-    # OSQuery is a subordinate; it must be related to a principal application
+    # Osquery is a subordinate; it must be related to a principal application
     # over the `juju-info` interface to be scheduled onto a machine.
     general_info = {
       kind     = "endpoint"

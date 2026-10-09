@@ -1,40 +1,40 @@
 .. meta::
-   :description: Discover the OSQuery charm, a Juju operator that deploys and manages the OSQuery endpoint security monitoring agent.
+   :description: Discover the osquery charm, a Juju operator that deploys and manages the osquery endpoint security monitoring agent.
 
 .. vale Canonical.007-Headings-sentence-case = NO
 
 .. _index:
 
-OSQuery operator
+osquery operator
 ================
 
 .. vale Canonical.007-Headings-sentence-case = YES
 
 A `Juju <https://juju.is/>`_ :ref:`charm <juju:charm>`
-deploying and managing `OSQuery <https://www.osquery.io/>`_ on virtual machines and bare-metal hosts.
+deploying and managing `osquery <https://www.osquery.io/>`_ on virtual machines and bare-metal hosts.
 
-.. TODO: Replace the upstream link above if a Canonical SecOps OSQuery product
+.. TODO: Replace the upstream link above if a Canonical SecOps osquery product
    page becomes available.
 
-OSQuery exposes an operating system as a high-performance relational database,
+Osquery exposes an operating system as a high-performance relational database,
 letting security and operations teams query the state of a host with SQL. This
-charm deploys the Canonical SecOps fork of OSQuery as a
+charm deploys the Canonical SecOps fork of osquery as a
 :ref:`subordinate <juju:subordinate-charm>`
 agent that runs alongside a principal application on the same machine. It
-installs OSQuery from the `c-osquery snap <https://snapcraft.io/c-osquery>`_,
-runs it in daemon mode, and connects it over TLS to a centrally managed OSQuery Controller that supplies the
+installs osquery from the `c-osquery snap <https://snapcraft.io/c-osquery>`_,
+runs it in daemon mode, and connects it over TLS to a centrally managed osquery Controller that supplies the
 agent's configuration and collects its logs.
 
 Like any Juju charm, this charm supports one-line deployment, configuration,
-integration, scaling, and more. For OSQuery, this includes:
+integration, scaling, and more. For osquery, this includes:
 
 * Installing and running the ``osqueryd`` daemon on any principal machine.
-* Translating Juju configuration into the OSQuery flagfile and reconciling the
+* Translating Juju configuration into the osquery flagfile and reconciling the
   daemon whenever the configuration changes.
-* Enrolling the agent with an OSQuery Controller over TLS, with the enrollment
+* Enrolling the agent with an osquery Controller over TLS, with the enrollment
   secret and client certificates delivered through Juju secrets.
 
-This charm makes operating OSQuery fleets simple and consistent for security,
+This charm makes operating osquery fleets simple and consistent for security,
 DevOps, and SRE teams through Juju's clean interface.
 
 In this documentation
@@ -46,7 +46,7 @@ In this documentation
     * -
       -
     * - Get started
-      - :ref:`Deploy the OSQuery charm <tutorial_basic_deployment>` | :ref:`Enroll an OSQuery Controller <tutorial_advanced_deployment>`
+      - :ref:`Deploy the osquery charm <tutorial_basic_deployment>` | :ref:`Enroll an osquery Controller <tutorial_advanced_deployment>`
     * - Deployment
       - :ref:`Configurations <reference_configurations>` | :ref:`Relation endpoints <reference_relation_endpoints>`
     * - Operations
@@ -61,8 +61,8 @@ How this documentation is organized
 
 This documentation uses the `Diátaxis documentation structure <https://diataxis.fr/>`_.
 
-- The :ref:`Tutorial <tutorial_index>` takes you step-by-step through a basic deployment of the OSQuery charm.
-- :ref:`How-to guides <how_to_index>` assume you have basic familiarity with the OSQuery charm. Learn more about setting up, using, maintaining, and contributing to this charm.
+- The :ref:`Tutorial <tutorial_index>` takes you step-by-step through a basic deployment of the osquery charm.
+- :ref:`How-to guides <how_to_index>` assume you have basic familiarity with the osquery charm. Learn more about setting up, using, maintaining, and contributing to this charm.
 - :ref:`Reference <reference_index>` provides a guide to configurations, relations, and other technical details.
 - :ref:`Explanation <explanation_index>` includes topic overviews, background and context and detailed discussion.
 - :ref:`Release notes <release_notes_index>` holds all the release notes for the charm, including any system or upgrade requirements.
@@ -81,7 +81,7 @@ If there's a particular area of documentation that you'd like to see that's miss
 Project and community
 ---------------------
 
-The OSQuery Operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community
+The osquery Operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community
 projects, contributions, suggestions, fixes, and constructive feedback.
 
 Governance and policies
@@ -101,7 +101,7 @@ Releases
 
 - :ref:`Release notes <release_notes_index>`
 
-Thinking about using the OSQuery Operator for your next project?
+Thinking about using the osquery Operator for your next project?
 `Get in touch <https://matrix.to/#/#charmhub-charmdev:ubuntu.com>`_!
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO

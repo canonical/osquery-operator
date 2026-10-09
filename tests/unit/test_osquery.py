@@ -9,7 +9,7 @@ import stat
 import pytest
 
 import osquery
-from errors import OSQueryConfigError, OSQueryInstallError
+from errors import OsqueryConfigError, OsqueryInstallError
 
 
 def _api_error(cls):
@@ -44,7 +44,7 @@ def test_install_unavailable_channel_raises_config_error(monkeypatch):
 
     monkeypatch.setattr(osquery.snap, "ensure_installed", fail)
 
-    with pytest.raises(OSQueryConfigError, match="nope/stable"):
+    with pytest.raises(OsqueryConfigError, match="nope/stable"):
         osquery.install("nope/stable")
 
 
@@ -54,7 +54,7 @@ def test_install_failure_raises(monkeypatch):
 
     monkeypatch.setattr(osquery.snap, "ensure_installed", fail)
 
-    with pytest.raises(OSQueryInstallError):
+    with pytest.raises(OsqueryInstallError):
         osquery.install("latest/edge")
 
 
@@ -64,7 +64,7 @@ def test_install_snapd_unreachable_raises(monkeypatch):
 
     monkeypatch.setattr(osquery.snap, "ensure_installed", fail)
 
-    with pytest.raises(OSQueryInstallError):
+    with pytest.raises(OsqueryInstallError):
         osquery.install("latest/edge")
 
 
@@ -87,7 +87,7 @@ def test_is_installed_snapd_error_raises(monkeypatch):
 
     monkeypatch.setattr(osquery.snap, "list_one", fail)
 
-    with pytest.raises(OSQueryInstallError):
+    with pytest.raises(OsqueryInstallError):
         osquery.is_installed()
 
 
@@ -120,7 +120,7 @@ def test_uninstall_failure_raises(monkeypatch):
 
     monkeypatch.setattr(osquery.snap, "remove", fail)
 
-    with pytest.raises(OSQueryInstallError):
+    with pytest.raises(OsqueryInstallError):
         osquery.uninstall()
 
 
@@ -259,7 +259,7 @@ def test_write_file_error_raises_config_error(monkeypatch, tmp_path, as_current_
 
     monkeypatch.setattr(osquery.os, "chmod", boom)
 
-    with pytest.raises(OSQueryConfigError):
+    with pytest.raises(OsqueryConfigError):
         osquery.write_secret_file(str(tmp_path / "x"), "value")
 
 
@@ -272,7 +272,7 @@ def test_write_file_write_failure_raises_config_error(monkeypatch, tmp_path, as_
 
     monkeypatch.setattr(osquery.os, "fchmod", boom)
 
-    with pytest.raises(OSQueryConfigError):
+    with pytest.raises(OsqueryConfigError):
         osquery.write_secret_file(str(path), "value")
 
 
@@ -305,5 +305,5 @@ def test_restart_failure_raises(monkeypatch):
 
     monkeypatch.setattr(osquery.snap, "restart", fail)
 
-    with pytest.raises(OSQueryInstallError):
+    with pytest.raises(OsqueryInstallError):
         osquery.restart()

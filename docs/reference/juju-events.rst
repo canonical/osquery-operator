@@ -1,5 +1,5 @@
 .. meta::
-   :description: Reference documentation for all Juju events observed by the OSQuery charm.
+   :description: Reference documentation for all Juju events observed by the osquery charm.
 
 .. _reference_juju_events:
 
@@ -7,7 +7,7 @@ Juju events
 ===========
 
 The charm follows a holistic (reconcile) pattern: nearly every lifecycle event
-is routed to a single idempotent handler that ensures OSQuery is installed,
+is routed to a single idempotent handler that ensures osquery is installed,
 renders the flagfile from the current configuration, and (re)starts the daemon.
 
 The following Juju events are observed:

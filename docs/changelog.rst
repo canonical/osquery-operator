@@ -1,5 +1,5 @@
 .. meta::
-   :description: View the changelog for the OSQuery charm, including all versions and changes.
+   :description: View the changelog for the osquery charm, including all versions and changes.
 
 .. _changelog:
 

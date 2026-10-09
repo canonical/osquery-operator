@@ -1,12 +1,12 @@
 .. meta::
-   :description: A security overview of the OSQuery charm, including its threat model and best practices.
+   :description: A security overview of the osquery charm, including its threat model and best practices.
 
 .. _explanation_security:
 
 Security
 ========
 
-This page provides an overview of the security posture of the OSQuery charm: how
+This page provides an overview of the security posture of the osquery charm: how
 it handles sensitive material, what to be aware of when operating it, and the
 best practices that keep a deployment secure.
 
@@ -16,7 +16,7 @@ best practices that keep a deployment secure.
 Handling of sensitive material
 ------------------------------
 
-The charm handles several pieces of sensitive material: the OSQuery enrollment
+The charm handles several pieces of sensitive material: the osquery enrollment
 secret, and the TLS client certificate and key used to authenticate to the
 controller.
 
@@ -32,7 +32,7 @@ that runs the daemon can read them.
 Transport security
 ------------------
 
-All communication between the OSQuery agent and its controller is protected by
+All communication between the osquery agent and its controller is protected by
 mutual TLS. The agent authenticates the controller with a CA certificate and
 authenticates itself with a client certificate and key. See :ref:`the
 cryptographic overview <reference_cryptographic_overview>` for details.
@@ -59,7 +59,7 @@ Best practices
 - Restrict who can access the Juju model, since model access implies control over
   the charm's configuration and secrets.
 - Keep the charm up to date so the deployment benefits from security fixes in
-  both the charm and the OSQuery snap. See :ref:`how to upgrade
+  both the charm and the osquery snap. See :ref:`how to upgrade
   <how_to_upgrade>`.
 - Rotate the enrollment secret and TLS credentials periodically as part of routine
   credential hygiene. See `how to manage secrets <https://documentation.ubuntu.com/juju/3.6/howto/manage-secrets/>`_ for

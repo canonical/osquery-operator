@@ -1,14 +1,14 @@
 .. meta::
-   :description: Learn how to redeploy the OSQuery charm.
+   :description: Learn how to redeploy the osquery charm.
 
 .. _how_to_redeploy:
 
 How to redeploy
 ===============
 
-Because the OSQuery charm is stateless, redeploying it is straightforward: remove
+Because the osquery charm is stateless, redeploying it is straightforward: remove
 the application and deploy it again against the same principal. The agent
-re-enrolls with the OSQuery Controller once its configuration is reapplied.
+re-enrolls with the osquery Controller once its configuration is reapplied.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 
@@ -24,7 +24,7 @@ Before removing the application, capture its configuration so you can reapply it
 Remove the existing application
 -------------------------------
 
-Remove the OSQuery subordinate. This leaves the principal application untouched:
+Remove the osquery subordinate. This leaves the principal application untouched:
 
 .. code-block:: bash
 

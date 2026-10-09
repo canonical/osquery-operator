@@ -14,7 +14,7 @@ systematically from the macro name:
   * ``shell`` -- the flag is only honoured by the interactive shell (osqueryi).
 
 This script is committed alongside the charm so it can be re-run whenever the
-OSQuery version is bumped, keeping the list of supported flags in sync with the
+osquery version is bumped, keeping the list of supported flags in sync with the
 fork's source. See ``docs/reference/configurations.rst`` for how the output maps
 to charm configuration options.
 """

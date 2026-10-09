@@ -20,7 +20,7 @@ import textwrap
 #######################
 
 # Project name
-project = "OSQuery operator"
+project = "osquery operator"
 
 # Author name; used in the default copyright statement in the page footer
 author = "Canonical Ltd."
@@ -162,8 +162,8 @@ rediraffe_dir_only = True
 # <first sentence of home page>".
 llms_txt_description = textwrap.dedent(
     """\
-    This is the documentation for the OSQuery operator, a Juju charm deploying and
-    managing OSQuery on virtual machines and bare-metal hosts.
+    This is the documentation for the osquery operator, a Juju charm deploying and
+    managing osquery on virtual machines and bare-metal hosts.
     """
 )
 

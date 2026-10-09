@@ -1,5 +1,5 @@
 .. meta::
-   :description: Familiarize yourself with contributing to the OSQuery charm documentation.
+   :description: Familiarize yourself with contributing to the osquery charm documentation.
 
 .. _how_to_contribute:
 

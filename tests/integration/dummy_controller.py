@@ -1,10 +1,10 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""A minimal stand-in for an OSQuery Controller, used by integration tests.
+"""A minimal stand-in for an osquery Controller, used by integration tests.
 
 It serves HTTPS on the given port with the supplied self-signed certificate and
-answers the OSQuery TLS enrollment/config requests. The body of the enrollment
+answers the osquery TLS enrollment/config requests. The body of the enrollment
 request is written verbatim to an output file so the test can assert that the
 real daemon sent the configured enrollment secret and host identifier.
 

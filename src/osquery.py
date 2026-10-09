@@ -1,10 +1,10 @@
 # Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Workload management for the OSQuery agent.
+"""Workload management for the osquery agent.
 
 This module contains the logic that interacts with the host system to install
-and remove OSQuery. It is intentionally free of any Ops/Juju imports so that it
+and remove osquery. It is intentionally free of any Ops/Juju imports so that it
 can be unit tested in isolation and reasoned about independently from the charm
 lifecycle.
 """
@@ -15,11 +15,11 @@ from pathlib import Path
 
 from charmlibs import snap, systemd
 
-from errors import OSQueryConfigError, OSQueryInstallError
+from errors import OsqueryConfigError, OsqueryInstallError
 
 logger = logging.getLogger(__name__)
 
-# Canonical SecOps OSQuery fork (5.21.0, eBPF). Classic confinement: eBPF
+# Canonical SecOps osquery fork (5.21.0, eBPF). Classic confinement: eBPF
 # needs privileges no strict-confinement interface grants.
 SNAP_NAME = "c-osquery"
 # The snap's daemon app and its systemd unit.
@@ -55,7 +55,7 @@ SECURE_DIR_MODE = 0o700
 
 
 def install(channel: str) -> bool:
-    """Ensure the OSQuery snap is installed and tracking ``channel``.
+    """Ensure the osquery snap is installed and tracking ``channel``.
 
     Installs the snap (with classic confinement) when it is absent, and
     refreshes it onto ``channel`` when it currently tracks a different one. When
@@ -71,22 +71,22 @@ def install(channel: str) -> bool:
         ``True`` if the snap was installed or refreshed, ``False`` otherwise.
 
     Raises:
-        OSQueryConfigError: if ``channel`` does not exist for the snap.
-        OSQueryInstallError: if installing or refreshing the snap fails.
+        OsqueryConfigError: if ``channel`` does not exist for the snap.
+        OsqueryInstallError: if installing or refreshing the snap fails.
     """
     try:
         logger.info("Ensuring %s snap is installed from %s", SNAP_NAME, channel)
         return bool(snap.ensure_installed(SNAP_NAME, channel, classic=True, update=False))
     except snap.ChannelNotAvailableError as exc:
-        raise OSQueryConfigError(
+        raise OsqueryConfigError(
             f"snap channel '{channel}' is not available for {SNAP_NAME}"
         ) from exc
     except snap.Error as exc:
-        raise OSQueryInstallError(f"failed to install {SNAP_NAME}: {exc}") from exc
+        raise OsqueryInstallError(f"failed to install {SNAP_NAME}: {exc}") from exc
 
 
 def uninstall() -> None:
-    """Remove the OSQuery snap from the system.
+    """Remove the osquery snap from the system.
 
     snapd stops the daemon before removing the snap. The removal purges the
     snap's data instead of saving an automatic snapshot, because
@@ -94,20 +94,20 @@ def uninstall() -> None:
     must not outlive the unit.
 
     Raises:
-        OSQueryInstallError: if removing the snap fails.
+        OsqueryInstallError: if removing the snap fails.
     """
     try:
         logger.info("Removing %s snap", SNAP_NAME)
         snap.remove(SNAP_NAME, purge=True)
     except snap.Error as exc:
-        raise OSQueryInstallError(f"failed to remove {SNAP_NAME}: {exc}") from exc
+        raise OsqueryInstallError(f"failed to remove {SNAP_NAME}: {exc}") from exc
 
 
 def is_installed() -> bool:
-    """Return whether the OSQuery snap is installed (on any channel).
+    """Return whether the osquery snap is installed (on any channel).
 
     Raises:
-        OSQueryInstallError: if snapd cannot be queried.
+        OsqueryInstallError: if snapd cannot be queried.
     """
     try:
         snap.list_one(SNAP_NAME)
@@ -115,11 +115,11 @@ def is_installed() -> bool:
     except snap.NotInstalledError:
         return False
     except snap.Error as exc:
-        raise OSQueryInstallError(f"failed to query {SNAP_NAME}: {exc}") from exc
+        raise OsqueryInstallError(f"failed to query {SNAP_NAME}: {exc}") from exc
 
 
 def is_running() -> bool:
-    """Return whether the OSQuery daemon is currently running."""
+    """Return whether the osquery daemon is currently running."""
     return systemd.service_running(SYSTEMD_UNIT)
 
 
@@ -144,7 +144,7 @@ def _write_file(path: str, content: str, *, file_mode: int, dir_mode: int) -> bo
         ``True`` if the file content changed, ``False`` if it already matched.
 
     Raises:
-        OSQueryConfigError: if the file or directory cannot be written.
+        OsqueryConfigError: if the file or directory cannot be written.
     """
     target = Path(path)
     parent = target.parent
@@ -171,19 +171,19 @@ def _write_file(path: str, content: str, *, file_mode: int, dir_mode: int) -> bo
             handle.write(content)
         return True
     except OSError as exc:
-        raise OSQueryConfigError(f"failed to write {path}: {exc}") from exc
+        raise OsqueryConfigError(f"failed to write {path}: {exc}") from exc
 
 
 def write_flagfile(content: str) -> bool:
-    """Write the generated OSQuery flagfile to disk.
+    """Write the generated osquery flagfile to disk.
 
     Returns:
         ``True`` if the flagfile content changed, ``False`` if it already matched.
 
     Raises:
-        OSQueryConfigError: if the flagfile cannot be written.
+        OsqueryConfigError: if the flagfile cannot be written.
     """
-    logger.info("Writing OSQuery flagfile to %s", FLAGFILE_PATH)
+    logger.info("Writing osquery flagfile to %s", FLAGFILE_PATH)
     return _write_file(FLAGFILE_PATH, content, file_mode=FLAGFILE_MODE, dir_mode=SECURE_DIR_MODE)
 
 
@@ -201,7 +201,7 @@ def write_secret_file(path: str, content: str) -> bool:
         ``True`` if the file content changed, ``False`` if it already matched.
 
     Raises:
-        OSQueryConfigError: if the file cannot be written.
+        OsqueryConfigError: if the file cannot be written.
     """
     logger.info("Writing secret file %s", path)
     return _write_file(path, content, file_mode=SECRET_FILE_MODE, dir_mode=SECURE_DIR_MODE)
@@ -221,25 +221,25 @@ def write_public_file(path: str, content: str) -> bool:
         ``True`` if the file content changed, ``False`` if it already matched.
 
     Raises:
-        OSQueryConfigError: if the file cannot be written.
+        OsqueryConfigError: if the file cannot be written.
     """
     logger.info("Writing file %s", path)
     return _write_file(path, content, file_mode=PUBLIC_FILE_MODE, dir_mode=SECURE_DIR_MODE)
 
 
 def restart() -> None:
-    """Enable and (re)start the OSQuery daemon so it reloads its flagfile.
+    """Enable and (re)start the osquery daemon so it reloads its flagfile.
 
-    OSQuery reads the flagfile only at start-up, so the service must be bounced
+    Osquery reads the flagfile only at start-up, so the service must be bounced
     for configuration changes to take effect. The service is also enabled so it
     survives reboots.
 
     Raises:
-        OSQueryInstallError: if the service fails to start.
+        OsqueryInstallError: if the service fails to start.
     """
     try:
         logger.info("Enabling and restarting %s.%s", SNAP_NAME, SERVICE_NAME)
         snap.start(SNAP_NAME, SERVICE_NAME, enable=True)
         snap.restart(SNAP_NAME, SERVICE_NAME)
     except snap.Error as exc:
-        raise OSQueryInstallError(f"failed to restart {SNAP_NAME}.{SERVICE_NAME}: {exc}") from exc
+        raise OsqueryInstallError(f"failed to restart {SNAP_NAME}.{SERVICE_NAME}: {exc}") from exc

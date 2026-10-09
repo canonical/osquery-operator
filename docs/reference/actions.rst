@@ -1,5 +1,5 @@
 .. meta::
-   :description: Reference explaining that the OSQuery charm exposes no Juju actions.
+   :description: Reference explaining that the osquery charm exposes no Juju actions.
 
 .. _reference_actions:
 
@@ -11,7 +11,7 @@ operations that a charm exposes so operators can run them on demand.
 
 .. vale Canonical.004-Canonical-product-names = NO
 
-The OSQuery charm doesn't define any actions. Its behavior is entirely
+The osquery charm doesn't define any actions. Its behavior is entirely
 configuration-driven: the charm reconciles the ``osqueryd`` daemon in response to
 Juju events (such as configuration changes) rather than through operator-invoked
 actions. See :ref:`Configurations <reference_configurations>` and

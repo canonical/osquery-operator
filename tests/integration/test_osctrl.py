@@ -44,7 +44,7 @@ def test_osquery_enrols_with_real_osctrl_and_ships_logs(
     Steps:
     - Create a fresh osctrl TLS environment (with a scheduled query) and read its
       UUID and enrollment secret.
-    - Deploy the ``ubuntu`` principal and the OSQuery subordinate; confirm the
+    - Deploy the ``ubuntu`` principal and the osquery subordinate; confirm the
       subordinate blocks until the controller options are set.
     - Make the controller reachable on the principal machine with an
       ``osctrl.lxd`` hosts entry.

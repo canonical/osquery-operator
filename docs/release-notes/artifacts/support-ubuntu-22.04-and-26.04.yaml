@@ -12,10 +12,10 @@ changes:
   description: >
     Extended the charm to build and run on Ubuntu 22.04 LTS and 26.04 LTS in
     addition to 24.04 LTS. A separate charm artifact is now produced for each
-    supported base, matching the Ubuntu releases for which the OSQuery PPA
+    supported base, matching the Ubuntu releases for which the osquery PPA
     publishes packages. Integration tests run against all three bases, and are
     additionally scheduled every Wednesday to catch regressions from the
-    unpinned OSQuery package version.
+    unpinned osquery package version.
   urls:
     pr:
       - "https://github.com/canonical/osquery-operator/pull/2"

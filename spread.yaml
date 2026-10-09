@@ -27,7 +27,7 @@ exclude:
 
 integration-suites:
   tests/integration/:
-    summary: OSQuery integration tests
+    summary: osquery integration tests
     working-dir: ./
     backends:
     - integration-test
