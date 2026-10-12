@@ -13,5 +13,8 @@ logs — is shipped directly to the osquery Controller over TLS, which is the
 system of record for that data. The charm doesn't presently surface a separate
 metrics endpoint for Juju or for the Canonical Observability Stack.
 
+For what data the controller records and how it's organized, see :ref:`The
+osquery Controller <reference_osquery_controller>`.
+
 For visibility into a running deployment today, use the Juju status and logs as
 described in :ref:`how to troubleshoot <how_to_troubleshoot>`.

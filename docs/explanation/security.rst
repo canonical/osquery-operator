@@ -62,8 +62,8 @@ Best practices
   both the charm and the osquery snap. See :ref:`how to upgrade
   <how_to_upgrade>`.
 - Rotate the enrollment secret and TLS credentials periodically as part of routine
-  credential hygiene. See `how to manage secrets <https://documentation.ubuntu.com/juju/3.6/howto/manage-secrets/>`_ for
-  updating a Juju secret's value.
+  credential hygiene. See :ref:`how to enroll the agent with a controller
+  <how_to_enroll_with_controller>` for the rotation steps.
 
 .. TODO: Link to the project's security policy and vulnerability-reporting
    process (SECURITY.md) once a public disclosure address is confirmed.

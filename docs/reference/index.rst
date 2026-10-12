@@ -42,6 +42,7 @@ high-level deployment with any required dependencies.
 
     Charm architecture <charm-architecture>
     High-level deployment overview <high-level-deployment>
+    The osquery Controller <osquery-controller>
 
 Advanced topics
 ---------------

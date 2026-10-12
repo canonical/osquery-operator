@@ -40,5 +40,5 @@ Key points:
 - All agents communicate with the osquery Controller over TLS. The controller,
   not Juju, owns the fleet's query schedules, telemetry rules, and log storage.
 
-.. TODO: Add a link to the osquery Controller deployment documentation once it's
-   published.
+This charm targets `osctrl <https://osctrl.net/>`_ as the controller. For how to
+deploy and operate it, see the `osctrl documentation <https://docs.osctrl.net/>`_.

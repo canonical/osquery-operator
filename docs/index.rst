@@ -51,6 +51,8 @@ In this documentation
       - :ref:`Configurations <reference_configurations>` | :ref:`Relation endpoints <reference_relation_endpoints>`
     * - Operations
       - :ref:`Upgrade <how_to_upgrade>` | :ref:`Redeploy <how_to_redeploy>` | :ref:`Back up and restore <how_to_back_up_restore>` | :ref:`Troubleshoot <how_to_troubleshoot>` | :ref:`Metrics <reference_metrics>` | :ref:`Terraform <how_to_terraform>`
+    * - Product-specific feature
+      - :ref:`Enroll with a controller <how_to_enroll_with_controller>` | :ref:`The osquery Controller <reference_osquery_controller>`
     * - Design
       - :ref:`Architecture <reference_charm_architecture>` | :ref:`Design <explanation_charm_design>`
     * - Security

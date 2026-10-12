@@ -27,8 +27,8 @@ What you'll need
   - Optionally, the TLS certificates used to authenticate to the controller, if
     your controller is configured to require them.
 
-.. TODO: Link to the osquery Controller documentation once it's published, so
-   readers know how to obtain these values.
+To learn how to provision an environment and obtain these values, see :ref:`how
+to enroll the agent with a controller <how_to_enroll_with_controller>`.
 
 What you'll do
 --------------
