@@ -13,18 +13,6 @@ already deployed the charm with Juju.
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 .. vale Canonical.500-Repeated-words = NO
 
-Connect to a controller
------------------------
-
-Enroll the agent with an osquery Controller, including provisioning an
-environment, obtaining credentials, and rotating them.
-
-.. toctree::
-    :hidden:
-    :maxdepth: 1
-
-    Enroll the agent with a controller <enroll-with-controller>
-
 Basic operations
 ----------------
 
@@ -34,6 +22,7 @@ These guides cover common day-to-day tasks for a running deployment.
     :hidden:
     :maxdepth: 1
 
+    Enroll the agent with a controller <enroll-with-controller>
     Troubleshoot <troubleshoot>
 
 Update and refresh

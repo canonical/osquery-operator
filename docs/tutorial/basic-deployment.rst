@@ -118,7 +118,7 @@ Watch the deployment settle with:
 
 Wait until the ``ubuntu`` application is ``active`` and the ``osquery``
 subordinate reaches a settled state. The osquery charm blocks until it's told
-which osquery Controller to enroll with, so it's expected to report a blocked
+which osquery controller to enroll with, so it's expected to report a blocked
 status such as ``controller-env-uuid is required`` at this stage. Connecting the
 agent to a controller is covered in the :ref:`advanced tutorial
 <tutorial_advanced_deployment>`.
@@ -188,7 +188,7 @@ osquery answers straight from the live system (your exact output will vary):
     +-----+---------+
 
 Note that the ``osqueryi`` shell is just a convenience for testing. Typically the agent
-runs in the background as a daemon and is controlled by the osquery Controller.
+runs in the background as a daemon and is controlled by the osquery controller.
 See the :ref:`advanced tutorial <tutorial_advanced_deployment>` for instructions on enrolling the agent with a controller.
 
 Clean up the environment
@@ -210,4 +210,4 @@ Next steps
 ----------
 
 Now that you have a basic deployment, continue to the :ref:`advanced tutorial
-<tutorial_advanced_deployment>` to connect the agent to an osquery Controller.
+<tutorial_advanced_deployment>` to connect the agent to an osquery controller.

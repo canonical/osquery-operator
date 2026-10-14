@@ -43,7 +43,7 @@ under ``/var/snap/c-osquery/common/etc/osquery``.
             osqueryd -->|reads| flagfile
             osqueryd -->|reads| secrets
         end
-        controller["osquery Controller"]
+        controller["osquery controller"]
         osqueryd -->|TLS: enroll / config / logs| controller
 
 Workload
@@ -57,7 +57,7 @@ reads its command-line flags from a flagfile on disk; the charm generates this
 flagfile from the Juju configuration, so changing a configuration value and
 restarting the daemon is how the charm applies changes to the workload.
 
-The agent connects outward over TLS to a centrally managed osquery Controller,
+The agent connects outward over TLS to a centrally managed osquery controller,
 which supplies its configuration (query schedules, telemetry rules, and query
 tasks) and collects its logs.
 

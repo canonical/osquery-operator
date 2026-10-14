@@ -58,7 +58,7 @@ separated from its host-facing concerns.
 Talking to a controller instead of Juju relations
 -------------------------------------------------
 
-An osquery fleet is coordinated by a central osquery Controller that owns the
+An osquery fleet is coordinated by a central osquery controller that owns the
 query schedules, telemetry rules, and log storage. The charm connects each agent
 to that controller directly over TLS rather than modelling the controller as a
 Juju relation. This keeps the charm aligned with how osquery fleets are operated

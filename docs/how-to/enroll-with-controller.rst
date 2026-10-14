@@ -1,5 +1,5 @@
 .. meta::
-   :description: Provision an environment on an osquery Controller and enroll the agent, including obtaining and rotating enrollment secrets and TLS certificates.
+   :description: Provision an environment on an osquery controller and enroll the agent, including obtaining and rotating enrollment secrets and TLS certificates.
 
 .. _how_to_enroll_with_controller:
 
@@ -7,7 +7,7 @@ How to enroll the agent with a controller
 =========================================
 
 The osquery charm runs the ``osqueryd`` agent, but an agent is only useful once
-it's enrolled with an :ref:`osquery Controller <reference_osquery_controller>`,
+it's enrolled with an :ref:`osquery controller <reference_osquery_controller>`,
 which supplies its configuration and collects its logs. This guide covers the
 end-to-end flow: provisioning an environment on the controller, obtaining the
 credentials the agent needs, applying them to the charm, and rotating them later.
@@ -17,7 +17,6 @@ This charm targets `osctrl <https://osctrl.net/>`_, and the guide assumes you
 already have a running osctrl deployment and can run ``osctrl-cli`` against it
 (either directly against its database or through the osctrl API).
 
-.. vale Canonical.013-Spell-out-numbers-below-10 = NO
 .. vale Canonical.500-Repeated-words = NO
 
 Prerequisites

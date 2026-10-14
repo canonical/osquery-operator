@@ -14,7 +14,7 @@ how sensitive material is handled.
 Transport security
 ------------------
 
-The osquery agent communicates with its osquery Controller exclusively over TLS.
+The osquery agent communicates with its osquery controller exclusively over TLS.
 All enrollment, configuration retrieval, log delivery, and distributed-query
 traffic is carried over these TLS connections.
 
@@ -47,4 +47,4 @@ explanation <explanation_security>` for the accompanying threat model and
 best-practice guidance.
 
 .. TODO: Document the specific cipher suites and TLS versions negotiated once the
-   osquery Controller's cryptographic profile is finalized.
+   osquery controller's cryptographic profile is finalized.

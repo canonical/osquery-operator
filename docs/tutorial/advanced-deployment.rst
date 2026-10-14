@@ -1,5 +1,5 @@
 .. meta::
-   :description: Connect the osquery agent to an osquery Controller using Juju configuration and secrets.
+   :description: Connect the osquery agent to an osquery controller using Juju configuration and secrets.
 
 .. _tutorial_advanced_deployment:
 
@@ -9,7 +9,7 @@ Connect the osquery agent to a controller
 In the :ref:`basic tutorial <tutorial_basic_deployment>` you deployed the
 osquery charm and confirmed that the ``osqueryd`` daemon was installed. In this
 tutorial you'll finish the deployment by connecting the agent to an osquery
-Controller, which supplies the agent's configuration (query schedules, telemetry
+controller, which supplies the agent's configuration (query schedules, telemetry
 rules, and query tasks) and collects its logs.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
@@ -19,7 +19,7 @@ What you'll need
 ----------------
 
 - The deployment from the :ref:`basic tutorial <tutorial_basic_deployment>`.
-- The connection details for an osquery Controller:
+- The connection details for an osquery controller:
 
   - The controller's hostname or URI.
   - The environment UUID assigned to your fleet.
@@ -88,7 +88,7 @@ against its bundle of publicly trusted certificate authorities. Provide it only
 to pin a private or self-signed certificate authority.
 
 When they're needed, the ``.pem`` files must be generated beforehand and
-registered with the osquery Controller. Generating and registering them is
+registered with the osquery controller. Generating and registering them is
 out of scope for this tutorial. Once you have them, provide the server CA, the
 client certificate, and the client key as file-backed configuration options:
 

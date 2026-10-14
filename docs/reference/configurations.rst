@@ -37,7 +37,7 @@ both are set, the unit reports ``blocked`` with a message naming the missing
 options.
 
 ``controller-uri``
-   Hostname of the osquery Controller. It sets ``--tls_hostname`` to
+   Hostname of the osquery controller. It sets ``--tls_hostname`` to
    ``<controller-uri>:443``.
 
 ``controller-env-uuid``

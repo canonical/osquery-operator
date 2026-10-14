@@ -1,19 +1,15 @@
 .. meta::
-   :description: Reference for the osquery Controller and how it relates to the osquery charm.
+   :description: Reference for the osquery controller and how it relates to the osquery charm.
 
 .. _reference_osquery_controller:
 
-.. vale Canonical.007-Headings-sentence-case = NO
-
-The osquery Controller
+The osquery controller
 ======================
-
-.. vale Canonical.007-Headings-sentence-case = YES
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 .. vale Canonical.500-Repeated-words = NO
 
-The *osquery Controller* is the central service that an osquery fleet enrolls
+The *osquery controller* is the central service that an osquery fleet enrolls
 with. It's a separate component from this charm: the charm manages the
 ``osqueryd`` agent on each host, while the controller owns the fleet's query
 schedules, telemetry rules, and log storage. A working deployment needs both —
@@ -81,7 +77,7 @@ configuration changes. See the :ref:`Configurations reference
 Data held by the controller
 ---------------------------
 
-The controller, not the charm or Juju, is the system of record for the data an
+The controller is the system of record for the data an
 osquery fleet produces: scheduled query results, status logs, and
 distributed-query responses. Because this data is shipped directly to the
 controller over TLS, the charm doesn't expose it as Juju or Prometheus metrics.

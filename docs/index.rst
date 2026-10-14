@@ -22,7 +22,7 @@ charm deploys the Canonical SecOps fork of osquery as a
 :ref:`subordinate <juju:subordinate-charm>`
 agent that runs alongside a principal application on the same machine. It
 installs osquery from the `c-osquery snap <https://snapcraft.io/c-osquery>`_,
-runs it in daemon mode, and connects it over TLS to a centrally managed osquery Controller that supplies the
+runs it in daemon mode, and connects it over TLS to a centrally managed osquery controller that supplies the
 agent's configuration and collects its logs.
 
 Like any Juju charm, this charm supports one-line deployment, configuration,
@@ -31,7 +31,7 @@ integration, scaling, and more. For osquery, this includes:
 * Installing and running the ``osqueryd`` daemon on any principal machine.
 * Translating Juju configuration into the osquery flagfile and reconciling the
   daemon whenever the configuration changes.
-* Enrolling the agent with an osquery Controller over TLS, with the enrollment
+* Enrolling the agent with an osquery controller over TLS, with the enrollment
   secret and client certificates delivered through Juju secrets.
 
 This charm makes operating osquery fleets simple and consistent for security,
@@ -46,13 +46,13 @@ In this documentation
     * -
       -
     * - Get started
-      - :ref:`Deploy the osquery charm <tutorial_basic_deployment>` | :ref:`Enroll an osquery Controller <tutorial_advanced_deployment>`
+      - :ref:`Deploy the osquery charm <tutorial_basic_deployment>` | :ref:`Enroll an osquery controller <tutorial_advanced_deployment>`
     * - Deployment
       - :ref:`Configurations <reference_configurations>` | :ref:`Relation endpoints <reference_relation_endpoints>`
     * - Operations
       - :ref:`Upgrade <how_to_upgrade>` | :ref:`Redeploy <how_to_redeploy>` | :ref:`Back up and restore <how_to_back_up_restore>` | :ref:`Troubleshoot <how_to_troubleshoot>` | :ref:`Metrics <reference_metrics>` | :ref:`Terraform <how_to_terraform>`
-    * - Product-specific feature
-      - :ref:`Enroll with a controller <how_to_enroll_with_controller>` | :ref:`The osquery Controller <reference_osquery_controller>`
+    * - osquery controller
+      - :ref:`Enroll the agent <how_to_enroll_with_controller>` | :ref:`Overview <reference_osquery_controller>`
     * - Design
       - :ref:`Architecture <reference_charm_architecture>` | :ref:`Design <explanation_charm_design>`
     * - Security
