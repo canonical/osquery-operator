@@ -306,7 +306,7 @@ Some flags are always managed by the charm and are not exposed as options:
 ``--proxy_hostname``
    Set from the model's HTTPS proxy, so osquery routes its outbound TLS traffic
    through it: ``juju-https-proxy`` (``JUJU_CHARM_HTTPS_PROXY``), or else the
-   legacy ``https-proxy`` (``HTTPS_PROXY``). Osquery expects ``host:port``, so
+   legacy ``https-proxy`` (``HTTPS_PROXY``). osquery expects ``host:port``, so
    the charm drops the scheme: ``http://squid.internal:3128`` becomes
    ``--proxy_hostname=squid.internal:3128``. It is only emitted when the model
    has an HTTPS proxy.

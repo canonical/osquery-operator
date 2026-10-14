@@ -6,7 +6,6 @@ Hardcoded
 misconfiguration
 osquery
 osqueryd
-Osquery
 plaintext
 redeployments
 subgraph

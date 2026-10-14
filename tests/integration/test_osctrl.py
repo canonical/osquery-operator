@@ -39,7 +39,7 @@ def _principal_unit(juju: jubilant.Juju, app: str) -> str:
 def test_osquery_enrols_with_real_osctrl_and_ships_logs(
     juju: jubilant.Juju, charm_paths, osctrl: OsctrlVM
 ):
-    """Osquery enrols against a real osctrl and ships logs.
+    """Verify osquery enrols against a real osctrl and ships logs.
 
     Steps:
     - Create a fresh osctrl TLS environment (with a scheduled query) and read its

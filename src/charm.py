@@ -17,7 +17,7 @@ from errors import OsqueryConfigError, OsqueryError
 logger = logging.getLogger(__name__)
 
 # Where Juju puts the model's HTTPS proxy in the hook environment:
-# juju-https-proxy, then the legacy https-proxy. Osquery routes its outbound
+# juju-https-proxy, then the legacy https-proxy. osquery routes its outbound
 # TLS traffic through the first one set.
 HTTPS_PROXY_ENVS = ("JUJU_CHARM_HTTPS_PROXY", "HTTPS_PROXY", "https_proxy")
 # Snap channel option; configures the charm, not the flagfile.
@@ -89,7 +89,7 @@ class OsqueryCharm(ops.CharmBase):
         flagfile = flags.render_flagfile(flags.build_flags(values, proxy_hostname))
         changed = osquery.write_flagfile(flagfile) or changed
 
-        # Osquery only reads its flagfile at start-up, so restart when the
+        # osquery only reads its flagfile at start-up, so restart when the
         # rendered config changed. Also (re)start if the daemon is not running
         # (for example after a reboot or a fresh install) even when nothing
         # changed, so reconcile self-heals a stopped service.
