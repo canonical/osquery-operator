@@ -19,7 +19,6 @@ Basic operations
 These guides cover common day-to-day tasks for a running deployment.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Enroll the agent with a controller <enroll-with-controller>
@@ -32,7 +31,6 @@ Backups, redeployments, and upgrades keep the osquery charm current and let it
 benefit from new features and fixes.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Back up and restore <back-up-restore>
@@ -46,7 +44,6 @@ These guides help you deploy the charm with Terraform and contribute to the
 project.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Use Terraform <terraform>
