@@ -14,7 +14,7 @@ description: |
   The charm installs osquery from the `c-osquery` snap (classic confinement)
   and runs osquery in daemon mode.
 
-  Osquery opens an outbound TLS connection to a centrally managed osquery
+  osquery opens an outbound TLS connection to a centrally managed osquery
   Controller to fetch its configuration (schedules, telemetry rules and query
   tasks) and to push the logs produced by its scheduled queries.
 
@@ -23,7 +23,7 @@ links:
   issues: https://github.com/canonical/osquery-operator/issues
   source: https://github.com/canonical/osquery-operator
 
-# Osquery runs co-located with a principal application on the same machine and
+# osquery runs co-located with a principal application on the same machine and
 # monitors its host, therefore the charm is a subordinate.
 subordinate: true
 

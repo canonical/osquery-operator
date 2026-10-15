@@ -16,9 +16,9 @@ deploying and managing `osquery <https://www.osquery.io/>`_ on virtual machines 
 .. TODO: Replace the upstream link above if a Canonical SecOps osquery product
    page becomes available.
 
-Osquery exposes an operating system as a high-performance relational database,
-letting security and operations teams query the state of a host with SQL. This
-charm deploys the Canonical SecOps fork of osquery as a
+The osquery agent exposes an operating system as a high-performance relational
+database, letting security and operations teams query the state of a host with
+SQL. This charm deploys the Canonical SecOps fork of osquery as a
 :ref:`subordinate <juju:subordinate-charm>`
 agent that runs alongside a principal application on the same machine. It
 installs osquery from the `c-osquery snap <https://snapcraft.io/c-osquery>`_,

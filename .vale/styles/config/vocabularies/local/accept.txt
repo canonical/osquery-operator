@@ -6,7 +6,6 @@ Launchpad
 LXD
 osctrl
 osquery
-Osquery
 osqueryd
 PPA
 pytest

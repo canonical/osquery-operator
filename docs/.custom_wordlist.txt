@@ -7,7 +7,6 @@ misconfiguration
 osctrl
 osquery
 osqueryd
-Osquery
 plaintext
 redeployments
 subgraph

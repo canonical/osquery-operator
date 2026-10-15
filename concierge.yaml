@@ -7,7 +7,7 @@ juju:
     test-mode: "true"
     automatically-retry-hooks: "false"
 
-# Osquery is a machine subordinate charm, so it is exercised on a LXD cloud
+# osquery is a machine subordinate charm, so it is exercised on a LXD cloud
 # rather than a Kubernetes substrate.
 providers:
   lxd:

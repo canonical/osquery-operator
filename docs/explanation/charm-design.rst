@@ -6,7 +6,7 @@
 Charm design
 ============
 
-Osquery is endpoint security monitoring software: its purpose is to observe the
+osquery is endpoint security monitoring software: its purpose is to observe the
 host it runs on. That job only makes sense on the same machine as the workload
 being monitored, so the charm is designed as a
 :ref:`subordinate charm <juju:subordinate-charm>`
