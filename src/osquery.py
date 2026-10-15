@@ -230,7 +230,7 @@ def write_public_file(path: str, content: str) -> bool:
 def restart() -> None:
     """Enable and (re)start the osquery daemon so it reloads its flagfile.
 
-    Osquery reads the flagfile only at start-up, so the service must be bounced
+    osquery reads the flagfile only at start-up, so the service must be bounced
     for configuration changes to take effect. The service is also enabled so it
     survives reboots.
 

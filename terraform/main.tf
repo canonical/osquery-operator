@@ -15,7 +15,7 @@ resource "juju_application" "osquery" {
   config      = var.config
   constraints = var.constraints
 
-  # `units` is intentionally omitted. Osquery is a subordinate charm: it does
+  # `units` is intentionally omitted. osquery is a subordinate charm: it does
   # not get its own units, instead Juju co-locates one osquery unit next to
   # every unit of the principal application it is related to. Setting `units`
   # on a subordinate application is rejected by the Juju Terraform provider.

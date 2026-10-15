@@ -12,7 +12,7 @@ bare-metal hosts.
 <!-- TODO: Replace the upstream link above with a Canonical SecOps osquery
 product page once one is available. -->
 
-Osquery exposes an operating system as a high-performance relational database,
+osquery exposes an operating system as a high-performance relational database,
 letting security and operations teams query the state of a host with SQL. This
 charm deploys the Canonical SecOps fork of osquery as a
 [subordinate](https://documentation.ubuntu.com/juju/3.6/reference/charm/#subordinate-charm)
