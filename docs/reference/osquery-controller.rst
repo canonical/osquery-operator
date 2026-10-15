@@ -91,8 +91,8 @@ how osctrl stores and exposes it — nodes, scheduled query results, status logs
 and distributed-query results — see the `osctrl documentation
 <https://docs.osctrl.net/>`_.
 
-Next steps
-----------
+Further reading
+---------------
 
 - :ref:`How to enroll the agent with a controller <how_to_enroll_with_controller>`
 - :ref:`Connect the osquery agent to a controller <tutorial_advanced_deployment>`
