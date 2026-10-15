@@ -52,7 +52,7 @@ In this documentation
     * - Operations
       - :ref:`Upgrade <how_to_upgrade>` | :ref:`Redeploy <how_to_redeploy>` | :ref:`Back up and restore <how_to_back_up_restore>` | :ref:`Troubleshoot <how_to_troubleshoot>` | :ref:`Metrics <reference_metrics>` | :ref:`Terraform <how_to_terraform>`
     * - osquery controller
-      - :ref:`Enroll the agent <how_to_enroll_with_controller>` | :ref:`Overview <reference_osquery_controller>`
+      - :ref:`Overview <reference_osquery_controller>` | :ref:`Enroll the agent <how_to_enroll_with_controller>`
     * - Design
       - :ref:`Architecture <reference_charm_architecture>` | :ref:`Design <explanation_charm_design>`
     * - Security

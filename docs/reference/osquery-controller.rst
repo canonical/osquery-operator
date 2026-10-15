@@ -31,9 +31,10 @@ The charm and the controller are deployed and operated independently:
   flagfile. See :ref:`the charm architecture <reference_charm_architecture>`.
 - The **controller** is deployed outside of Juju. Deploying and operating the
   controller is out of scope for this documentation.
-- Each agent connects *outward* to the controller over TLS; the controller never
-  connects back into the Juju model. See :ref:`the high-level deployment overview
-  <reference_high_level_deployment>` for the topology.
+
+Each agent connects *outward* to the controller over TLS; the controller never
+connects back into the Juju model. See :ref:`the high-level deployment overview
+<reference_high_level_deployment>` for the topology.
 
 The charm doesn't model the controller as a Juju relation. Instead, you give the
 charm the controller's connection details through configuration, and the agent
