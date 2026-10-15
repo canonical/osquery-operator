@@ -28,7 +28,7 @@ Advanced tutorial
 -----------------
 
 Once you have a basic deployment, learn how to connect the agent to an osquery
-Controller and supply its enrollment secret through a Juju secret.
+controller and supply its enrollment secret through a Juju secret.
 
 .. toctree::
     :hidden:

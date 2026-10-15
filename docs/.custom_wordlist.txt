@@ -4,6 +4,7 @@ declaratively
 flagfile
 Hardcoded
 misconfiguration
+osctrl
 osquery
 osqueryd
 plaintext

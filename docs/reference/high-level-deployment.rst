@@ -11,7 +11,7 @@ This page shows how the osquery charm fits into a typical deployment.
 The osquery charm is a subordinate that runs on the same machine as a principal
 application. On each host, the charm installs and manages the ``osqueryd``
 daemon. Every agent connects outward over TLS to a centrally managed osquery
-Controller, which supplies the agents' configuration and collects their logs.
+controller, which supplies the agents' configuration and collects their logs.
 
 .. mermaid::
 
@@ -26,7 +26,7 @@ Controller, which supplies the agents' configuration and collects their logs.
             osquery2["osquery subordinate<br/>charm (osqueryd)"]
             principal2 -.->|general-info| osquery2
         end
-        controller["osquery Controller"]
+        controller["osquery controller"]
         osquery1 -->|TLS: enroll / config / logs| controller
         osquery2 -->|TLS: enroll / config / logs| controller
 
@@ -37,8 +37,8 @@ Key points:
 - Each ``osqueryd`` agent is configured from Juju configurations, which the
   charm renders into an osquery flagfile. See :ref:`Configurations
   <reference_configurations>`.
-- All agents communicate with the osquery Controller over TLS. The controller,
+- All agents communicate with the osquery controller over TLS. The controller,
   not Juju, owns the fleet's query schedules, telemetry rules, and log storage.
 
-.. TODO: Add a link to the osquery Controller deployment documentation once it's
-   published.
+This charm targets `osctrl <https://osctrl.net/>`_ as the controller. For how to
+deploy and operate it, see the `osctrl documentation <https://docs.osctrl.net/>`_.

@@ -8,7 +8,7 @@ How to redeploy
 
 Because the osquery charm is stateless, redeploying it is straightforward: remove
 the application and deploy it again against the same principal. The agent
-re-enrolls with the osquery Controller once its configuration is reapplied.
+re-enrolls with the osquery controller once its configuration is reapplied.
 
 .. vale Canonical.013-Spell-out-numbers-below-10 = NO
 

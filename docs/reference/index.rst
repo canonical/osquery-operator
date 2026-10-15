@@ -19,7 +19,6 @@ including actions, configurations, and integrations.
 .. vale Canonical.004-Canonical-product-names = NO
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Actions <actions>
@@ -37,11 +36,11 @@ The following pages provide more details about the charm architecture and a
 high-level deployment with any required dependencies.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Charm architecture <charm-architecture>
     High-level deployment overview <high-level-deployment>
+    The osquery controller <osquery-controller>
 
 Advanced topics
 ---------------
@@ -50,7 +49,6 @@ These pages provide more details about advanced-level topics such as Terraform
 and cryptography.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Cryptographic overview <cryptographic-overview>
@@ -62,7 +60,6 @@ Changelog
 The changelog records all notable changes to the osquery charm.
 
 .. toctree::
-    :hidden:
     :maxdepth: 1
 
     Changelog <../changelog>

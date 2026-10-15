@@ -40,7 +40,7 @@ Provides
 --------
 
 The charm doesn't currently provide any relation endpoints. It communicates with
-its osquery Controller directly over TLS rather than through a Juju relation.
+its osquery controller directly over TLS rather than through a Juju relation.
 
 .. TODO: If the charm gains provided endpoints (for example, an observability or
    controller integration), document them here.

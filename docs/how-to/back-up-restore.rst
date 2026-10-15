@@ -9,7 +9,7 @@ How to back up and restore
 The osquery charm is stateless. All of its meaningful state lives elsewhere:
 
 - The agent's configuration (query schedules, telemetry rules, and query tasks)
-  is owned by the osquery Controller and fetched over TLS at runtime.
+  is owned by the osquery controller and fetched over TLS at runtime.
 - The agent's logs are shipped to the controller rather than retained locally.
 - The charm's own settings (the Juju configuration and secrets) are stored in
   the Juju controller as part of the model.
