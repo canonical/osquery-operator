@@ -13,6 +13,7 @@ header:
   paths-ignore:
   - '.github/**'
   - '.readthedocs.yaml'
+  - '.copier-answers.yml'
   - 'docs/**'
   - '**/*.json'
   - '**/*.md'
